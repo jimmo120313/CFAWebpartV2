@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "actionplan-quick-edit-list-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/actionplanQuickEditList/ActionplanQuickEditListWebPart.js",
+          "manifest": "./src/webparts/actionplanQuickEditList/ActionplanQuickEditListWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "ActionplanQuickEditListWebPartStrings": "lib/webparts/actionplanQuickEditList/loc/{locale}.js"
+  }
+}
