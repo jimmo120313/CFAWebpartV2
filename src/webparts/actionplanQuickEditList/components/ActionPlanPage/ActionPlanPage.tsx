@@ -116,6 +116,7 @@ export class ActionPlanPage extends React.Component<
 
         <ActionPlanItemList
           selectedBrigade={this.state.selectedBrigade}
+          reviewPeriod={this.state.reviewPeriod}
           fRating={this.state.ratingOption}
           fVCategory={this.state.ViabilityOption}
           fEndState={this.state.EndState}

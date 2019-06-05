@@ -106,7 +106,7 @@ export class ABRService {
     selectedBrigade.forEach(e => {
       brigadesId.push(e.brigadeId);
     });
-
+    console.log(brigadesId);
     //Generate Query
     let query = new CamlBuilder()
       .View([
@@ -127,9 +127,16 @@ export class ABRService {
       ])
       .LeftJoin("Brigade", "Brigade")
       .Select("Title", "BrigadeTitle")
-      .LeftJoin("ReviewID", "Review")
+      .LeftJoin("ReviewID", "Annual Brigade Review")
       .Select("ID", "ReviewId")
       .Query()
+      .Where()
+      .LookupField("Brigade")
+      .Id()
+      .In(brigadesId)
+      // .And()
+      // .TextField("Year")
+      // .EqualTo(reviewPeriod)
       .ToString();
 
     let allActionPlanItemDetail: IActionPlanItem[] = [];
@@ -138,11 +145,11 @@ export class ABRService {
     const actionPlanItemDetail = await sp.web.lists
       .getByTitle("Action Plan Items")
       .renderListDataAsStream({ ViewXml: query });
-
+    console.log(actionPlanItemDetail);
     const row = actionPlanItemDetail.Row;
     for (let i = 0; i < row.length; i++) {
       allActionPlanItemDetail.push({
-        brigadeName: row[i].BrigadeTItle,
+        brigadeName: row[i].BrigadeTitle,
         endState: row[i].Title,
         viabilityCategory: row[i].ViabilityCategory,
         subCategory: row[i].SubCategory,
@@ -199,8 +206,7 @@ export class ABRService {
       .Select("ID", "ReviewID")
       .LeftJoin("Class", "Class", "Review")
       .Select("Title", "Classification")
-      .Query()
-      .Where()
+      .Query().Where()
       .LookupField("Brigade")
       .Id()
       .In(brigadesId)
@@ -277,7 +283,6 @@ export class ABRService {
       .getByTitle("	Action Plan Items")
       .fields;
 
-    debugger;
     let assignTo = await objField.getByInternalNameOrTitle("AssignedTo").get();
     assignTo.Choices.forEach(element => {
 
@@ -287,7 +292,8 @@ export class ABRService {
     let prioritys = await objField.getByInternalNameOrTitle("Priority")
       .get();
     prioritys.Choices.forEach(element => {
-      this.priorityOption[element] = element;
+      let string = "'" + element + "'";
+      this.priorityOption["'" + element + "'"] = element;
     });
 
     let due = await objField.getByInternalNameOrTitle("Due").get();
@@ -300,13 +306,6 @@ export class ABRService {
     status.Choices.forEach(element => {
       this.statusOpion[element] = element;
     });
-
-
-
-    console.log(this.supportOption);
-    console.log(this.priorityOption);
-    console.log(this.dueOption);
-    console.log(this.statusOpion);
 
   }
 }

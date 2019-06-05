@@ -20,12 +20,12 @@ export class ActionPlanItemList extends React.Component<
     this.state = {
       selectedBrigade: this.props.selectedBrigade,
       rows: [],
-
     };
   }
   public async componentDidMount(): Promise<void> {
+
     actionPlanItem = await this.actionPlanItemService._getActionPlanItem(
-      "",
+      this.props.reviewPeriod,
       this.state.selectedBrigade
     );
 
@@ -58,6 +58,7 @@ export class ActionPlanItemList extends React.Component<
       { field: "priority", title: "Priority", lookup: this.props.itemPriorityOption },
       { field: "due", title: "Due", lookup: this.props.itemDueOption },
       { field: "status", title: "Status", lookup: this.props.itemStatusOption }
+
     ];
     console.log(this.columns);
     this.setState({ rows: actionPlanItem });
