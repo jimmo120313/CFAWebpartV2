@@ -1,0 +1,17 @@
+:global {
+  .dd {
+    width: 20%;
+    float: left;
+  }
+
+  .Canvas.Canvas {
+    max-width: initial;
+  }
+
+  #workbenchPageContent {
+    max-width: 9000px !important;
+  }
+  .CanvasZone.row.CanvasZone--alignment.CanvasZone--noMargin.CanvasZone--edit{
+    max-width:100%
+  }
+}

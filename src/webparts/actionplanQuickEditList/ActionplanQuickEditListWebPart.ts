@@ -8,8 +8,8 @@ import {
 } from '@microsoft/sp-property-pane';
 
 import * as strings from 'ActionplanQuickEditListWebPartStrings';
-import ActionplanQuickEditList from './components/ActionplanQuickEditList';
-import { IActionplanQuickEditListProps } from './components/IActionplanQuickEditListProps';
+import { AppContainer, IAppContainerProps } from './components';
+import { SPComponentLoader } from '@microsoft/sp-loader';
 
 export interface IActionplanQuickEditListWebPartProps {
   description: string;
@@ -18,15 +18,18 @@ export interface IActionplanQuickEditListWebPartProps {
 export default class ActionplanQuickEditListWebPart extends BaseClientSideWebPart<IActionplanQuickEditListWebPartProps> {
 
   public render(): void {
-    const element: React.ReactElement<IActionplanQuickEditListProps > = React.createElement(
-      ActionplanQuickEditList,
-      {
-        description: this.properties.description
-      }
+    const element: React.ReactElement<IAppContainerProps> = React.createElement(
+      AppContainer
     );
 
     ReactDom.render(element, this.domElement);
   }
+
+  protected onInit(): Promise<void> {
+    SPComponentLoader.loadCss('https://fonts.googleapis.com/icon?family=Material+Icons');
+    return super.onInit();
+  }
+
 
   protected onDispose(): void {
     ReactDom.unmountComponentAtNode(this.domElement);
