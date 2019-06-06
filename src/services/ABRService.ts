@@ -99,12 +99,13 @@ export class ABRService {
 
   public async _getActionPlanItem(
     reviewPeriod?: string,
-    selectedBrigade?: IBrigadeDataListOption[]
+    selectedBrigade?: ISolutionDropdownOption[],
+    reviewsId?: string[]
   ): Promise<IActionPlanItem[]> {
     let brigadesId = new Array();
 
     selectedBrigade.forEach(e => {
-      brigadesId.push(e.brigadeId);
+      brigadesId.push(e.key);
     });
     console.log(brigadesId);
     //Generate Query
@@ -134,9 +135,9 @@ export class ABRService {
       .LookupField("Brigade")
       .Id()
       .In(brigadesId)
-      // .And()
-      // .TextField("Year")
-      // .EqualTo(reviewPeriod)
+      .And()
+      .TextField("ReviewId")
+      .In(reviewsId)
       .ToString();
 
     let allActionPlanItemDetail: IActionPlanItem[] = [];
@@ -145,10 +146,11 @@ export class ABRService {
     const actionPlanItemDetail = await sp.web.lists
       .getByTitle("Action Plan Items")
       .renderListDataAsStream({ ViewXml: query });
-    console.log(actionPlanItemDetail);
+    //console.log(actionPlanItemDetail);
     const row = actionPlanItemDetail.Row;
     for (let i = 0; i < row.length; i++) {
       allActionPlanItemDetail.push({
+        reviewId: row[i].ReviewId,
         brigadeName: row[i].BrigadeTitle,
         endState: row[i].Title,
         viabilityCategory: row[i].ViabilityCategory,
@@ -169,12 +171,12 @@ export class ABRService {
 
   public async _getActionPlanMaster(
     reviewPeriod: string,
-    selectedBrigade: IBrigadeDataListOption[]
+    selectedBrigade: ISolutionDropdownOption[]
   ): Promise<IActionPlan[]> {
     let brigadesId = new Array();
 
     selectedBrigade.forEach(e => {
-      brigadesId.push(e.brigadeId);
+      brigadesId.push(e.key);
     });
 
     //Generate Query
@@ -249,7 +251,8 @@ export class ABRService {
         classification: row[i].Classification
       });
     }
-
+    console.log("test1");
+    console.log(actionPlanDetail);
     return actionPlanDetail;
   }
 
@@ -278,7 +281,7 @@ export class ABRService {
 
 
 
-  public async _getSupportRequired(): Promise<void> {
+  public async _getItemListOption(): Promise<void> {
     let objField = sp.web.lists
       .getByTitle("	Action Plan Items")
       .fields;
@@ -286,25 +289,26 @@ export class ABRService {
     let assignTo = await objField.getByInternalNameOrTitle("AssignedTo").get();
     assignTo.Choices.forEach(element => {
 
-      this.supportOption[element] = element;
+      this.supportOption["'" + element + "'"] = element;
+
     });
 
     let prioritys = await objField.getByInternalNameOrTitle("Priority")
       .get();
     prioritys.Choices.forEach(element => {
-      let string = "'" + element + "'";
+
       this.priorityOption["'" + element + "'"] = element;
     });
 
     let due = await objField.getByInternalNameOrTitle("Due").get();
     due.Choices.forEach(element => {
-      this.dueOption[element] = element;
+      this.dueOption["'" + element + "'"] = element;
     });
 
     let status = await objField.getByInternalNameOrTitle("Status")
       .get();
     status.Choices.forEach(element => {
-      this.statusOpion[element] = element;
+      this.statusOpion["'" + element + "'"] = element;
     });
 
   }

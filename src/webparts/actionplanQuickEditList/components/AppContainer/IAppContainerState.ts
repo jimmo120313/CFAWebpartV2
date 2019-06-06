@@ -1,7 +1,7 @@
-import { IBrigadeDataListOption } from "../../../../models/index";
+import { IBrigadeDataListOption, ISolutionDropdownOption } from "../../../../models/index";
 
 export interface IAppContainerState {
   isActionPlanCreated: boolean;
-  selectedBrigade: IBrigadeDataListOption[];
+  selectedBrigade: ISolutionDropdownOption[];
   selectedReviewPeriod: string;
 }

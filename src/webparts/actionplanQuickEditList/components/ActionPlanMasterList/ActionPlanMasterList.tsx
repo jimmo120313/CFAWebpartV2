@@ -34,33 +34,29 @@ const columns = [
 ];
 
 let actionPlanDetail: IActionPlan[];
-let actionPlanItemDetail: IActionPlanItem[];
-const actionPlanColumns = () => { };
+// let actionPlanItemDetail: IActionPlanItem[];
+// const actionPlanColumns = () => { };
 
 export class ActionPlanMasterList extends React.Component<
   IActionPlanMasterListProps,
   IActionPlanMasterListState
   > {
-  private actionPlanService = new ABRService();
+
 
   constructor(props: IActionPlanMasterListProps) {
     super(props);
-    this.state = {
-      rows: []
-    };
+    // this.state = {
+    //   rows: this.props.row
+    // };
   }
   public async componentDidMount(): Promise<void> {
     //this.brigade._getBrigadeDetail();
-    actionPlanDetail = await this.actionPlanService._getActionPlanMaster(
-      this.props.reviewPeriod,
-      this.props.selectedBrigade
-    );
+    // actionPlanDetail = await this.actionPlanService._getActionPlanMaster(
+    //   this.props.reviewPeriod,
+    //   this.props.selectedBrigade
+    // );
 
-    await this.actionPlanService._getActionPlanItem(
-      this.props.reviewPeriod,
-      this.props.selectedBrigade
-    );
-    this.setState({ rows: actionPlanDetail });
+    // this.setState({ rows: this.props.row });
   }
 
   public render(): React.ReactElement<IActionPlanMasterListProps> {
@@ -69,16 +65,7 @@ export class ActionPlanMasterList extends React.Component<
       <MaterialTable
         title="Action Plans"
         columns={columns}
-        data={this.state.rows}
-
-
-      // actions={[
-      //   {
-      //     icon: "save",
-      //     tooltip: "Save User",
-      //     onClick: (event, rowData) => alert("You saved " + rowData.name)
-      //   }
-      // ]}
+        data={this.props.row}
       />
 
     );

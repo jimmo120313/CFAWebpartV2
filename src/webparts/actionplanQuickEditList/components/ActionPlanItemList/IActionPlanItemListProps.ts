@@ -1,3 +1,4 @@
+import { IActionPlanItem } from "../../../../models";
 export interface IActionPlanItemListProp {
   selectedBrigade: any[];
   reviewPeriod: string;
@@ -5,8 +6,9 @@ export interface IActionPlanItemListProp {
   fVCategory: any[];
   fEndState: any[];
   fClassification: any[];
-  itemSupportOption: string[];
-  itemPriorityOption: string[];
-  itemDueOption: string[];
-  itemStatusOption: string[];
+  row?: IActionPlanItem[];
+  // itemSupportOption: string[];
+  // itemPriorityOption: string[];
+  // itemDueOption: string[];
+  // itemStatusOption: string[];
 }

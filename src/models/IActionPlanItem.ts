@@ -1,4 +1,5 @@
 export interface IActionPlanItem {
+  reviewId?: string;
   brigadeName?: string;
   endState?: string;
   viabilityCategory?: string;

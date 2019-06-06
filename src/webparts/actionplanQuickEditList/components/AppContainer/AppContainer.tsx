@@ -18,11 +18,11 @@ export class AppContainer extends React.Component<
   constructor(props: IAppContainerProps) {
     super(props);
     let testReviewPeriod = "2017/18";
-    let testselectedBrigade: IBrigadeDataListOption[] = [];
+    let testselectedBrigade: ISolutionDropdownOption[] = [];
     let e = {
-      "brigadeId": 853,
-      "brigadeName": "Nulla Vale",
-      "itemType": "0"
+      "key": "853",
+      "text": "Nulla Vale",
+      "itemType": 0
     };
 
     testselectedBrigade.push(e);
@@ -37,7 +37,7 @@ export class AppContainer extends React.Component<
   }
 
   private _createActionPlanClicked = (
-    brigades: IBrigadeDataListOption[],
+    brigades: ISolutionDropdownOption[],
     reviewPeriod: string
   ): void => {
     //debugger;

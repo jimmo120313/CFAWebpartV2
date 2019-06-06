@@ -1,7 +1,11 @@
 import { IActionPlanItem, IActionPlanItemChoice } from "../../../../models/";
 
 export interface IActionPlanItemListState {
-  rows?: any[];
+  rows?: IActionPlanItem[];
   selectedBrigade: any[];
+  // itemSupportOption: string[];
+  // itemPriorityOption: string[];
+  // itemDueOption: string[];
+  // itemStatusOption: string[];
 
 }

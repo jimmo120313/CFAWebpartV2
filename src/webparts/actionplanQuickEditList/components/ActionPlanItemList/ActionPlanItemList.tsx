@@ -19,7 +19,11 @@ export class ActionPlanItemList extends React.Component<
     super(props);
     this.state = {
       selectedBrigade: this.props.selectedBrigade,
-      rows: [],
+      rows: this.props.row
+      // itemDueOption: [],
+      // itemPriorityOption: [],
+      // itemStatusOption: [],
+      // itemSupportOption: []
     };
   }
   public async componentDidMount(): Promise<void> {
@@ -28,6 +32,8 @@ export class ActionPlanItemList extends React.Component<
       this.props.reviewPeriod,
       this.state.selectedBrigade
     );
+    await this.actionPlanItemService._getItemListOption();
+
 
     this.columns = [
       { field: "brigadeName", title: "Brigade Name", editable: 'never' },
@@ -54,17 +60,18 @@ export class ActionPlanItemList extends React.Component<
             cols={50}
           />)
       },
-      { field: "supportRequired", title: "Support Required", lookup: this.props.itemSupportOption },
-      { field: "priority", title: "Priority", lookup: this.props.itemPriorityOption },
-      { field: "due", title: "Due", lookup: this.props.itemDueOption },
-      { field: "status", title: "Status", lookup: this.props.itemStatusOption }
+      { field: "supportRequired", title: "Support Required", lookup: this.actionPlanItemService.supportOption },
+      { field: "priority", title: "Priority", lookup: this.actionPlanItemService.priorityOption },
+      { field: "due", title: "Due", lookup: this.actionPlanItemService.dueOption },
+      { field: "status", title: "Status", lookup: this.actionPlanItemService.statusOpion }
 
     ];
-    console.log(this.columns);
-    this.setState({ rows: actionPlanItem });
+
+    //this.setState({ rows: actionPlanItem });
   }
 
   public render(): React.ReactElement<IActionPlanItemListProp> {
+
     if (this.state.rows) {
       return (
         <MaterialTable

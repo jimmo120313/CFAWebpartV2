@@ -1,6 +1,5 @@
-import { IBrigadeDataListOption } from "../../../../models/IBrigadeDataListOption";
+import { IBrigadeDataListOption, IActionPlan, ISolutionDropdownOption } from "../../../../models";
 
 export interface IActionPlanMasterListProps {
-  reviewPeriod: string;
-  selectedBrigade: IBrigadeDataListOption[];
+  row?: IActionPlan[];
 }
