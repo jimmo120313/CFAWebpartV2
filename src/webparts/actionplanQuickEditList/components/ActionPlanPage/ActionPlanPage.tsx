@@ -74,9 +74,7 @@ export class ActionPlanPage extends React.Component<
       itemDueOption: [],
       itemStatusOption: [],
     };
-    console.log(this.state.reviewPeriod);
-    console.log(this.state.ds_Brigade);
-    console.log(this.state.s_Brigade);
+
 
   }
   public async componentDidMount(): Promise<void> {
@@ -98,7 +96,7 @@ export class ActionPlanPage extends React.Component<
       this.props.selectedBrigade
     );
 
-    //Get all selecte reivewId
+    //Get all selected reivewId
     this.actionPlanDetail.forEach(e => { this.selectedReviewID.push(e.reviewId); });
 
     this.actionPlanItemDetail = await this.abrService._getActionPlanItem(
@@ -107,6 +105,8 @@ export class ActionPlanPage extends React.Component<
       this.selectedReviewID
     );
 
+
+
     await this.abrService._getItemListOption();
 
 
@@ -114,7 +114,7 @@ export class ActionPlanPage extends React.Component<
       { field: "reviewId", title: "Review ID", editable: 'never' },
       { field: "brigadeName", title: "Brigade Name", editable: 'never' },
       { field: "endState", title: "End State", editable: 'never' },
-      { field: "viability", title: "Viability Category", editable: 'never' },
+      { field: "viabilityCategory", title: "Viability Category", editable: 'never' },
       { field: "subCategory", title: "Sub-Category", editable: 'never' },
       { field: "rating", title: "Rating", editable: 'never' },
       { field: "statementSelection", title: "Statement Selection", editable: 'never' },
@@ -143,7 +143,11 @@ export class ActionPlanPage extends React.Component<
 
     ];
 
-    this.setState({ masterRow: this.actionPlanDetail, DetailRow: this.actionPlanItemDetail });
+    this.setState(
+      {
+        masterRow: this.actionPlanDetail,
+        DetailRow: this.actionPlanItemDetail.filter((e) => { this.iniRatingKeyArray.indexOf(e.rating) !== -1 })
+      });
 
   }
 

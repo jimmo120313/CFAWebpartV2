@@ -107,7 +107,7 @@ export class ABRService {
     selectedBrigade.forEach(e => {
       brigadesId.push(e.key);
     });
-    console.log(brigadesId);
+
     //Generate Query
     let query = new CamlBuilder()
       .View([
@@ -148,6 +148,7 @@ export class ABRService {
       .renderListDataAsStream({ ViewXml: query });
     //console.log(actionPlanItemDetail);
     const row = actionPlanItemDetail.Row;
+    console.log(row);
     for (let i = 0; i < row.length; i++) {
       allActionPlanItemDetail.push({
         reviewId: row[i].ReviewId,
@@ -165,7 +166,7 @@ export class ABRService {
         status: row[i].Status
       });
     }
-
+    console.log(allActionPlanItemDetail);
     return allActionPlanItemDetail;
   }
 
