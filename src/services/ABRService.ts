@@ -1,4 +1,4 @@
-import { sp, CamlQuery } from "@pnp/sp";
+import { sp, CamlQuery, Web } from "@pnp/sp";
 import {
   ISolutionDropdownOption,
   IBrigadeDataListOption,
@@ -18,6 +18,7 @@ export class ABRService {
   public priorityOption: any = {};
   public dueOption: any = {};
   public statusOpion: any = {};
+
 
 
   public async _getBrigadeOption(
@@ -63,15 +64,15 @@ export class ABRService {
   public _getRating(): ISolutionDropdownOption[] {
     let vCategoryObj: ISolutionDropdownOption[] = [
       {
-        key: "1",
+        key: "Red",
         text: "Red"
       },
       {
-        key: "2",
+        key: "Amber",
         text: "Amber"
       },
       {
-        key: "3",
+        key: "Green",
         text: "Green"
       }
     ];
@@ -88,7 +89,7 @@ export class ABRService {
 
     vc.forEach(d => {
       let vCategoryObj: ISolutionDropdownOption = {
-        key: d.ID,
+        key: d.Title,
         text: d.Title
       };
       this.viabilityCategory.push(vCategoryObj);
@@ -112,6 +113,7 @@ export class ABRService {
     let query = new CamlBuilder()
       .View([
         "ID",
+        "BrigadeId",
         "BrigadeTitle",
         "Title",
         "ViabilityCategory",
@@ -128,6 +130,7 @@ export class ABRService {
       ])
       .LeftJoin("Brigade", "Brigade")
       .Select("Title", "BrigadeTitle")
+      .Select("ID", "BrigadeId")
       .LeftJoin("ReviewID", "Annual Brigade Review")
       .Select("ID", "ReviewId")
       .Query()
@@ -146,14 +149,17 @@ export class ABRService {
     const actionPlanItemDetail = await sp.web.lists
       .getByTitle("Action Plan Items")
       .renderListDataAsStream({ ViewXml: query });
+
+    console.log(actionPlanItemDetail);
     //console.log(actionPlanItemDetail);
     const row = actionPlanItemDetail.Row;
-    console.log(row);
     for (let i = 0; i < row.length; i++) {
       allActionPlanItemDetail.push({
         reviewId: row[i].ReviewId,
+        brigadeId: row[i].BrigadeId,
         brigadeName: row[i].BrigadeTitle,
         endState: row[i].Title,
+        endStateId: i.toString(),
         viabilityCategory: row[i].ViabilityCategory,
         subCategory: row[i].SubCategory,
         rating: row[i].Rating,
@@ -228,6 +234,7 @@ export class ABRService {
     const allActionPlan = await sp.web.lists
       .getByTitle("Action Plans")
       .renderListDataAsStream({ ViewXml: query });
+
     const row = allActionPlan.Row;
 
     for (let i = 0; i < row.length; i++) {
@@ -252,8 +259,7 @@ export class ABRService {
         classification: row[i].Classification
       });
     }
-    console.log("test1");
-    console.log(actionPlanDetail);
+
     return actionPlanDetail;
   }
 
@@ -311,6 +317,25 @@ export class ABRService {
     status.Choices.forEach(element => {
       this.statusOpion["'" + element + "'"] = element;
     });
+
+  }
+
+  public async _saveActionPlanItems(): Promise<void> {
+    const webUrl: string = "https://viccfa.sharepoint.com/sites/AAATEST/ABR/Demo";
+    const listName: string = "Action Plan Items"
+    const rootWeb = new Web(webUrl);
+    const list = rootWeb.lists.getByTitle(listName);
+    //get entity name
+    const listEntityName = await list.getListItemEntityTypeFullName();
+    const batch = sp.web.createBatch();
+    //const list = sp.web.lists.getByTitle("Action Plan Items");
+    const entityTypeFullName = await list.getListItemEntityTypeFullName();
+    //debugger;
+    list.items.getById(2062).inBatch(batch).update({ Title: "The current brigade site is suitable for current and future brigade requirements." }, "*", entityTypeFullName)
+    //list.items.getById(2062).inBatch(batch).update()
+    //list.items.getById(2066).inBatch(batch).update({ "Title": "The Brigade buildings/structures and amenities are suitable for current and future brigade requirements.2" }, "*", entityTypeFullName)
+
+    await batch.execute();
 
   }
 }

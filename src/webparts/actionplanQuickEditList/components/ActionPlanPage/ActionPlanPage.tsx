@@ -12,6 +12,9 @@ import { ActionPlanItemList } from "../ActionPlanItemList/index";
 require("./ActionPlanPage.module.scss");
 import { ABRService } from "../../../../services/ABRService";
 import { Dropdown, DropdownMenuItemType, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
+import Button from '@material-ui/core/Button';
+import ButtonBase from '@material-ui/core/ButtonBase';
+
 
 import MaterialTable from "material-table";
 import { ResponsiveMode } from "office-ui-fabric-react/lib/utilities/decorators/withResponsiveMode";
@@ -30,67 +33,63 @@ export class ActionPlanPage extends React.Component<
   private dueOption: string[] = [];
   private statusOption: string[] = [];
   private selectedReviewID: string[] = [];
-  private actionPlanDetail: IActionPlan[];
-  private actionPlanItemDetail: IActionPlanItem[];
+  private actionPlanDetail: IActionPlan[];              ///const
+  private actionPlanItemDetail: IActionPlanItem[];      ///const
   private itemColumns: any[] = [];
   private actionPlanItem: IActionPlanItem[];
 
-  private iniBrigadeKeyArray: string[] = [];
-  private iniRatingKeyArray: string[] = [];
+  private ds_ratingOption: ISolutionDropdownOption[] = [];
+  private ds_ViabilityOption: ISolutionDropdownOption[] = [];
+  private ds_EndState: ISolutionDropdownOption[] = [];
+  private ds_Brigade: ISolutionDropdownOption[] = [];
+  private ds_Classification: ISolutionDropdownOption[] = [];
+  private s_ratingOption: string[] = [];
+  private s_Brigade: string[] = [];
+  private s_ViabilityOption: string[] = [];
+  private s_EndState: string[] = [];
+  private s_Classification: string[] = [];
+  //Selected Option
+
 
   constructor(props: IActionPlanPageProps) {
     super(props);
 
     this.props.selectedBrigade.forEach(element => {
-      this.iniBrigadeKeyArray.push(element.key);
+      this.s_Brigade.push(element.key);
     });
 
+    this.ds_Brigade = this.props.selectedBrigade,
 
-    this.state = {
-      //From Parent
-      reviewPeriod: this.props.reviewPeriod,
+      this.state = {
+        //From Parent
+        reviewPeriod: this.props.reviewPeriod,
+        masterRow: [],
 
-      //For Filter DataSource
-      ds_Brigade: this.props.selectedBrigade,
-      ds_ratingOption: [],
-      ds_ViabilityOption: [],
-      ds_EndState: [],
-      ds_Classification: [],
-      //Selected Option
-      s_Brigade: this.iniBrigadeKeyArray,
-      s_ratingOption: [],
-      s_ViabilityOption: "",
-      s_EndState: "",
-      s_Classification: "",
-
-      //For Master List
-      masterRow: [],
-
-      ////For Item List
-      reviewIDs: [],
-      DetailRow: [],
-      itemSupportOption: [],
-      itemPriorityOption: [],
-      itemDueOption: [],
-      itemStatusOption: [],
-    };
+        ////For Item List
+        reviewIDs: [],
+        DetailRow: [],
+        itemSupportOption: [],
+        itemPriorityOption: [],
+        itemDueOption: [],
+        itemStatusOption: [],
+      };
 
 
   }
   public async componentDidMount(): Promise<void> {
     //Get Rating
-    let rating = await this.abrService._getRating();
+    this.ds_ratingOption = await this.abrService._getRating();
+    this.s_ratingOption = ['Red', 'Amber'];
 
-    this.iniRatingKeyArray = ['1', '2'];
-    this.setState({ ds_ratingOption: rating, s_ratingOption: this.iniRatingKeyArray });
 
     //Get Viability Category
-    this.abrService
-      ._getViabilityCategoryOption()
-      .then((option: ISolutionDropdownOption[]) => {
-        this.setState({ ds_ViabilityOption: option });
-      });
+    this.ds_ViabilityOption = await this.abrService._getViabilityCategoryOption();
 
+    this.ds_ViabilityOption.forEach(element => {
+      this.s_ViabilityOption.push(element.key);
+    });
+
+    //Get Action Plan Master Detail
     this.actionPlanDetail = await this.abrService._getActionPlanMaster(
       this.props.reviewPeriod,
       this.props.selectedBrigade
@@ -99,17 +98,27 @@ export class ActionPlanPage extends React.Component<
     //Get all selected reivewId
     this.actionPlanDetail.forEach(e => { this.selectedReviewID.push(e.reviewId); });
 
+
+    //Get all Action Plan Item
     this.actionPlanItemDetail = await this.abrService._getActionPlanItem(
       this.props.reviewPeriod,
       this.props.selectedBrigade,
       this.selectedReviewID
     );
 
+    //Get all end state
+    this.actionPlanItemDetail.forEach(element => {
+      this.ds_EndState.push({ key: element.endStateId, text: element.endState })
+    });
 
+    this.ds_EndState.forEach(element => {
+      this.s_EndState.push(element.key);
+    });
 
+    //Get All item list lookup field
     await this.abrService._getItemListOption();
 
-
+    //Render item list column
     this.itemColumns = [
       { field: "reviewId", title: "Review ID", editable: 'never' },
       { field: "brigadeName", title: "Brigade Name", editable: 'never' },
@@ -143,17 +152,35 @@ export class ActionPlanPage extends React.Component<
 
     ];
 
+    this._handleFilterUpdate()
+
+
+  }
+
+  public _handleFilterUpdate(): void {
+
+    let tempItemDetail: IActionPlanItem[] = [];
+
+    this.actionPlanItemDetail.forEach(e => {
+      if (
+        this.s_ratingOption.indexOf(e.rating) !== -1
+        && this.s_Brigade.indexOf(e.brigadeId) !== -1
+        && this.s_ViabilityOption.indexOf(e.viabilityCategory) !== -1
+        && this.s_EndState.indexOf(e.endStateId) !== -1
+      ) {
+        tempItemDetail.push(e);
+      }
+
+    });
+
     this.setState(
       {
         masterRow: this.actionPlanDetail,
-        DetailRow: this.actionPlanItemDetail.filter((e) => { this.iniRatingKeyArray.indexOf(e.rating) !== -1 })
+        DetailRow: tempItemDetail
       });
-
   }
 
-  public _handleItemListUpdate(): void {
 
-  }
   public _renderItemDetailTable(): object {
     return (
       <MaterialTable
@@ -189,7 +216,7 @@ export class ActionPlanPage extends React.Component<
 
   public _onBrigadeChangeMultiSelect = (item: IDropdownOption): void => {
 
-    const updatedSelectedItem = this.state.s_Brigade ? this.copyArray(this.state.s_Brigade) : [];
+    const updatedSelectedItem = this.s_Brigade ? this.copyArray(this.s_Brigade) : [];
     if (item.selected) {
       // add the option if it's checked
       updatedSelectedItem.push(item.key);
@@ -200,13 +227,16 @@ export class ActionPlanPage extends React.Component<
         updatedSelectedItem.splice(currIndex, 1);
       }
     }
-    this.setState({
-      s_Brigade: updatedSelectedItem
-    });
+
+    this.s_Brigade = updatedSelectedItem;
+
   }
+
+
   public _onRatingChangeMultiSelect = (item: IDropdownOption): void => {
 
-    const updatedSelectedItem = this.state.s_ratingOption ? this.copyArray(this.state.s_ratingOption) : [];
+    const updatedSelectedItem = this.s_ratingOption ? this.copyArray(this.s_ratingOption) : [];
+
     if (item.selected) {
       // add the option if it's checked
       updatedSelectedItem.push(item.key);
@@ -217,9 +247,71 @@ export class ActionPlanPage extends React.Component<
         updatedSelectedItem.splice(currIndex, 1);
       }
     }
-    this.setState({
-      s_ratingOption: updatedSelectedItem
-    });
+
+    this.s_ratingOption = updatedSelectedItem;
+
+    this._handleFilterUpdate();
+
+  }
+
+  public _onVCategoryChange = (item: IDropdownOption): void => {
+    const updatedSelectedItem = this.s_ViabilityOption ? this.copyArray(this.s_ViabilityOption) : [];
+
+    if (item.selected) {
+      // add the option if it's checked
+      updatedSelectedItem.push(item.key);
+    } else {
+      // remove the option if it's unchecked
+      const currIndex = updatedSelectedItem.indexOf(item.key);
+      if (currIndex > -1) {
+        updatedSelectedItem.splice(currIndex, 1);
+      }
+    }
+
+    this.s_ViabilityOption = updatedSelectedItem;
+
+    this._handleFilterUpdate();
+
+  }
+
+  public _onClassificationSelected = (item: IDropdownOption): void => {
+    const updatedSelectedItem = this.s_Classification ? this.copyArray(this.s_Classification) : [];
+
+    if (item.selected) {
+      // add the option if it's checked
+      updatedSelectedItem.push(item.key);
+    } else {
+      // remove the option if it's unchecked
+      const currIndex = updatedSelectedItem.indexOf(item.key);
+      if (currIndex > -1) {
+        updatedSelectedItem.splice(currIndex, 1);
+      }
+    }
+
+    this.s_Classification = updatedSelectedItem;
+
+    this._handleFilterUpdate();
+
+  }
+
+  public _onEndStateSelected = (item: IDropdownOption): void => {
+    const updatedSelectedItem = this.s_EndState ? this.copyArray(this.s_EndState) : [];
+
+    if (item.selected) {
+      // add the option if it's checked
+      updatedSelectedItem.push(item.key);
+    } else {
+      // remove the option if it's unchecked
+      const currIndex = updatedSelectedItem.indexOf(item.key);
+      if (currIndex > -1) {
+        updatedSelectedItem.splice(currIndex, 1);
+      }
+    }
+
+    this.s_EndState = updatedSelectedItem;
+
+    this._handleFilterUpdate();
+
   }
 
   public _renderFilterControls(): object {
@@ -228,9 +320,9 @@ export class ActionPlanPage extends React.Component<
         <div className="dd">
           <Dropdown
             label="Brigade"
-            placeHolder="Brigade (Multi Select)"
-            selectedKeys={this.state.s_Brigade}
-            options={this.state.ds_Brigade}
+            placeHolder="Please select Brigade"
+            selectedKeys={this.s_Brigade}
+            options={this.ds_Brigade}
             multiSelect
             onChanged={this._onBrigadeChangeMultiSelect}
           />
@@ -238,9 +330,9 @@ export class ActionPlanPage extends React.Component<
         <div className="dd">
           <Dropdown
             label="Rating"
-            placeHolder="Rating (Multi Select)"
-            selectedKeys={this.state.s_ratingOption}
-            options={this.state.ds_ratingOption}
+            placeHolder="Please select Rating"
+            selectedKeys={this.s_ratingOption}
+            options={this.ds_ratingOption}
             multiSelect
             onChanged={this._onRatingChangeMultiSelect}
           />
@@ -248,31 +340,33 @@ export class ActionPlanPage extends React.Component<
         <div className="dd">
           <Dropdown
             label="Viability Category"
-            placeHolder="Viability Category"
-            options={this.state.ds_ViabilityOption}
-            responsiveMode={ResponsiveMode.large}
-            onChanged={(item: IDropdownOption) => { this.setState({ s_ViabilityOption: item.text }); }}
+            placeHolder="Please Select Viability Category"
+            selectedKeys={this.s_ViabilityOption}
+            options={this.ds_ViabilityOption}
+            multiSelect
+            onChanged={this._onVCategoryChange}
           />
         </div>
-
-
-
-
-
-        {/* <Dropdown
-          label="End State"
-          placeHolder="End State (Question Ref)"
-          options={this.state.s_EndState}
-        //onChanged={this._onDistrictSelected}
-        />
-        <Dropdown
-          label="Classification"
-          placeHolder="Classification"
-          defaultSelectedKeys={['GG', 'FF']}
-          multiSelect
-          options={this.state.s_Classification}
-          className="dd"
-        />  */}
+        <div className="dd">
+          <Dropdown
+            label="End State"
+            placeHolder="End State (Question Ref)"
+            selectedKeys={this.s_EndState}
+            options={this.ds_EndState}
+            multiSelect
+            onChanged={this._onEndStateSelected}
+          />
+        </div>
+        <div className="dd">
+          <Dropdown
+            label="Classification"
+            placeHolder="Classification"
+            options={this.ds_Classification}
+            selectedKeys={this.s_Classification}
+            multiSelect
+            onChanged={this._onClassificationSelected}
+          />
+        </div>
       </div>
     );
   }
@@ -284,18 +378,25 @@ export class ActionPlanPage extends React.Component<
         <ActionPlanMasterList
           row={this.state.masterRow}
         />
+
         {this._renderItemDetailTable()}
 
-        {/* <ActionPlanItemList
-          selectedBrigade={this.state.selectedBrigade}
-          reviewPeriod={this.state.reviewPeriod}
-          fRating={this.state.ratingOption}
-          fVCategory={this.state.ViabilityOption}
-          fEndState={this.state.EndState}
-          fClassification={this.state.Classification}
-          row={this.state.DetailRow}
-        /> */}
+
+        <div>
+          <Button variant="contained" className="cancelButton">
+            Default
+          </Button>
+          <ButtonBase
+            onClick={() => { this.abrService._saveActionPlanItems() }}
+          >
+            <Button variant="contained" color="primary" className="saveButton">
+              Primary
+            </Button>
+          </ButtonBase>
+        </div>
+
       </div>
     );
   }
+
 }
