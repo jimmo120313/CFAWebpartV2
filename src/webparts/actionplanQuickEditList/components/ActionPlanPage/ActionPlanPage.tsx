@@ -46,7 +46,7 @@ export class ActionPlanPage extends React.Component<
   private s_ratingOption: string[] = [];
   private s_Brigade: string[] = [];
   private s_ViabilityOption: string[] = [];
-  private s_EndState: string[] = [];
+  //private s_EndState: string[] = [];
   private s_Classification: string[] = [];
   //Selected Option
 
@@ -64,7 +64,8 @@ export class ActionPlanPage extends React.Component<
         //From Parent
         reviewPeriod: this.props.reviewPeriod,
         masterRow: [],
-
+        //filters
+        s_EndState: [],
         ////For Item List
         reviewIDs: [],
         DetailRow: [],
@@ -110,11 +111,12 @@ export class ActionPlanPage extends React.Component<
     this.actionPlanItemDetail.forEach(element => {
       this.ds_EndState.push({ key: element.endStateId, text: element.endState });
     });
-
+    let endstate: string[] = [];
     this.ds_EndState.forEach(element => {
-      this.s_EndState.push(element.key);
+      endstate.push(element.key);
     });
-    debugger;
+    this.setState({ s_EndState: endstate });
+
     //Get All item list lookup field
     await this.abrService._getItemListOption();
 
@@ -166,7 +168,7 @@ export class ActionPlanPage extends React.Component<
         this.s_ratingOption.indexOf(e.rating) !== -1
         && this.s_Brigade.indexOf(e.brigadeId) !== -1
         && this.s_ViabilityOption.indexOf(e.viabilityCategory) !== -1
-        && this.s_EndState.indexOf(e.endStateId) !== -1
+        && this.state.s_EndState.indexOf(e.endStateId) !== -1
       ) {
         tempItemDetail.push(e);
       }
@@ -296,7 +298,7 @@ export class ActionPlanPage extends React.Component<
   }
 
   public _onEndStateSelected = (item: IDropdownOption): void => {
-    const updatedSelectedItem = this.s_EndState ? this.copyArray(this.s_EndState) : [];
+    const updatedSelectedItem = this.state.s_EndState ? this.copyArray(this.state.s_EndState) : [];
 
     if (item.selected) {
       // add the option if it's checked
@@ -308,8 +310,8 @@ export class ActionPlanPage extends React.Component<
         updatedSelectedItem.splice(currIndex, 1);
       }
     }
+    this.setState({ s_EndState: updatedSelectedItem })
 
-    this.s_EndState = updatedSelectedItem;
 
     this._handleFilterUpdate();
 
@@ -352,7 +354,7 @@ export class ActionPlanPage extends React.Component<
           <Dropdown
             label="End State"
             placeHolder="End State (Question Ref)"
-            selectedKeys={this.s_EndState}
+            selectedKeys={this.state.s_EndState}
             options={this.ds_EndState}
             multiSelect
             onChanged={this._onEndStateSelected}

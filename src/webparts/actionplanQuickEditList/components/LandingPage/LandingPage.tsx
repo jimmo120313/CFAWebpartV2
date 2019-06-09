@@ -11,6 +11,7 @@ import { Dropdown, IDropdownOption } from "office-ui-fabric-react/lib/Dropdown";
 import { Selection } from "office-ui-fabric-react/lib/Selection";
 import { MarqueeSelection } from "office-ui-fabric-react/lib/MarqueeSelection";
 import { TextField } from "office-ui-fabric-react/lib/TextField";
+import { Transfer, Button } from antd;
 
 import {
   CommandBarButton,
@@ -52,12 +53,12 @@ export class LandingPage extends React.Component<
   }
 
   public async componentDidMount(): Promise<void> {
-    //this.brigade._getBrigadeDetail();
-    // this.brigade
-    //   ._getReviewPeriodOption()
-    //   .then((option: ISolutionDropdownOption[]) => {
-    //     this.setState({ reviewPeriodOption: option });
-    //   });
+
+    this.brigade
+      ._getReviewPeriodOption()
+      .then((option: ISolutionDropdownOption[]) => {
+        this.setState({ reviewPeriodOption: option });
+      });
     this.brigade
       ._getDistrictOption()
       .then((option: ISolutionDropdownOption[]) => {
@@ -123,65 +124,65 @@ export class LandingPage extends React.Component<
 
   public render(): React.ReactElement<ILandingPageProps> {
     return (
+      <div>
+        <Dropdown
+          placeHolder="Select Year"
+          options={this.state.reviewPeriodOption}
+          onChanged={this._onReviewPeriodSelected}
+        />
+        <Dropdown
+          placeHolder="Select District"
+          options={this.state.districtOption}
+          onChanged={this._onDistrictSelected}
+        />
 
-      //   <Dropdown
-      //     placeHolder="Select Year"
-      //     options={this.state.reviewPeriodOption}
-      //     onChanged={this._onReviewPeriodSelected}
-      //   />
-      //   <Dropdown
-      //     placeHolder="Select District"
-      //     options={this.state.districtOption}
-      //     onChanged={this._onDistrictSelected}
-      //   />
+        <div style={{ display: "flex", alignItems: "stretch", height: "40px" }}>
+          <CommandBarButton
+            data-automation-id="test2"
+            disabled={this.state.isGetBrigadeDisabled}
+            //checked={checked}
+            iconProps={{ iconName: "CheckList" }}
+            text="Select Brigade"
+            onClick={this._onGetBrigade}
+          />
+        </div>
 
-      //   <div style={{ display: "flex", alignItems: "stretch", height: "40px" }}>
-      //     <CommandBarButton
-      //       data-automation-id="test2"
-      //       disabled={this.state.isGetBrigadeDisabled}
-      //       //checked={checked}
-      //       iconProps={{ iconName: "CheckList" }}
-      //       text="Select Brigade"
-      //       onClick={this._onGetBrigade}
-      //     />
-      //   </div>
+        {/* <TextField
+          //className={exampleChildClass}
+          label="Filter by name:"
+          onChanged={this._onChanged}
+        />
+        <MarqueeSelection selection={this._selection}>
+          <DetailsList
+            items={this.state.brigadeOption}
+            columns={[
+              {
+                key: "Brigade",
+                name: "Brigade",
+                fieldName: "brigadeName",
+                minWidth: 100,
+                maxWidth: 200,
+                headerClassName: "detailListHeader",
+                isResizable: true
+              }
+            ]}
+            setKey="set"
+            layoutMode={DetailsListLayoutMode.fixedColumns}
+            selection={this._selection}
+            selectionPreservedOnEmptyClick={true}
+            ariaLabelForSelectionColumn="Toggle selection"
+            ariaLabelForSelectAllCheckbox="Toggle selection for all items"
 
-      //   <TextField
-      //     //className={exampleChildClass}
-      //     label="Filter by name:"
-      //     onChanged={this._onChanged}
-      //   />
-      //   <MarqueeSelection selection={this._selection}>
-      //     <DetailsList
-      //       items={this.state.brigadeOption}
-      //       columns={[
-      //         {
-      //           key: "Brigade",
-      //           name: "Brigade",
-      //           fieldName: "brigadeName",
-      //           minWidth: 100,
-      //           maxWidth: 200,
-      //           headerClassName: "detailListHeader",
-      //           isResizable: true
-      //         }
-      //       ]}
-      //       setKey="set"
-      //       layoutMode={DetailsListLayoutMode.fixedColumns}
-      //       selection={this._selection}
-      //       selectionPreservedOnEmptyClick={true}
-      //       ariaLabelForSelectionColumn="Toggle selection"
-      //       ariaLabelForSelectAllCheckbox="Toggle selection for all items"
-
-      //     //onItemInvoked={this._onItemInvoked}    //This is for action Double click
-      //     />
-      //   </MarqueeSelection>
-      //   <PrimaryButton
-      //     disabled={this.state.isCreateActionPlanButtonDisabled}
-      //     //checked={false}
-      //     text="I Want to Build an Action Plan"
-      //     onClick={this._createActionPlan}
-      //   />
-      <div>test Landing Page</div>
+          //onItemInvoked={this._onItemInvoked}    //This is for action Double click
+          />
+        </MarqueeSelection>
+        <PrimaryButton
+          disabled={this.state.isCreateActionPlanButtonDisabled}
+          //checked={false}
+          text="I Want to Build an Action Plan"
+          onClick={this._createActionPlan}
+        />*/}
+      </div>
     );
   }
 }

@@ -9,7 +9,7 @@ export interface IActionPlanPageState {
   //s_Brigade: string[];
   //s_ratingOption: string[];
   //s_ViabilityOption: string;
-  //s_EndState: string;
+  s_EndState: string[];
   //s_Classification: string;
   //From Parent
   reviewPeriod: string;

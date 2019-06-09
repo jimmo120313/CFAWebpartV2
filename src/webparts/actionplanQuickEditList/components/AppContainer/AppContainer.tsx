@@ -49,24 +49,24 @@ export class AppContainer extends React.Component<
   }
 
   public render(): React.ReactElement<IAppContainerProps> {
-
-    return (<div className="row"><ActionPlanPage
-      selectedBrigade={this.state.selectedBrigade}
-      reviewPeriod={this.state.selectedReviewPeriod}
-    /></div>);
-    // if (this.state.isActionPlanCreated) {
-    //   return (
-    //     <ActionPlanPage
-    //       selectedBrigade={this.state.selectedBrigade}
-    //       reviewPeriod={this.state.selectedReviewPeriod}
-    //     />
-    //   );
-    // } else {
-    //   return (
-    //     <div>
-    //       <LandingPage onCreateActionPlan={this._createActionPlanClicked} />
-    //     </div>
-    //   );
-    // }
+    //for testing actionPlanPage
+    // return (<div className="row"><ActionPlanPage
+    //   selectedBrigade={this.state.selectedBrigade}
+    //   reviewPeriod={this.state.selectedReviewPeriod}
+    // /></div>);
+    if (this.state.isActionPlanCreated) {
+      return (
+        <ActionPlanPage
+          selectedBrigade={this.state.selectedBrigade}
+          reviewPeriod={this.state.selectedReviewPeriod}
+        />
+      );
+    } else {
+      return (
+        <div>
+          <LandingPage onCreateActionPlan={this._createActionPlanClicked} />
+        </div>
+      );
+    }
   }
 }
