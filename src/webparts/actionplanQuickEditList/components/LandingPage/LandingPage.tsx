@@ -87,7 +87,7 @@ export class LandingPage extends React.Component<
       .catch(e => {
         console.log(e);
       });
-  };
+  }
 
   // private _onChanged = (
   //   event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -100,7 +100,7 @@ export class LandingPage extends React.Component<
         )
         : this._allBrigadeOption
     });
-  };
+  }
 
   private _onDistrictSelected = (item: IDropdownOption): void => {
     this.setState({
@@ -109,17 +109,17 @@ export class LandingPage extends React.Component<
       selectedBrigade: []
     });
     this._allBrigadeOption = [];
-  };
+  }
   private _onReviewPeriodSelected = (item: IDropdownOption): void => {
     this.setState({ selectedReviewPeriod: item.text });
-  };
+  }
 
   private _createActionPlan = (): void => {
     this.props.onCreateActionPlan(
       this.state.selectedBrigade,
       this.state.selectedReviewPeriod
     );
-  };
+  }
 
   public render(): React.ReactElement<ILandingPageProps> {
     return (

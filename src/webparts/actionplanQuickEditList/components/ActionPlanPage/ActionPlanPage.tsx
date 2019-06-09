@@ -108,13 +108,13 @@ export class ActionPlanPage extends React.Component<
 
     //Get all end state
     this.actionPlanItemDetail.forEach(element => {
-      this.ds_EndState.push({ key: element.endStateId, text: element.endState })
+      this.ds_EndState.push({ key: element.endStateId, text: element.endState });
     });
 
     this.ds_EndState.forEach(element => {
       this.s_EndState.push(element.key);
     });
-
+    debugger;
     //Get All item list lookup field
     await this.abrService._getItemListOption();
 
@@ -152,7 +152,7 @@ export class ActionPlanPage extends React.Component<
 
     ];
 
-    this._handleFilterUpdate()
+    this._handleFilterUpdate();
 
 
   }
@@ -195,6 +195,7 @@ export class ActionPlanPage extends React.Component<
                   const data = this.state.DetailRow;
                   const index = data.indexOf(oldData);
                   data[index] = newData;
+                  data[index].isUpdated = true;
                   this.setState({ DetailRow: data }, () => resolve());
                 }
                 resolve();
@@ -387,7 +388,11 @@ export class ActionPlanPage extends React.Component<
             Default
           </Button>
           <ButtonBase
-            onClick={() => { this.abrService._saveActionPlanItems() }}
+            onClick={async () => {
+              let newRow: IActionPlanItem[] = await this.abrService._saveActionPlanItems(this.state.DetailRow);
+              this.setState({ DetailRow: newRow });
+              console.log(this.state.DetailRow);
+            }}
           >
             <Button variant="contained" color="primary" className="saveButton">
               Primary

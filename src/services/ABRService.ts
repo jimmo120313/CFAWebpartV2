@@ -1,3 +1,4 @@
+import { registerBeforeUnloadHandler } from '@microsoft/teams-js';
 import { sp, CamlQuery, Web } from "@pnp/sp";
 import {
   ISolutionDropdownOption,
@@ -150,7 +151,7 @@ export class ABRService {
       .getByTitle("Action Plan Items")
       .renderListDataAsStream({ ViewXml: query });
 
-    console.log(actionPlanItemDetail);
+
     //console.log(actionPlanItemDetail);
     const row = actionPlanItemDetail.Row;
     for (let i = 0; i < row.length; i++) {
@@ -169,10 +170,11 @@ export class ABRService {
         supportRequired: row[i].AssignedTo,
         priority: row[i].Priority,
         due: row[i].Due,
-        status: row[i].Status
+        status: row[i].Status,
+        actionPlanItemId: row[i].ID
       });
     }
-    console.log(allActionPlanItemDetail);
+
     return allActionPlanItemDetail;
   }
 
@@ -320,22 +322,43 @@ export class ABRService {
 
   }
 
-  public async _saveActionPlanItems(): Promise<void> {
+  public async _saveActionPlanItems(row: IActionPlanItem[]): Promise<IActionPlanItem[]> {
+    let changedRows: IActionPlanItem[] = [];
+
+    row.forEach(r => {
+      if (r.isUpdated) {
+        changedRows.push(r);
+        r.isUpdated = false;
+      }
+    });
+
     const webUrl: string = "https://viccfa.sharepoint.com/sites/AAATEST/ABR/Demo";
     const listName: string = "Action Plan Items"
     const rootWeb = new Web(webUrl);
     const list = rootWeb.lists.getByTitle(listName);
     //get entity name
-    const listEntityName = await list.getListItemEntityTypeFullName();
+    //const listEntityName = await list.getListItemEntityTypeFullName();
     const batch = sp.web.createBatch();
-    //const list = sp.web.lists.getByTitle("Action Plan Items");
     const entityTypeFullName = await list.getListItemEntityTypeFullName();
     //debugger;
-    list.items.getById(2062).inBatch(batch).update({ Title: "The current brigade site is suitable for current and future brigade requirements." }, "*", entityTypeFullName)
-    //list.items.getById(2062).inBatch(batch).update()
-    //list.items.getById(2066).inBatch(batch).update({ "Title": "The Brigade buildings/structures and amenities are suitable for current and future brigade requirements.2" }, "*", entityTypeFullName)
+    changedRows.forEach(c => {
+      list.items.getItemByStringId(c.actionPlanItemId)
+        .inBatch(batch)
+        .update(
+          {
+            Treatment: c.treatment,
+            Initiative: c.initiative,
+            AssignedTo: c.supportRequired,//Support Required
+            Priority: c.priority,
+            Status: "",
+            ApprovedBy: "",
+            Due: "",
+          }, "*", entityTypeFullName)
+    })
 
     await batch.execute();
+
+    return row;
 
   }
 }
