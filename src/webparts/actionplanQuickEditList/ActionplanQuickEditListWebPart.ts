@@ -27,6 +27,7 @@ export default class ActionplanQuickEditListWebPart extends BaseClientSideWebPar
 
   protected onInit(): Promise<void> {
     SPComponentLoader.loadCss('https://fonts.googleapis.com/icon?family=Material+Icons');
+    SPComponentLoader.loadCss('https://cdnjs.cloudflare.com/ajax/libs/antd/3.19.0/antd.css');
     return super.onInit();
   }
 

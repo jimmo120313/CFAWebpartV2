@@ -12,4 +12,5 @@ export interface ILandingPageState {
   selectedReviewPeriod: string;
   isGetBrigadeDisabled: boolean;
   isCreateActionPlanButtonDisabled: boolean;
+  targetKeys: string[];
 }

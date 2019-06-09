@@ -310,7 +310,7 @@ export class ActionPlanPage extends React.Component<
         updatedSelectedItem.splice(currIndex, 1);
       }
     }
-    this.setState({ s_EndState: updatedSelectedItem })
+    this.setState({ s_EndState: updatedSelectedItem });
 
 
     this._handleFilterUpdate();

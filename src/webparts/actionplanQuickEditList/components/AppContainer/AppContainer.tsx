@@ -17,22 +17,21 @@ export class AppContainer extends React.Component<
   > {
   constructor(props: IAppContainerProps) {
     super(props);
-    let testReviewPeriod = "2017/18";
-    let testselectedBrigade: ISolutionDropdownOption[] = [];
-    let e = {
-      "key": "853",
-      "text": "Nulla Vale",
-      "itemType": 0
-    };
+    // let testReviewPeriod = "2017/18";
+    // let testselectedBrigade: ISolutionDropdownOption[] = [];
+    // let e = {
+    //   "key": "853",
+    //   "text": "Nulla Vale",
+    //   "itemType": 0
+    // };
 
-    testselectedBrigade.push(e);
+    // testselectedBrigade.push(e);
     //this.setState({ selectedBrigade: testselectedBrigade, selectedReviewPeriod: testReviewPeriod })
     this.state = {
-      selectedBrigade: testselectedBrigade,
-      selectedReviewPeriod: testReviewPeriod,
+      selectedBrigade: [],
+      selectedReviewPeriod: "",
       isActionPlanCreated: false
     };
-
 
   }
 
@@ -40,7 +39,7 @@ export class AppContainer extends React.Component<
     brigades: ISolutionDropdownOption[],
     reviewPeriod: string
   ): void => {
-    //debugger;
+
     this.setState({
       selectedBrigade: brigades,
       selectedReviewPeriod: reviewPeriod,

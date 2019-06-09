@@ -11,7 +11,8 @@ import { Dropdown, IDropdownOption } from "office-ui-fabric-react/lib/Dropdown";
 import { Selection } from "office-ui-fabric-react/lib/Selection";
 import { MarqueeSelection } from "office-ui-fabric-react/lib/MarqueeSelection";
 import { TextField } from "office-ui-fabric-react/lib/TextField";
-import { Transfer, Button } from antd;
+import { Transfer, Button } from "antd";
+//require('antd/lib/date-picker/style/css');
 
 import {
   CommandBarButton,
@@ -43,7 +44,8 @@ export class LandingPage extends React.Component<
       selectedReviewPeriod: "",
 
       isGetBrigadeDisabled: false,
-      isCreateActionPlanButtonDisabled: false
+      isCreateActionPlanButtonDisabled: false,
+      targetKeys: []
     };
 
     this._selection = new Selection({
@@ -90,36 +92,56 @@ export class LandingPage extends React.Component<
       });
   }
 
-  // private _onChanged = (
-  //   event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>
-  // ): void => {
-  private _onChanged = (text: any): void => {
-    this.setState({
-      brigadeOption: text
-        ? this._allBrigadeOption.filter(
-          i => i.brigadeName.toLowerCase().indexOf(text) > -1
-        )
-        : this._allBrigadeOption
-    });
-  }
 
-  private _onDistrictSelected = (item: IDropdownOption): void => {
-    this.setState({
-      selectedDistrict: item.text,
-      brigadeOption: [],
-      selectedBrigade: []
-    });
-    this._allBrigadeOption = [];
+  // private _onChanged = (text: any): void => {
+  //   this.setState({
+  //     brigadeOption: text
+  //       ? this._allBrigadeOption.filter(
+  //         i => i.brigadeName.toLowerCase().indexOf(text) > -1
+  //       )
+  //       : this._allBrigadeOption
+  //   });
+  // }
+
+  private _onDistrictSelected = async (item: IDropdownOption): Promise<void> => {
+    let bOption = new ABRService();
+    bOption
+      ._getBrigadeOption(item.text)
+      .then((brigadeOption: IBrigadeDataListOption[]) => {
+        //this._allBrigadeOption = brigadeOption;
+        this.setState({
+          brigadeOption: brigadeOption,
+          selectedDistrict: item.text,
+          selectedBrigade: [],
+          targetKeys: []
+        });
+      })
+      .catch(e => {
+        console.log(e);
+      });
+
+
   }
   private _onReviewPeriodSelected = (item: IDropdownOption): void => {
     this.setState({ selectedReviewPeriod: item.text });
   }
 
   private _createActionPlan = (): void => {
+    let selectedBrigade: ISolutionDropdownOption[] = [];
+
+    this.state.targetKeys.forEach(k => {
+
+      selectedBrigade.push({ key: this.state.brigadeOption[k].description, text: this.state.brigadeOption[k].title });
+    });
+
     this.props.onCreateActionPlan(
-      this.state.selectedBrigade,
+      selectedBrigade,
       this.state.selectedReviewPeriod
     );
+  }
+
+  public handleChange = targetKeys => {
+    this.setState({ targetKeys });
   }
 
   public render(): React.ReactElement<ILandingPageProps> {
@@ -136,7 +158,7 @@ export class LandingPage extends React.Component<
           onChanged={this._onDistrictSelected}
         />
 
-        <div style={{ display: "flex", alignItems: "stretch", height: "40px" }}>
+        {/* <div style={{ display: "flex", alignItems: "stretch", height: "40px" }}>
           <CommandBarButton
             data-automation-id="test2"
             disabled={this.state.isGetBrigadeDisabled}
@@ -145,7 +167,21 @@ export class LandingPage extends React.Component<
             text="Select Brigade"
             onClick={this._onGetBrigade}
           />
-        </div>
+        </div> */}
+
+        <Transfer
+          dataSource={this.state.brigadeOption}
+          showSearch
+          listStyle={{
+            width: 250,
+            height: 300,
+          }}
+          operations={['Select', 'Remove']}
+          targetKeys={this.state.targetKeys}
+          onChange={this.handleChange}
+          render={item => `${item.title}`}
+
+        />
 
         {/* <TextField
           //className={exampleChildClass}
@@ -175,13 +211,13 @@ export class LandingPage extends React.Component<
 
           //onItemInvoked={this._onItemInvoked}    //This is for action Double click
           />
-        </MarqueeSelection>
+        </MarqueeSelection>*/}
         <PrimaryButton
           disabled={this.state.isCreateActionPlanButtonDisabled}
           //checked={false}
           text="I Want to Build an Action Plan"
           onClick={this._createActionPlan}
-        />*/}
+        />
       </div>
     );
   }

@@ -33,11 +33,13 @@ export class ABRService {
       .expand("District")
       .filter(q)
       .getAll();
-
+    console.log(allBrigade);
     for (let i = 0; i < allBrigade.length; i++) {
       brigade.push({
-        brigadeId: allBrigade[i].ID,
-        brigadeName: allBrigade[i].Title
+        key: i.toString(),
+        title: allBrigade[i].Title,
+        description: allBrigade[i].Id,
+        chosen: false
       });
     }
     return brigade;
@@ -333,7 +335,7 @@ export class ABRService {
     });
 
     const webUrl: string = "https://viccfa.sharepoint.com/sites/AAATEST/ABR/Demo";
-    const listName: string = "Action Plan Items"
+    const listName: string = "Action Plan Items";
     const rootWeb = new Web(webUrl);
     const list = rootWeb.lists.getByTitle(listName);
     //get entity name
@@ -353,8 +355,8 @@ export class ABRService {
             Status: "",
             ApprovedBy: "",
             Due: "",
-          }, "*", entityTypeFullName)
-    })
+          }, "*", entityTypeFullName);
+    });
 
     await batch.execute();
 
