@@ -102,7 +102,6 @@ export class ABRService {
   }
 
   public async _getActionPlanItem(
-    reviewPeriod?: string,
     selectedBrigade?: ISolutionDropdownOption[],
     reviewsId?: string[]
   ): Promise<IActionPlanItem[]> {

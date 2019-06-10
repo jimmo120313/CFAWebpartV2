@@ -6,11 +6,11 @@ export interface IActionPlanPageState {
   //ds_ViabilityOption: ISolutionDropdownOption[];
   //ds_EndState: ISolutionDropdownOption[];
   //ds_Classification: ISolutionDropdownOption[];
-  //s_Brigade: string[];
-  //s_ratingOption: string[];
-  //s_ViabilityOption: string;
+  s_Brigade: string[];
+  s_ratingOption: string[];
+  s_ViabilityOption: string[];
   s_EndState: string[];
-  //s_Classification: string;
+  s_Classification: string[];
   //From Parent
   reviewPeriod: string;
   //For Item List

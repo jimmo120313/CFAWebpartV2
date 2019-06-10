@@ -1,4 +1,6 @@
+import { ISolutionDropdownOption } from "../../../../models";
+
 export interface IActionPlanPageProps {
-  selectedBrigade: any[];
+  selectedBrigade: ISolutionDropdownOption[];
   reviewPeriod: string;
 }

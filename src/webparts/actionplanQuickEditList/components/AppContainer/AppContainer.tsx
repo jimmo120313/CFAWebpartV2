@@ -48,11 +48,7 @@ export class AppContainer extends React.Component<
   }
 
   public render(): React.ReactElement<IAppContainerProps> {
-    //for testing actionPlanPage
-    // return (<div className="row"><ActionPlanPage
-    //   selectedBrigade={this.state.selectedBrigade}
-    //   reviewPeriod={this.state.selectedReviewPeriod}
-    // /></div>);
+
     if (this.state.isActionPlanCreated) {
       return (
         <ActionPlanPage

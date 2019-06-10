@@ -43,52 +43,60 @@ export class ActionPlanPage extends React.Component<
   private ds_EndState: ISolutionDropdownOption[] = [];
   private ds_Brigade: ISolutionDropdownOption[] = [];
   private ds_Classification: ISolutionDropdownOption[] = [];
-  private s_ratingOption: string[] = [];
-  private s_Brigade: string[] = [];
-  private s_ViabilityOption: string[] = [];
+  //private s_ratingOption: string[] = [];
+  //private s_Brigade: string[] = [];
+  //private s_ViabilityOption: string[] = [];
   //private s_EndState: string[] = [];
-  private s_Classification: string[] = [];
+  //private s_Classification: string[] = [];
   //Selected Option
 
 
   constructor(props: IActionPlanPageProps) {
     super(props);
 
+    let brigades: string[] = [];
     this.props.selectedBrigade.forEach(element => {
-      this.s_Brigade.push(element.key);
+      brigades.push(element.key.toString());
     });
 
-    this.ds_Brigade = this.props.selectedBrigade,
-
-      this.state = {
-        //From Parent
-        reviewPeriod: this.props.reviewPeriod,
-        masterRow: [],
-        //filters
-        s_EndState: [],
-        ////For Item List
-        reviewIDs: [],
-        DetailRow: [],
-        itemSupportOption: [],
-        itemPriorityOption: [],
-        itemDueOption: [],
-        itemStatusOption: [],
-      };
+    this.ds_Brigade = this.props.selectedBrigade;
+    debugger;
+    this.state = {
+      //From Parent
+      reviewPeriod: this.props.reviewPeriod,
+      masterRow: [],
+      //filters
+      s_EndState: [],
+      s_ratingOption: [],
+      s_Brigade: brigades,
+      s_ViabilityOption: [],
+      s_Classification: [],
+      ////For Item List
+      reviewIDs: [],
+      DetailRow: [],
+      itemSupportOption: [],
+      itemPriorityOption: [],
+      itemDueOption: [],
+      itemStatusOption: [],
+    };
 
 
   }
   public async componentDidMount(): Promise<void> {
     //Get Rating
     this.ds_ratingOption = await this.abrService._getRating();
-    this.s_ratingOption = ['Red', 'Amber'];
+    //this.state.s_ratingOption = ['Red', 'Amber'];
+    this.setState({ s_ratingOption: ['Red', 'Amber'] });
 
 
     //Get Viability Category
     this.ds_ViabilityOption = await this.abrService._getViabilityCategoryOption();
 
+    let s_ViabilityOption: string[] = [];
     this.ds_ViabilityOption.forEach(element => {
-      this.s_ViabilityOption.push(element.key);
+      s_ViabilityOption.push(element.key);
     });
+    this.setState({ s_ViabilityOption });
 
     //Get Action Plan Master Detail
     this.actionPlanDetail = await this.abrService._getActionPlanMaster(
@@ -99,10 +107,8 @@ export class ActionPlanPage extends React.Component<
     //Get all selected reivewId
     this.actionPlanDetail.forEach(e => { this.selectedReviewID.push(e.reviewId); });
 
-
     //Get all Action Plan Item
     this.actionPlanItemDetail = await this.abrService._getActionPlanItem(
-      this.props.reviewPeriod,
       this.props.selectedBrigade,
       this.selectedReviewID
     );
@@ -154,21 +160,27 @@ export class ActionPlanPage extends React.Component<
 
     ];
 
-    this._handleFilterUpdate();
+    this._handleFilterUpdate(this.state.s_ratingOption, this.state.s_Brigade, this.state.s_ViabilityOption, this.state.s_EndState);
 
 
   }
 
-  public _handleFilterUpdate(): void {
+  public _handleFilterUpdate(ratingOption: string[], brigade: string[], viabilityOption: string[], endState: string[]): void {
 
     let tempItemDetail: IActionPlanItem[] = [];
+    let s_ratingOption: string[] = ratingOption;
+    let s_Brigade: string[] = brigade;
+    let s_ViabilityOption: string[] = viabilityOption;
+    let s_EndState: string[] = endState;
+
 
     this.actionPlanItemDetail.forEach(e => {
+
       if (
-        this.s_ratingOption.indexOf(e.rating) !== -1
-        && this.s_Brigade.indexOf(e.brigadeId) !== -1
-        && this.s_ViabilityOption.indexOf(e.viabilityCategory) !== -1
-        && this.state.s_EndState.indexOf(e.endStateId) !== -1
+        s_ratingOption.indexOf(e.rating) !== -1
+        && s_Brigade.indexOf(e.brigadeId) !== -1
+        && s_ViabilityOption.indexOf(e.viabilityCategory) !== -1
+        && s_EndState.indexOf(e.endStateId) !== -1
       ) {
         tempItemDetail.push(e);
       }
@@ -219,26 +231,24 @@ export class ActionPlanPage extends React.Component<
 
   public _onBrigadeChangeMultiSelect = (item: IDropdownOption): void => {
 
-    const updatedSelectedItem = this.s_Brigade ? this.copyArray(this.s_Brigade) : [];
+    const updatedSelectedItem = this.state.s_Brigade ? this.copyArray(this.state.s_Brigade) : [];
     if (item.selected) {
       // add the option if it's checked
       updatedSelectedItem.push(item.key);
     } else {
       // remove the option if it's unchecked
-      const currIndex = updatedSelectedItem.indexOf(item.key);
+      const currIndex = updatedSelectedItem.indexOf(item.key.toString());
       if (currIndex > -1) {
         updatedSelectedItem.splice(currIndex, 1);
       }
     }
 
-    this.s_Brigade = updatedSelectedItem;
-
+    this.setState({ s_Brigade: updatedSelectedItem });
   }
-
 
   public _onRatingChangeMultiSelect = (item: IDropdownOption): void => {
 
-    const updatedSelectedItem = this.s_ratingOption ? this.copyArray(this.s_ratingOption) : [];
+    const updatedSelectedItem = this.state.s_ratingOption ? this.copyArray(this.state.s_ratingOption) : [];
 
     if (item.selected) {
       // add the option if it's checked
@@ -251,14 +261,13 @@ export class ActionPlanPage extends React.Component<
       }
     }
 
-    this.s_ratingOption = updatedSelectedItem;
-
-    this._handleFilterUpdate();
+    this.setState({ s_ratingOption: updatedSelectedItem });
+    this._handleFilterUpdate(updatedSelectedItem, this.state.s_Brigade, this.state.s_ViabilityOption, this.state.s_EndState);
 
   }
 
   public _onVCategoryChange = (item: IDropdownOption): void => {
-    const updatedSelectedItem = this.s_ViabilityOption ? this.copyArray(this.s_ViabilityOption) : [];
+    const updatedSelectedItem = this.state.s_ViabilityOption ? this.copyArray(this.state.s_ViabilityOption) : [];
 
     if (item.selected) {
       // add the option if it's checked
@@ -271,14 +280,14 @@ export class ActionPlanPage extends React.Component<
       }
     }
 
-    this.s_ViabilityOption = updatedSelectedItem;
+    this.setState({ s_ViabilityOption: updatedSelectedItem });
 
-    this._handleFilterUpdate();
+    this._handleFilterUpdate(this.state.s_ratingOption, this.state.s_Brigade, updatedSelectedItem, this.state.s_EndState);
 
   }
 
   public _onClassificationSelected = (item: IDropdownOption): void => {
-    const updatedSelectedItem = this.s_Classification ? this.copyArray(this.s_Classification) : [];
+    const updatedSelectedItem = this.state.s_Classification ? this.copyArray(this.state.s_Classification) : [];
 
     if (item.selected) {
       // add the option if it's checked
@@ -290,10 +299,9 @@ export class ActionPlanPage extends React.Component<
         updatedSelectedItem.splice(currIndex, 1);
       }
     }
+    this.setState({ s_Classification: updatedSelectedItem });
 
-    this.s_Classification = updatedSelectedItem;
-
-    this._handleFilterUpdate();
+    this._handleFilterUpdate(this.state.s_ratingOption, this.state.s_Brigade, this.state.s_ViabilityOption, this.state.s_EndState);
 
   }
 
@@ -313,7 +321,7 @@ export class ActionPlanPage extends React.Component<
     this.setState({ s_EndState: updatedSelectedItem });
 
 
-    this._handleFilterUpdate();
+    this._handleFilterUpdate(this.state.s_ratingOption, this.state.s_Brigade, this.state.s_ViabilityOption, updatedSelectedItem);
 
   }
 
@@ -324,7 +332,7 @@ export class ActionPlanPage extends React.Component<
           <Dropdown
             label="Brigade"
             placeHolder="Please select Brigade"
-            selectedKeys={this.s_Brigade}
+            selectedKeys={this.state.s_Brigade}
             options={this.ds_Brigade}
             multiSelect
             onChanged={this._onBrigadeChangeMultiSelect}
@@ -334,7 +342,7 @@ export class ActionPlanPage extends React.Component<
           <Dropdown
             label="Rating"
             placeHolder="Please select Rating"
-            selectedKeys={this.s_ratingOption}
+            selectedKeys={this.state.s_ratingOption}
             options={this.ds_ratingOption}
             multiSelect
             onChanged={this._onRatingChangeMultiSelect}
@@ -344,7 +352,7 @@ export class ActionPlanPage extends React.Component<
           <Dropdown
             label="Viability Category"
             placeHolder="Please Select Viability Category"
-            selectedKeys={this.s_ViabilityOption}
+            selectedKeys={this.state.s_ViabilityOption}
             options={this.ds_ViabilityOption}
             multiSelect
             onChanged={this._onVCategoryChange}
@@ -365,7 +373,7 @@ export class ActionPlanPage extends React.Component<
             label="Classification"
             placeHolder="Classification"
             options={this.ds_Classification}
-            selectedKeys={this.s_Classification}
+            selectedKeys={this.state.s_Classification}
             multiSelect
             onChanged={this._onClassificationSelected}
           />

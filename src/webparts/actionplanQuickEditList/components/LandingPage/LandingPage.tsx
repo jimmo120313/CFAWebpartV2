@@ -131,7 +131,7 @@ export class LandingPage extends React.Component<
 
     this.state.targetKeys.forEach(k => {
 
-      selectedBrigade.push({ key: this.state.brigadeOption[k].description, text: this.state.brigadeOption[k].title });
+      selectedBrigade.push({ key: this.state.brigadeOption[k].description.toString(), text: this.state.brigadeOption[k].title });
     });
 
     this.props.onCreateActionPlan(

@@ -28,10 +28,12 @@ export class ActionPlanItemList extends React.Component<
   }
   public async componentDidMount(): Promise<void> {
 
-    actionPlanItem = await this.actionPlanItemService._getActionPlanItem(
-      this.props.reviewPeriod,
-      this.state.selectedBrigade
-    );
+    // actionPlanItem = await this.actionPlanItemService._getActionPlanItem(
+
+    //   this.state.selectedBrigade
+    //   selectedBrigade?: ISolutionDropdownOption[],
+    //   this
+    // );
     await this.actionPlanItemService._getItemListOption();
 
 
