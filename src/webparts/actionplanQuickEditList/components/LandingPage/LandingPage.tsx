@@ -147,17 +147,20 @@ export class LandingPage extends React.Component<
   public render(): React.ReactElement<ILandingPageProps> {
     return (
       <div>
-        <Dropdown
-          placeHolder="Select Year"
-          options={this.state.reviewPeriodOption}
-          onChanged={this._onReviewPeriodSelected}
-        />
-        <Dropdown
-          placeHolder="Select District"
-          options={this.state.districtOption}
-          onChanged={this._onDistrictSelected}
-        />
-
+        <div className="middleAlignDD">
+          <Dropdown
+            placeHolder="Select Year"
+            options={this.state.reviewPeriodOption}
+            onChanged={this._onReviewPeriodSelected}
+          />
+        </div>
+        <div className="middleAlignDD">
+          <Dropdown
+            placeHolder="Select District"
+            options={this.state.districtOption}
+            onChanged={this._onDistrictSelected}
+          />
+        </div>
         {/* <div style={{ display: "flex", alignItems: "stretch", height: "40px" }}>
           <CommandBarButton
             data-automation-id="test2"
@@ -168,21 +171,21 @@ export class LandingPage extends React.Component<
             onClick={this._onGetBrigade}
           />
         </div> */}
+        <div className="middleAlignTransfer">
+          <Transfer
+            dataSource={this.state.brigadeOption}
+            showSearch
+            listStyle={{
+              width: 250,
+              height: 300,
+            }}
+            operations={['Select', 'Remove']}
+            targetKeys={this.state.targetKeys}
+            onChange={this.handleChange}
+            render={item => `${item.title}`}
 
-        <Transfer
-          dataSource={this.state.brigadeOption}
-          showSearch
-          listStyle={{
-            width: 250,
-            height: 300,
-          }}
-          operations={['Select', 'Remove']}
-          targetKeys={this.state.targetKeys}
-          onChange={this.handleChange}
-          render={item => `${item.title}`}
-
-        />
-
+          />
+        </div>
         {/* <TextField
           //className={exampleChildClass}
           label="Filter by name:"
@@ -212,12 +215,15 @@ export class LandingPage extends React.Component<
           //onItemInvoked={this._onItemInvoked}    //This is for action Double click
           />
         </MarqueeSelection>*/}
-        <PrimaryButton
-          disabled={this.state.isCreateActionPlanButtonDisabled}
-          //checked={false}
-          text="I Want to Build an Action Plan"
-          onClick={this._createActionPlan}
-        />
+        <div className="middleAlignDD">
+          <PrimaryButton
+            disabled={this.state.targetKeys.length == 0}
+            //checked={false}
+            text="I Want to Build an Action Plan"
+            onClick={this._createActionPlan}
+            className="button"
+          />
+        </div>
       </div>
     );
   }

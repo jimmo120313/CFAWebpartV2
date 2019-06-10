@@ -13,6 +13,7 @@ import * as strings from "ActionplanQuickEditListWebPartStrings";
 export class ABRService {
   private reviewPeriod: ISolutionDropdownOption[] = [];
   private district: ISolutionDropdownOption[] = [];
+  private classification: ISolutionDropdownOption[] = [];
   private viabilityCategory: ISolutionDropdownOption[] = [];
   private ratingOpion: ISolutionDropdownOption[] = [];
   public supportOption: any = {};
@@ -33,7 +34,7 @@ export class ABRService {
       .expand("District")
       .filter(q)
       .getAll();
-    console.log(allBrigade);
+
     for (let i = 0; i < allBrigade.length; i++) {
       brigade.push({
         key: i.toString(),
@@ -64,8 +65,26 @@ export class ABRService {
     return this.district;
   }
 
+  public async _getClassificationOption(): Promise<ISolutionDropdownOption[]> {
+    const cl = await sp.web.lists
+      .getByTitle("Class")
+      .items.select("Title")
+      .get();
+
+    cl.forEach(d => {
+      let classificationObj: ISolutionDropdownOption = {
+        key: d.Title,
+        text: d.Title
+      };
+      this.classification.push(classificationObj);
+    });
+    this.classification.push({ key: "", text: "NULL" })
+
+    return this.classification;
+  }
+
   public _getRating(): ISolutionDropdownOption[] {
-    let vCategoryObj: ISolutionDropdownOption[] = [
+    this.ratingOpion = [
       {
         key: "Red",
         text: "Red"
@@ -79,7 +98,7 @@ export class ABRService {
         text: "Green"
       }
     ];
-    return vCategoryObj;
+    return this.ratingOpion;
   }
 
   public async _getViabilityCategoryOption(): Promise<
@@ -153,7 +172,6 @@ export class ABRService {
       .renderListDataAsStream({ ViewXml: query });
 
 
-    //console.log(actionPlanItemDetail);
     const row = actionPlanItemDetail.Row;
     for (let i = 0; i < row.length; i++) {
       allActionPlanItemDetail.push({
@@ -351,9 +369,9 @@ export class ABRService {
             Initiative: c.initiative,
             AssignedTo: c.supportRequired,//Support Required
             Priority: c.priority,
-            Status: "",
+            Status: c.status,
             ApprovedBy: "",
-            Due: "",
+            Due: c.due,
           }, "*", entityTypeFullName);
     });
 

@@ -11,26 +11,27 @@ import MaterialTable from "material-table";
 
 
 
+const headerProperties = { headerStyle: { backgroundColor: '#ff0000', color: '#ffffff', fontWeight: 'bold' as 'bold' } };
 
 const columns = [
-  { field: "brigadeName", title: "Brigade" },
-  { field: "reviewPeriod", title: "Review Year" },
-  { field: "dateStarted", title: "Date Started" },
-  { field: "completedBy", title: "Action Plan Completed By" },
-  { field: "districtName", title: "District" },
-  { field: "regionName", title: "Region" },
+  { field: "brigadeName", title: "Brigade", ...headerProperties },
+  { field: "reviewPeriod", title: "Review Year", ...headerProperties },
+  { field: "dateStarted", title: "Date Started", ...headerProperties },
+  { field: "completedBy", title: "Action Plan Completed By", ...headerProperties },
+  { field: "districtName", title: "District", ...headerProperties },
+  { field: "regionName", title: "Region", ...headerProperties },
   {
     field: "reviewDetail",
     title: "Review Detail",
-    render: rowData => <a href={rowData.reviewDetail}>Review Detail</a>
+    render: rowData => <a href={rowData.reviewDetail}>Review Detail</a>, ...headerProperties
   },
   {
     field: "actionPlanReportURL",
     title: "Action Plan Report",
-    render: rowData => <a href={rowData.actionPlanReportURL}>View Action plan report</a>
+    render: rowData => <a href={rowData.actionPlanReportURL}>View Action plan report</a>, ...headerProperties
   },
-  { field: "reviewId", title: "Review ID" },
-  { field: "classification", title: "Classification" }
+  { field: "reviewId", title: "Review ID", ...headerProperties },
+  { field: "classification", title: "Classification", ...headerProperties }
 ];
 
 let actionPlanDetail: IActionPlan[];
@@ -66,8 +67,11 @@ export class ActionPlanMasterList extends React.Component<
         title="Action Plans"
         columns={columns}
         data={this.props.row}
+        options={{
+          pageSize: 3,
+          pageSizeOptions: [3, 6, 9]
+        }}
       />
-
     );
   }
 }

@@ -46,6 +46,13 @@ export class AppContainer extends React.Component<
       isActionPlanCreated: true
     });
   }
+  private reInitiate = (): void => {
+    this.setState({
+      selectedBrigade: [],
+      selectedReviewPeriod: "",
+      isActionPlanCreated: false
+    });
+  }
 
   public render(): React.ReactElement<IAppContainerProps> {
 
@@ -54,6 +61,7 @@ export class AppContainer extends React.Component<
         <ActionPlanPage
           selectedBrigade={this.state.selectedBrigade}
           reviewPeriod={this.state.selectedReviewPeriod}
+          handleClose={this.reInitiate}
         />
       );
     } else {
