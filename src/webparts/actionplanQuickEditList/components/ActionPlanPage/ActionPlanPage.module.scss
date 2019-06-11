@@ -1,4 +1,5 @@
 :global {
+  font-size: 14px !important;
     .dd {
       width: 20%;
       float: left;
@@ -20,6 +21,14 @@
     }
     [id$='label']{
       font-weight: bold;
+    }
+    // input[class^="jss"]{
+    //   border: 0px !important;
+    //   font-size: 14px !important; 
+    // }
+    input.jss105.jss90.jss110.jss111{
+      border: 0px !important;
+      font-size: 14px !important; 
     }
   }
   

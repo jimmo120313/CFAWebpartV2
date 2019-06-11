@@ -17,7 +17,7 @@ import ButtonBase from '@material-ui/core/ButtonBase';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 
 import MaterialTable from "material-table";
-import { fontFamily, fontWeight } from "@material-ui/system";
+import { fontFamily, fontWeight, fontSize } from "@material-ui/system";
 
 
 export class ActionPlanPage extends React.Component<
@@ -129,8 +129,8 @@ export class ActionPlanPage extends React.Component<
     //Get All item list lookup field
     await this.abrService._getItemListOption();
 
-    const headerProperties = { headerStyle: { backgroundColor: '#E31A1A', color: '#ffffff', fontWeight: 'bold' as 'bold', paddingLeft: '5px', paddingRight: '20px' } };
-    const cellProps = { paddingLeft: '5px', paddingRight: '8px' };
+    const headerProperties = { headerStyle: { backgroundColor: '#E31A1A', color: '#ffffff', fontWeight: 'bold' as 'bold', paddingLeft: '5px', paddingRight: '20px', fontSize: '14px' } };
+    const cellProps = { paddingLeft: '5px', paddingRight: '8px', fontSize: '14px' };
     //Render item list column
     this.itemColumns = [
       //{ field: "reviewId", title: "Review ID", editable: 'never', ...headerProperties },
@@ -224,7 +224,10 @@ export class ActionPlanPage extends React.Component<
         title="Action Plan Items"
         options={{
           pageSize: 4,
-          pageSizeOptions: [4, 8, 12]
+          pageSizeOptions: [4, 8, 12],
+          searchFieldStyle: { border: '0px !important' },
+          actionsCellStyle: { fontSize: '14px !important' },
+          rowStyle: { fontSize: '14px !important' }
         }}
         editable={{
           onRowUpdate: (newData, oldData) =>

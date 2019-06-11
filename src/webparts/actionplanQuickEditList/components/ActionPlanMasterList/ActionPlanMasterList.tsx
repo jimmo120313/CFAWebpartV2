@@ -11,27 +11,27 @@ import MaterialTable from "material-table";
 
 
 
-const headerProperties = { headerStyle: { backgroundColor: '#E31A1A', color: '#ffffff', fontWeight: 'bold' as 'bold' } };
-
+const headerProperties = { headerStyle: { backgroundColor: '#E31A1A', color: '#ffffff', fontWeight: 'bold' as 'bold', fontSize: '14px' } };
+const cellProps = { fontSize: '14px' };
 const columns = [
-  { field: "brigadeName", title: "Brigade", ...headerProperties },
-  { field: "reviewPeriod", title: "Review Year", ...headerProperties },
-  { field: "dateStarted", title: "Date Started", ...headerProperties },
-  { field: "completedBy", title: "Action Plan Completed By", ...headerProperties },
-  { field: "districtName", title: "District", ...headerProperties },
-  { field: "regionName", title: "Region", ...headerProperties },
+  { field: "brigadeName", cellStyle: { ...cellProps }, title: "Brigade", ...headerProperties },
+  { field: "reviewPeriod", cellStyle: { ...cellProps }, title: "Review Year", ...headerProperties },
+  { field: "dateStarted", cellStyle: { ...cellProps }, title: "Date Started", ...headerProperties },
+  { field: "completedBy", cellStyle: { ...cellProps }, title: "Action Plan Completed By", ...headerProperties },
+  { field: "districtName", cellStyle: { ...cellProps }, title: "District", ...headerProperties },
+  { field: "regionName", cellStyle: { ...cellProps }, title: "Region", ...headerProperties },
   {
     field: "reviewDetail",
-    title: "Review Detail",
+    title: "Review Detail", cellStyle: { ...cellProps },
     render: rowData => <a href={rowData.reviewDetail}>Review Detail</a>, ...headerProperties
   },
   {
     field: "actionPlanReportURL",
-    title: "Action Plan Report",
+    title: "Action Plan Report", cellStyle: { ...cellProps },
     render: rowData => <a href={rowData.actionPlanReportURL}>View Action plan report</a>, ...headerProperties
   },
-  { field: "reviewId", title: "Review ID", ...headerProperties },
-  { field: "classification", title: "Classification", ...headerProperties }
+  { field: "reviewId", cellStyle: { ...cellProps }, title: "Review ID", ...headerProperties },
+  { field: "classification", cellStyle: { ...cellProps }, title: "Classification", ...headerProperties }
 ];
 
 let actionPlanDetail: IActionPlan[];
