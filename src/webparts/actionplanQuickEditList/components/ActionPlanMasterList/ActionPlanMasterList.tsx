@@ -11,7 +11,7 @@ import MaterialTable from "material-table";
 
 
 
-const headerProperties = { headerStyle: { backgroundColor: '#ff0000', color: '#ffffff', fontWeight: 'bold' as 'bold' } };
+const headerProperties = { headerStyle: { backgroundColor: '#E31A1A', color: '#ffffff', fontWeight: 'bold' as 'bold' } };
 
 const columns = [
   { field: "brigadeName", title: "Brigade", ...headerProperties },

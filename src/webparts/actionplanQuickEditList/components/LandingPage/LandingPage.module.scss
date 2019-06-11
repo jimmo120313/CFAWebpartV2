@@ -1,20 +1,35 @@
 :global {
   .detailListHeader {
-    //height: 80vh;
-    
+
     font-weight: bold;
   }
   .middleAlignDD{
     margin-left: 30%;
-    width: 29%;
-
+    width: 35%;
+    min-width: 602px;
+    
+    @media (max-width: 700px) {
+      min-width: 0;
+  }
   }
   .middleAlignTransfer{
-    margin-left: 30%;
-    width: 30%;
+    margin: 0 30%;
+    width: 40%;
+    min-width: 610px;
 
+    @media (max-width: 700px) {
+        min-width: 0;
+    }
   }
+
   .button{
     width: 100%;
+    background-color:#E31A1A;
+    color:#ffff;
+  }
+  .buttonDisabled{
+    width: 100%;
+    background-color:#D9D9D9;
+    color:#ffff;
   }
 }

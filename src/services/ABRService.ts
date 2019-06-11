@@ -78,7 +78,7 @@ export class ABRService {
       };
       this.classification.push(classificationObj);
     });
-    this.classification.push({ key: "", text: "NULL" })
+    this.classification.push({ key: "", text: "NULL" });
 
     return this.classification;
   }

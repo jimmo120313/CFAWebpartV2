@@ -22,4 +22,6 @@ export interface IActionPlanPageState {
   masterRow: IActionPlan[];
   DetailRow: IActionPlanItem[];
   reviewIDs: number[];
+
+  isLoading: boolean;
 }

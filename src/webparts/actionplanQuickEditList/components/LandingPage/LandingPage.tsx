@@ -221,7 +221,7 @@ export class LandingPage extends React.Component<
             //checked={false}
             text="I Want to Build an Action Plan"
             onClick={this._createActionPlan}
-            className="button"
+            className={this.state.targetKeys.length == 0 ? "buttonDisabled" : "button"}
           />
         </div>
       </div>

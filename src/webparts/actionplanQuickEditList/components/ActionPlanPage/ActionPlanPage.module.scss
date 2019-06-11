@@ -18,6 +18,8 @@
     .ActionPlanPageContainer{
       overflow: hidden 
     }
-    
+    [id$='label']{
+      font-weight: bold;
+    }
   }
   

@@ -14,13 +14,10 @@ import { ABRService } from "../../../../services/ABRService";
 import { Dropdown, DropdownMenuItemType, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import Button from '@material-ui/core/Button';
 import ButtonBase from '@material-ui/core/ButtonBase';
-
+import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 
 import MaterialTable from "material-table";
-import { ResponsiveMode } from "office-ui-fabric-react/lib/utilities/decorators/withResponsiveMode";
-// import Select from '@material-ui/core/Select';
-// import Input from '@material-ui/core/Input';
-// import MenuItem from '@material-ui/core/MenuItem';
+import { fontFamily, fontWeight } from "@material-ui/system";
 
 
 export class ActionPlanPage extends React.Component<
@@ -70,11 +67,13 @@ export class ActionPlanPage extends React.Component<
       itemPriorityOption: [],
       itemDueOption: [],
       itemStatusOption: [],
+      isLoading: true
     };
 
 
   }
   public async componentDidMount(): Promise<void> {
+
     //Get Rating
 
     this.ds_ratingOption = await this.abrService._getRating();
@@ -130,18 +129,19 @@ export class ActionPlanPage extends React.Component<
     //Get All item list lookup field
     await this.abrService._getItemListOption();
 
-    const headerProperties = { headerStyle: { backgroundColor: '#ff0000', color: '#ffffff', fontWeight: 'bold' as 'bold' } };
+    const headerProperties = { headerStyle: { backgroundColor: '#E31A1A', color: '#ffffff', fontWeight: 'bold' as 'bold', paddingLeft: '5px', paddingRight: '20px' } };
+    const cellProps = { paddingLeft: '5px', paddingRight: '8px' };
     //Render item list column
     this.itemColumns = [
       //{ field: "reviewId", title: "Review ID", editable: 'never', ...headerProperties },
-      { field: "brigadeName", title: "Brigade Name", editable: 'never', ...headerProperties },
-      { field: "endState", title: "End State", editable: 'never', ...headerProperties },
-      { field: "viabilityCategory", title: "Viability Category", editable: 'never', ...headerProperties },
-      { field: "subCategory", title: "Sub-Category", editable: 'never', ...headerProperties },
-      { field: "rating", title: "Rating", editable: 'never', ...headerProperties },
-      { field: "statementSelection", title: "Statement Selection", editable: 'never', ...headerProperties },
+      { field: "brigadeName", cellStyle: { ...cellProps }, title: "Brigade Name", editable: 'never', ...headerProperties },
+      { field: "endState", cellStyle: { ...cellProps }, title: "End State", editable: 'never', ...headerProperties },
+      { field: "viabilityCategory", cellStyle: { ...cellProps }, title: "Viability Category", editable: 'never', ...headerProperties },
+      { field: "subCategory", cellStyle: { ...cellProps }, title: "Sub-Category", editable: 'never', ...headerProperties },
+      { field: "rating", cellStyle: { ...cellProps }, title: "Rating", editable: 'never', ...headerProperties },
+      { field: "statementSelection", cellStyle: { ...cellProps }, title: "Statement Selection", editable: 'never', ...headerProperties },
       {
-        field: "treatment", title: "Treatment", editComponent: props => (
+        field: "treatment", cellStyle: { ...cellProps }, title: "Treatment", editComponent: props => (
           <textarea
             value={props.value}
             onChange={e => props.onChange(e.target.value)}
@@ -156,20 +156,22 @@ export class ActionPlanPage extends React.Component<
             onChange={e => props.onChange(e.target.value)}
             rows={4}
             cols={50}
-          />), ...headerProperties
+          />), cellStyle: { ...cellProps }, ...headerProperties
       },
-      { field: "supportRequired", title: "Support Required", lookup: this.abrService.supportOption, ...headerProperties },
-      { field: "priority", title: "Priority", lookup: this.abrService.priorityOption, ...headerProperties },
-      { field: "due", title: "Due", lookup: this.abrService.dueOption, ...headerProperties },
-      { field: "status", title: "Status", lookup: this.abrService.statusOpion, ...headerProperties }
+      { field: "supportRequired", cellStyle: { ...cellProps }, title: "Support Required", lookup: this.abrService.supportOption, ...headerProperties },
+      { field: "priority", cellStyle: { ...cellProps }, title: "Priority", lookup: this.abrService.priorityOption, ...headerProperties },
+      { field: "due", cellStyle: { ...cellProps }, title: "Due", lookup: this.abrService.dueOption, ...headerProperties },
+      { field: "status", cellStyle: { ...cellProps }, title: "Status", lookup: this.abrService.statusOpion, ...headerProperties }
 
     ];
 
     this._handleFilterUpdate(this.state.s_ratingOption, this.state.s_Brigade, this.state.s_ViabilityOption, this.state.s_EndState, this.state.s_Classification);
-
   }
 
   public _handleFilterUpdate(ratingOption: string[], brigade: string[], viabilityOption: string[], endState: string[], classification: string[]): void {
+    if (!this.state.isLoading) {
+      this.setState({ isLoading: true });
+    }
 
     let tempItemDetail: IActionPlanItem[] = [];
     let tempMasterDetail: IActionPlan[] = [];
@@ -203,12 +205,13 @@ export class ActionPlanPage extends React.Component<
         }
 
       });
-    };
+    }
 
     this.setState(
       {
         masterRow: tempMasterDetail,
-        DetailRow: tempItemDetail
+        DetailRow: tempItemDetail,
+        isLoading: false
       });
   }
 
@@ -218,7 +221,7 @@ export class ActionPlanPage extends React.Component<
       <MaterialTable
         columns={this.itemColumns}
         data={this.state.DetailRow}
-        title="Action Plan Item"
+        title="Action Plan Items"
         options={{
           pageSize: 4,
           pageSizeOptions: [4, 8, 12]
@@ -354,6 +357,7 @@ export class ActionPlanPage extends React.Component<
         <div className="dd">
           <Dropdown
             label="Brigade"
+            className="labelStyle"
             placeHolder="Please select Brigade"
             selectedKeys={this.state.s_Brigade}
             options={this.ds_Brigade}
@@ -406,43 +410,48 @@ export class ActionPlanPage extends React.Component<
   }
 
   public render(): React.ReactElement<IActionPlanPageProps> {
-    return (
-      <div className="ActionPlanPageContainer">
-        {this._renderFilterControls()}
-        <ActionPlanMasterList
-          row={this.state.masterRow}
-        />
+    if (this.state.isLoading) {
+      return (<Spinner label="Loading Action Plan Data..." size={SpinnerSize.large} />);
 
-        {this._renderItemDetailTable()}
+    } else {
+      return (
+        <div className="ActionPlanPageContainer">
+          {this._renderFilterControls()}
+          <ActionPlanMasterList
+            row={this.state.masterRow}
+          />
+
+          {this._renderItemDetailTable()}
 
 
-        <div>
-          <ButtonBase
-            onClick={async () => {
-              this.props.handleClose();
-            }}
-            className="cancelButton"
-          >
-            <Button variant="contained">
-              Cancel
-          </Button>
-          </ButtonBase>
-          <ButtonBase
-            onClick={async () => {
-              let newRow: IActionPlanItem[] = await this.abrService._saveActionPlanItems(this.state.DetailRow);
-              this.setState({ DetailRow: newRow });
-              this.props.handleClose();
-            }}
-            className="saveButton"
-          >
-            <Button variant="contained" color="primary">
-              Save & Close
+          <div>
+            <ButtonBase
+              onClick={async () => {
+                this.props.handleClose();
+              }}
+              className="cancelButton"
+            >
+              <Button variant="contained">
+                Cancel
             </Button>
-          </ButtonBase>
-        </div>
+            </ButtonBase>
+            <ButtonBase
+              onClick={async () => {
+                let newRow: IActionPlanItem[] = await this.abrService._saveActionPlanItems(this.state.DetailRow);
+                this.setState({ DetailRow: newRow });
+                this.props.handleClose();
+              }}
+              className="saveButton"
+            >
+              <Button variant="contained" color="primary">
+                Save & Close
+              </Button>
+            </ButtonBase>
+          </div>
 
-      </div>
-    );
+        </div>
+      );
+    }
   }
 
 }
