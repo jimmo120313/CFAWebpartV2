@@ -13,13 +13,18 @@
   }
   }
   .middleAlignTransfer{
-    margin: 0 30%;
-    width: 40%;
-    min-width: 610px;
+     margin: 0 5%;
+    // width: 40%;
+     min-width: 610px;
 
     @media (max-width: 700px) {
         min-width: 0;
     }
+    
+  }
+  .controlWidth{
+    width: 91%;
+    margin: 0px 5%
   }
 
   .button{
@@ -27,9 +32,9 @@
     background-color:#E31A1A;
     color:#ffff;
   }
-  .buttonDisabled{
+  .buttonD{
     width: 100%;
-    background-color:#D9D9D9;
+    background-color:#D9D9D9 !important;
     color:#ffff;
   }
 }

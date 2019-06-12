@@ -225,9 +225,9 @@ export class ActionPlanPage extends React.Component<
         options={{
           pageSize: 4,
           pageSizeOptions: [4, 8, 12],
-          searchFieldStyle: { border: '0px !important' },
-          actionsCellStyle: { fontSize: '14px !important' },
-          rowStyle: { fontSize: '14px !important' }
+          //searchFieldStyle: { border: '0px !important' },
+          actionsCellStyle: { fontSize: '40px', fontWeight: 'bold' },
+          //rowStyle: { fontSize: '14px !important' }
         }}
         editable={{
           onRowUpdate: (newData, oldData) =>
@@ -434,7 +434,7 @@ export class ActionPlanPage extends React.Component<
               }}
               className="cancelButton"
             >
-              <Button variant="contained">
+              <Button variant="contained" size="large">
                 Cancel
             </Button>
             </ButtonBase>
@@ -446,7 +446,7 @@ export class ActionPlanPage extends React.Component<
               }}
               className="saveButton"
             >
-              <Button variant="contained" color="primary">
+              <Button variant="contained" color="primary" size="large">
                 Save & Close
               </Button>
             </ButtonBase>

@@ -146,15 +146,16 @@ export class LandingPage extends React.Component<
 
   public render(): React.ReactElement<ILandingPageProps> {
     return (
-      <div>
-        <div className="middleAlignDD">
+      <div className="middleAlignDD">
+        <div className="controlWidth" >
           <Dropdown
             placeHolder="Select Year"
             options={this.state.reviewPeriodOption}
             onChanged={this._onReviewPeriodSelected}
+
           />
         </div>
-        <div className="middleAlignDD">
+        <div className="controlWidth">
           <Dropdown
             placeHolder="Select District"
             options={this.state.districtOption}
@@ -215,13 +216,13 @@ export class LandingPage extends React.Component<
           //onItemInvoked={this._onItemInvoked}    //This is for action Double click
           />
         </MarqueeSelection>*/}
-        <div className="middleAlignDD">
+        <div className='controlWidth'>
           <PrimaryButton
             disabled={this.state.targetKeys.length == 0}
             //checked={false}
             text="I Want to Build an Action Plan"
             onClick={this._createActionPlan}
-            className={this.state.targetKeys.length == 0 ? "buttonDisabled" : "button"}
+            className={this.state.targetKeys.length == 0 ? "buttonD" : "button"}
           />
         </div>
       </div>
