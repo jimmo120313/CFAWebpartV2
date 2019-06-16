@@ -15,9 +15,11 @@ import { Dropdown, DropdownMenuItemType, IDropdownOption } from 'office-ui-fabri
 import Button from '@material-ui/core/Button';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
+import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 
 import MaterialTable from "material-table";
 import { fontFamily, fontWeight, fontSize } from "@material-ui/system";
+import { red } from "@material-ui/core/colors";
 
 
 export class ActionPlanPage extends React.Component<
@@ -56,6 +58,7 @@ export class ActionPlanPage extends React.Component<
       masterRow: [],
       //filters
       s_EndState: [],
+      f_EndState: [],
       s_ratingOption: [],
       s_Brigade: brigades,
       s_ViabilityOption: [],
@@ -67,7 +70,14 @@ export class ActionPlanPage extends React.Component<
       itemPriorityOption: [],
       itemDueOption: [],
       itemStatusOption: [],
-      isLoading: true
+      isLoading: true,
+
+      //For Filter check box
+      isClassificationChecked: true,
+      isBrigadeChecked: true,
+      isRatingChecked: false,
+      isViabilityCategoryChecked: true,
+      isEndStateChecked: true
     };
 
 
@@ -84,6 +94,7 @@ export class ActionPlanPage extends React.Component<
     //Get Viability Category
     this.ds_ViabilityOption = await this.abrService._getViabilityCategoryOption();
 
+    //TODO how to call Check all Method instead of duplicate same code
     let s_ViabilityOption: string[] = [];
     this.ds_ViabilityOption.forEach(element => {
       s_ViabilityOption.push(element.key);
@@ -93,6 +104,7 @@ export class ActionPlanPage extends React.Component<
     //Get Classification
     this.ds_Classification = await this.abrService._getClassificationOption();
 
+    //TODO how to call Check all Method instead of duplicate same code
     let s_Classification: string[] = [];
     this.ds_Classification.forEach(element => {
       s_Classification.push(element.key);
@@ -124,7 +136,7 @@ export class ActionPlanPage extends React.Component<
     this.ds_EndState.forEach(element => {
       endstate.push(element.key);
     });
-    this.setState({ s_EndState: endstate });
+    this.setState({ s_EndState: endstate, f_EndState: this.ds_EndState });
 
     //Get All item list lookup field
     await this.abrService._getItemListOption();
@@ -133,9 +145,11 @@ export class ActionPlanPage extends React.Component<
     const cellProps = { paddingLeft: '5px', paddingRight: '8px', fontSize: '14px' };
     //Render item list column
     this.itemColumns = [
+
       //{ field: "reviewId", title: "Review ID", editable: 'never', ...headerProperties },
       { field: "brigadeName", cellStyle: { ...cellProps }, title: "Brigade Name", editable: 'never', ...headerProperties },
       { field: "endState", cellStyle: { ...cellProps }, title: "End State", editable: 'never', ...headerProperties },
+      { field: "questionReference", cellStyle: { ...cellProps }, title: "Ref Number", editable: 'never', ...headerProperties },
       { field: "viabilityCategory", cellStyle: { ...cellProps }, title: "Viability Category", editable: 'never', ...headerProperties },
       { field: "subCategory", cellStyle: { ...cellProps }, title: "Sub-Category", editable: 'never', ...headerProperties },
       { field: "rating", cellStyle: { ...cellProps }, title: "Rating", editable: 'never', ...headerProperties },
@@ -161,14 +175,14 @@ export class ActionPlanPage extends React.Component<
       { field: "supportRequired", cellStyle: { ...cellProps }, title: "Support Required", lookup: this.abrService.supportOption, ...headerProperties },
       { field: "priority", cellStyle: { ...cellProps }, title: "Priority", lookup: this.abrService.priorityOption, ...headerProperties },
       { field: "due", cellStyle: { ...cellProps }, title: "Due", lookup: this.abrService.dueOption, ...headerProperties },
-      { field: "status", cellStyle: { ...cellProps }, title: "Status", lookup: this.abrService.statusOpion, ...headerProperties }
+      { field: "status", cellStyle: { ...cellProps }, title: "Action Status", lookup: this.abrService.statusOpion, ...headerProperties }
 
     ];
 
     this._handleFilterUpdate(this.state.s_ratingOption, this.state.s_Brigade, this.state.s_ViabilityOption, this.state.s_EndState, this.state.s_Classification);
   }
 
-  public _handleFilterUpdate(ratingOption: string[], brigade: string[], viabilityOption: string[], endState: string[], classification: string[]): void {
+  public _handleFilterUpdate(ratingOption: string[], brigade: string[], viabilityOption: string[], endState: string[], classification: string[], isViabilityChanged: boolean = false): void {
     if (!this.state.isLoading) {
       this.setState({ isLoading: true });
     }
@@ -194,25 +208,61 @@ export class ActionPlanPage extends React.Component<
     if (tempMasterDetail.length > 0) {
 
       this.actionPlanItemDetail.forEach(e => {
+        if (!isViabilityChanged) {
+          if (
+            s_ratingOption.indexOf(e.rating) !== -1
+            && s_Brigade.indexOf(e.brigadeId) !== -1
+            && s_ViabilityOption.indexOf(e.viabilityCategory) !== -1
+            && s_EndState.indexOf(e.endStateId) !== -1
 
-        if (
-          s_ratingOption.indexOf(e.rating) !== -1
-          && s_Brigade.indexOf(e.brigadeId) !== -1
-          && s_ViabilityOption.indexOf(e.viabilityCategory) !== -1
-          && s_EndState.indexOf(e.endStateId) !== -1
-        ) {
-          tempItemDetail.push(e);
+          ) {
+            tempItemDetail.push(e);
+          }
+        } else {
+          if (
+            s_ratingOption.indexOf(e.rating) !== -1
+            && s_Brigade.indexOf(e.brigadeId) !== -1
+            && s_ViabilityOption.indexOf(e.viabilityCategory) !== -1
+
+          ) {
+            tempItemDetail.push(e);
+          }
         }
 
       });
     }
-
-    this.setState(
-      {
-        masterRow: tempMasterDetail,
-        DetailRow: tempItemDetail,
-        isLoading: false
+    if (isViabilityChanged) {
+      let EndStates: ISolutionDropdownOption[] = [];
+      let selectedEndStates: string[] = [];
+      tempItemDetail.forEach(element => {
+        if (viabilityOption.indexOf(element.viabilityCategory) > -1) {
+          EndStates.push({ key: element.endStateId, text: element.endState });
+        }
       });
+
+
+      EndStates.forEach(element => {
+        selectedEndStates.push(element.key);
+      });
+
+      this.setState(
+        {
+          masterRow: tempMasterDetail,
+          DetailRow: tempItemDetail,
+          f_EndState: EndStates,
+          s_EndState: selectedEndStates,
+          isLoading: false
+        });
+
+    } else {
+      this.setState(
+        {
+          masterRow: tempMasterDetail,
+          DetailRow: tempItemDetail,
+          isLoading: false
+        });
+    }
+
   }
 
 
@@ -225,9 +275,8 @@ export class ActionPlanPage extends React.Component<
         options={{
           pageSize: 4,
           pageSizeOptions: [4, 8, 12],
-          //searchFieldStyle: { border: '0px !important' },
-          actionsCellStyle: { fontSize: '40px', fontWeight: 'bold' },
-          //rowStyle: { fontSize: '14px !important' }
+          actionsCellStyle: { fontWeight: 'bold' },
+          search: false
         }}
         editable={{
           onRowUpdate: (newData, oldData) =>
@@ -244,6 +293,20 @@ export class ActionPlanPage extends React.Component<
               }, 1000);
             })
         }}
+        localization={{
+          header: {
+            actions: 'Edit & Save'
+
+          },
+          body: {
+            editRow: {
+              cancelTooltip: 'Cancel',
+              saveTooltip: 'Save'
+            }
+          }
+
+
+        }}
       />
     );
 
@@ -256,6 +319,8 @@ export class ActionPlanPage extends React.Component<
     }
     return newArray;
   }
+
+
 
   public _onBrigadeChangeMultiSelect = (item: IDropdownOption): void => {
 
@@ -270,9 +335,24 @@ export class ActionPlanPage extends React.Component<
         updatedSelectedItem.splice(currIndex, 1);
       }
     }
-
-    this.setState({ s_Brigade: updatedSelectedItem });
+    let isAllBrigadeChecked = this.ds_Brigade.length === updatedSelectedItem.length ? true : false
+    this.setState({ s_Brigade: updatedSelectedItem, isBrigadeChecked: isAllBrigadeChecked });
     this._handleFilterUpdate(this.state.s_ratingOption, updatedSelectedItem, this.state.s_ViabilityOption, this.state.s_EndState, this.state.s_Classification);
+  }
+
+  public _selectRemoveAllBrigade = (ev: React.FormEvent<HTMLElement>, isBrigadeChecked: boolean): void => {
+
+    let Brigade: string[] = [];
+    if (isBrigadeChecked) {
+      this.ds_Brigade.forEach(element => {
+        Brigade.push(element.key);
+      });
+    }
+
+    let isAllBrigadeChecked = this.ds_Brigade.length === Brigade.length ? true : false
+
+    this.setState({ s_Brigade: Brigade, isBrigadeChecked: isAllBrigadeChecked })
+    this._handleFilterUpdate(this.state.s_ratingOption, Brigade, this.state.s_ViabilityOption, this.state.s_EndState, this.state.s_Classification);
   }
 
   public _onRatingChangeMultiSelect = (item: IDropdownOption): void => {
@@ -290,9 +370,25 @@ export class ActionPlanPage extends React.Component<
       }
     }
 
-    this.setState({ s_ratingOption: updatedSelectedItem });
+    let isAllRatingChecked = this.ds_Classification.length === updatedSelectedItem.length ? true : false
+    this.setState({ s_ratingOption: updatedSelectedItem, isRatingChecked: isAllRatingChecked });
     this._handleFilterUpdate(updatedSelectedItem, this.state.s_Brigade, this.state.s_ViabilityOption, this.state.s_EndState, this.state.s_Classification);
 
+  }
+
+  public _selectRemoveAllRating = (ev: React.FormEvent<HTMLElement>, isRatingChecked: boolean): void => {
+
+    let Rating: string[] = [];
+    if (isRatingChecked) {
+      this.ds_ratingOption.forEach(element => {
+        Rating.push(element.key);
+      });
+    }
+
+    let isAllRatingChecked = this.ds_ratingOption.length === Rating.length ? true : false
+
+    this.setState({ s_ratingOption: Rating, isRatingChecked: isAllRatingChecked })
+    this._handleFilterUpdate(Rating, this.state.s_Brigade, this.state.s_ViabilityOption, this.state.s_EndState, this.state.s_Classification);
   }
 
   public _onVCategoryChange = (item: IDropdownOption): void => {
@@ -309,10 +405,25 @@ export class ActionPlanPage extends React.Component<
       }
     }
 
-    this.setState({ s_ViabilityOption: updatedSelectedItem });
+    let isAllViabilityCategoryChecked = this.ds_ViabilityOption.length === updatedSelectedItem.length ? true : false
+    this.setState({ s_ViabilityOption: updatedSelectedItem, isViabilityCategoryChecked: isAllViabilityCategoryChecked });
+    this._handleFilterUpdate(this.state.s_ratingOption, this.state.s_Brigade, updatedSelectedItem, this.state.s_EndState, this.state.s_Classification, true);
 
-    this._handleFilterUpdate(this.state.s_ratingOption, this.state.s_Brigade, updatedSelectedItem, this.state.s_EndState, this.state.s_Classification);
+  }
 
+  public _selectRemoveAllViabilityCategory = (ev: React.FormEvent<HTMLElement>, isViabilityCategoryChecked: boolean): void => {
+
+    let ViabilityCategory: string[] = [];
+    if (isViabilityCategoryChecked) {
+      this.ds_ViabilityOption.forEach(element => {
+        ViabilityCategory.push(element.key);
+      });
+    }
+
+    let isAllViabilityCategoryChecked = this.ds_ViabilityOption.length === ViabilityCategory.length ? true : false
+
+    this.setState({ s_ViabilityOption: ViabilityCategory, isViabilityCategoryChecked: isAllViabilityCategoryChecked })
+    this._handleFilterUpdate(this.state.s_ratingOption, this.state.s_Brigade, ViabilityCategory, this.state.s_EndState, this.state.s_Classification, true);
   }
 
   public _onClassificationSelected = (item: IDropdownOption): void => {
@@ -328,10 +439,27 @@ export class ActionPlanPage extends React.Component<
         updatedSelectedItem.splice(currIndex, 1);
       }
     }
-    this.setState({ s_Classification: updatedSelectedItem });
+    let isAllClassificationChecked = this.ds_Classification.length === updatedSelectedItem.length ? true : false
+
+    this.setState({ s_Classification: updatedSelectedItem, isClassificationChecked: isAllClassificationChecked });
 
     this._handleFilterUpdate(this.state.s_ratingOption, this.state.s_Brigade, this.state.s_ViabilityOption, this.state.s_EndState, updatedSelectedItem);
 
+  }
+
+  public _selectRemoveAllClassification = (ev: React.FormEvent<HTMLElement>, isClassificationChecked: boolean): void => {
+
+    let Classification: string[] = [];
+    if (isClassificationChecked) {
+      this.ds_Classification.forEach(element => {
+        Classification.push(element.key);
+      });
+    }
+
+    let isAllClassificationChecked = this.ds_Classification.length === Classification.length ? true : false
+
+    this.setState({ s_Classification: Classification, isClassificationChecked: isAllClassificationChecked })
+    this._handleFilterUpdate(this.state.s_ratingOption, this.state.s_Brigade, this.state.s_ViabilityOption, this.state.s_EndState, Classification);
   }
 
   public _onEndStateSelected = (item: IDropdownOption): void => {
@@ -347,19 +475,36 @@ export class ActionPlanPage extends React.Component<
         updatedSelectedItem.splice(currIndex, 1);
       }
     }
-    this.setState({ s_EndState: updatedSelectedItem });
-
+    let isAllEndStateChecked = this.state.f_EndState.length === updatedSelectedItem.length ? true : false
+    this.setState({ s_EndState: updatedSelectedItem, isEndStateChecked: isAllEndStateChecked });
 
     this._handleFilterUpdate(this.state.s_ratingOption, this.state.s_Brigade, this.state.s_ViabilityOption, updatedSelectedItem, this.state.s_Classification);
 
   }
 
+  public _selectRemoveAllEndState = (ev: React.FormEvent<HTMLElement>, isEndStateChecked: boolean): void => {
+
+    let EndState: string[] = [];
+    if (isEndStateChecked) {
+      this.state.f_EndState.forEach(element => {
+        EndState.push(element.key);
+      });
+    }
+
+    let isAllEndStateChecked = this.state.f_EndState.length === EndState.length ? true : false
+
+    this.setState({ s_EndState: EndState, isEndStateChecked: isAllEndStateChecked })
+    this._handleFilterUpdate(this.state.s_ratingOption, this.state.s_Brigade, this.state.s_ViabilityOption, EndState, this.state.s_Classification);
+  }
+
+
   public _renderFilterControls(): object {
     return (
       <div className="filterDiv">
         <div className="dd">
+          <Checkbox label="Brigade" className="cb" onChange={this._selectRemoveAllBrigade} defaultChecked={true} checked={this.state.isBrigadeChecked} />
           <Dropdown
-            label="Brigade"
+            // label="Brigade"
             className="labelStyle"
             placeHolder="Please select Brigade"
             selectedKeys={this.state.s_Brigade}
@@ -369,8 +514,9 @@ export class ActionPlanPage extends React.Component<
           />
         </div>
         <div className="dd">
+          <Checkbox label="Rating" className="cb" onChange={this._selectRemoveAllRating} defaultChecked={false} checked={this.state.isRatingChecked} />
           <Dropdown
-            label="Rating"
+            //label="Rating"
             placeHolder="Please select Rating"
             selectedKeys={this.state.s_ratingOption}
             options={this.ds_ratingOption}
@@ -379,8 +525,9 @@ export class ActionPlanPage extends React.Component<
           />
         </div>
         <div className="dd">
+          < Checkbox label="Viability Category" className="cb" onChange={this._selectRemoveAllViabilityCategory} defaultChecked={true} checked={this.state.isViabilityCategoryChecked} />
           <Dropdown
-            label="Viability Category"
+            //label="Viability Category"
             placeHolder="Please Select Viability Category"
             selectedKeys={this.state.s_ViabilityOption}
             options={this.ds_ViabilityOption}
@@ -389,18 +536,20 @@ export class ActionPlanPage extends React.Component<
           />
         </div>
         <div className="dd">
+          <Checkbox label="End State" className="cb" onChange={this._selectRemoveAllEndState} defaultChecked={true} checked={this.state.isEndStateChecked} />
           <Dropdown
-            label="End State"
+            //label="End State"
             placeHolder="End State (Question Ref)"
             selectedKeys={this.state.s_EndState}
-            options={this.ds_EndState}
+            options={this.state.f_EndState}
             multiSelect
             onChanged={this._onEndStateSelected}
           />
         </div>
         <div className="dd">
+          <Checkbox label="Classification" className="cb" onChange={this._selectRemoveAllClassification} defaultChecked={true} checked={this.state.isClassificationChecked} />
           <Dropdown
-            label="Classification"
+            //label="Classification"
             placeHolder="Classification"
             options={this.ds_Classification}
             selectedKeys={this.state.s_Classification}
@@ -419,11 +568,11 @@ export class ActionPlanPage extends React.Component<
     } else {
       return (
         <div className="ActionPlanPageContainer">
-          {this._renderFilterControls()}
+
           <ActionPlanMasterList
             row={this.state.masterRow}
           />
-
+          {this._renderFilterControls()}
           {this._renderItemDetailTable()}
 
 
@@ -435,7 +584,7 @@ export class ActionPlanPage extends React.Component<
               className="cancelButton"
             >
               <Button variant="contained" size="large">
-                Cancel
+                CLOSE
             </Button>
             </ButtonBase>
             <ButtonBase
@@ -447,11 +596,10 @@ export class ActionPlanPage extends React.Component<
               className="saveButton"
             >
               <Button variant="contained" color="primary" size="large">
-                Save & Close
+                SAVE MY WORK SO FAR
               </Button>
             </ButtonBase>
           </div>
-
         </div>
       );
     }

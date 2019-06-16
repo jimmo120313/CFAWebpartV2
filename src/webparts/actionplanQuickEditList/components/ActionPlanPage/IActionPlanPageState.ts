@@ -10,6 +10,7 @@ export interface IActionPlanPageState {
   s_ratingOption: string[];
   s_ViabilityOption: string[];
   s_EndState: string[];
+  f_EndState: ISolutionDropdownOption[];
   s_Classification: string[];
   //From Parent
   reviewPeriod: string;
@@ -24,4 +25,10 @@ export interface IActionPlanPageState {
   reviewIDs: number[];
 
   isLoading: boolean;
+
+  isClassificationChecked: boolean;
+  isBrigadeChecked: boolean;
+  isRatingChecked: boolean;
+  isViabilityCategoryChecked: boolean;
+  isEndStateChecked: boolean;
 }

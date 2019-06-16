@@ -154,8 +154,7 @@ export class LandingPage extends React.Component<
             onChanged={this._onReviewPeriodSelected}
 
           />
-        </div>
-        <div className="controlWidth">
+
           <Dropdown
             placeHolder="Select District"
             options={this.state.districtOption}
@@ -172,21 +171,22 @@ export class LandingPage extends React.Component<
             onClick={this._onGetBrigade}
           />
         </div> */}
-        <div className="middleAlignTransfer">
-          <Transfer
-            dataSource={this.state.brigadeOption}
-            showSearch
-            listStyle={{
-              width: 250,
-              height: 300,
-            }}
-            operations={['Select', 'Remove']}
-            targetKeys={this.state.targetKeys}
-            onChange={this.handleChange}
-            render={item => `${item.title}`}
+        {/* <div className="middleAlignTransfer"> */}
+        <Transfer
+          dataSource={this.state.brigadeOption}
+          showSearch
+          className={"middleAlignTransfer"}
+          listStyle={{
+            width: 250,
+            height: 300,
+          }}
+          operations={['Select', 'Remove']}
+          targetKeys={this.state.targetKeys}
+          onChange={this.handleChange}
+          render={item => `${item.title}`}
 
-          />
-        </div>
+        />
+        {/* </div> */}
         {/* <TextField
           //className={exampleChildClass}
           label="Filter by name:"

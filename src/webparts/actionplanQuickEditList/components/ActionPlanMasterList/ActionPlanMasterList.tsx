@@ -30,7 +30,7 @@ const columns = [
     title: "Action Plan Report", cellStyle: { ...cellProps },
     render: rowData => <a href={rowData.actionPlanReportURL}>View Action plan report</a>, ...headerProperties
   },
-  { field: "reviewId", cellStyle: { ...cellProps }, title: "Review ID", ...headerProperties },
+  //{ field: "reviewId", cellStyle: { ...cellProps }, title: "Review ID", ...headerProperties },
   { field: "classification", cellStyle: { ...cellProps }, title: "Classification", ...headerProperties }
 ];
 
@@ -69,7 +69,8 @@ export class ActionPlanMasterList extends React.Component<
         data={this.props.row}
         options={{
           pageSize: 3,
-          pageSizeOptions: [3, 6, 9]
+          pageSizeOptions: [3, 6, 9],
+          search: false
         }}
       />
     );

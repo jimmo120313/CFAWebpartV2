@@ -1,5 +1,5 @@
 export interface IActionPlanItem {
-  reviewId?: string;
+  //reviewId?: string;
   brigadeId?: string;
   brigadeName?: string;
   endState?: string;
@@ -16,5 +16,6 @@ export interface IActionPlanItem {
   status?: string;
   isUpdated?: boolean;
   actionPlanItemId?: string;
+  questionReference?: string;
 
 }

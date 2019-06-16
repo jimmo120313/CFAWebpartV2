@@ -43,7 +43,7 @@ export class ABRService {
         chosen: false
       });
     }
-    return brigade;
+    return brigade.sort((a, b) => a.title.localeCompare(b.title));
   }
 
 
@@ -147,7 +147,8 @@ export class ABRService {
         "Priority",
         "Due",
         "Status",
-        "ReviewId"
+        "ReviewId",
+        "QuestionReference"
       ])
       .LeftJoin("Brigade", "Brigade")
       .Select("Title", "BrigadeTitle")
@@ -175,7 +176,7 @@ export class ABRService {
     const row = actionPlanItemDetail.Row;
     for (let i = 0; i < row.length; i++) {
       allActionPlanItemDetail.push({
-        reviewId: row[i].ReviewId,
+        //reviewId: row[i].ReviewId,
         brigadeId: row[i].BrigadeId,
         brigadeName: row[i].BrigadeTitle,
         endState: row[i].Title,
@@ -190,7 +191,9 @@ export class ABRService {
         priority: row[i].Priority,
         due: row[i].Due,
         status: row[i].Status,
-        actionPlanItemId: row[i].ID
+        actionPlanItemId: row[i].ID,
+        questionReference: row[i].QuestionReference
+
       });
     }
 
