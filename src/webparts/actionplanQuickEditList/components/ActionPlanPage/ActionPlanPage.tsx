@@ -1,17 +1,15 @@
 import * as React from "react";
 
 import {
-  IReviewPeriod,
   ISolutionDropdownOption,
-  IBrigadeDataListOption,
   IActionPlan, IActionPlanItem
 } from "../../../../models/index";
 import { IActionPlanPageProps, IActionPlanPageState } from "./index";
 import { ActionPlanMasterList } from "../ActionPlanMasterList/index";
-import { ActionPlanItemList } from "../ActionPlanItemList/index";
+
 require("./ActionPlanPage.module.scss");
 import { ABRService } from "../../../../services/ABRService";
-import { Dropdown, DropdownMenuItemType, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
+import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import Button from '@material-ui/core/Button';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
@@ -19,7 +17,6 @@ import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 
 import MaterialTable from "material-table";
 import { fontFamily, fontWeight, fontSize } from "@material-ui/system";
-import { red } from "@material-ui/core/colors";
 
 
 export class ActionPlanPage extends React.Component<
@@ -335,7 +332,7 @@ export class ActionPlanPage extends React.Component<
         updatedSelectedItem.splice(currIndex, 1);
       }
     }
-    let isAllBrigadeChecked = this.ds_Brigade.length === updatedSelectedItem.length ? true : false
+    let isAllBrigadeChecked = this.ds_Brigade.length === updatedSelectedItem.length ? true : false;
     this.setState({ s_Brigade: updatedSelectedItem, isBrigadeChecked: isAllBrigadeChecked });
     this._handleFilterUpdate(this.state.s_ratingOption, updatedSelectedItem, this.state.s_ViabilityOption, this.state.s_EndState, this.state.s_Classification);
   }
@@ -349,9 +346,9 @@ export class ActionPlanPage extends React.Component<
       });
     }
 
-    let isAllBrigadeChecked = this.ds_Brigade.length === Brigade.length ? true : false
+    let isAllBrigadeChecked = this.ds_Brigade.length === Brigade.length ? true : false;
 
-    this.setState({ s_Brigade: Brigade, isBrigadeChecked: isAllBrigadeChecked })
+    this.setState({ s_Brigade: Brigade, isBrigadeChecked: isAllBrigadeChecked });
     this._handleFilterUpdate(this.state.s_ratingOption, Brigade, this.state.s_ViabilityOption, this.state.s_EndState, this.state.s_Classification);
   }
 
@@ -370,7 +367,7 @@ export class ActionPlanPage extends React.Component<
       }
     }
 
-    let isAllRatingChecked = this.ds_Classification.length === updatedSelectedItem.length ? true : false
+    let isAllRatingChecked = this.ds_Classification.length === updatedSelectedItem.length ? true : false;
     this.setState({ s_ratingOption: updatedSelectedItem, isRatingChecked: isAllRatingChecked });
     this._handleFilterUpdate(updatedSelectedItem, this.state.s_Brigade, this.state.s_ViabilityOption, this.state.s_EndState, this.state.s_Classification);
 
@@ -385,9 +382,9 @@ export class ActionPlanPage extends React.Component<
       });
     }
 
-    let isAllRatingChecked = this.ds_ratingOption.length === Rating.length ? true : false
+    let isAllRatingChecked = this.ds_ratingOption.length === Rating.length ? true : false;
 
-    this.setState({ s_ratingOption: Rating, isRatingChecked: isAllRatingChecked })
+    this.setState({ s_ratingOption: Rating, isRatingChecked: isAllRatingChecked });
     this._handleFilterUpdate(Rating, this.state.s_Brigade, this.state.s_ViabilityOption, this.state.s_EndState, this.state.s_Classification);
   }
 
@@ -405,7 +402,7 @@ export class ActionPlanPage extends React.Component<
       }
     }
 
-    let isAllViabilityCategoryChecked = this.ds_ViabilityOption.length === updatedSelectedItem.length ? true : false
+    let isAllViabilityCategoryChecked = this.ds_ViabilityOption.length === updatedSelectedItem.length ? true : false;
     this.setState({ s_ViabilityOption: updatedSelectedItem, isViabilityCategoryChecked: isAllViabilityCategoryChecked });
     this._handleFilterUpdate(this.state.s_ratingOption, this.state.s_Brigade, updatedSelectedItem, this.state.s_EndState, this.state.s_Classification, true);
 
@@ -420,9 +417,9 @@ export class ActionPlanPage extends React.Component<
       });
     }
 
-    let isAllViabilityCategoryChecked = this.ds_ViabilityOption.length === ViabilityCategory.length ? true : false
+    let isAllViabilityCategoryChecked = this.ds_ViabilityOption.length === ViabilityCategory.length ? true : false;
 
-    this.setState({ s_ViabilityOption: ViabilityCategory, isViabilityCategoryChecked: isAllViabilityCategoryChecked })
+    this.setState({ s_ViabilityOption: ViabilityCategory, isViabilityCategoryChecked: isAllViabilityCategoryChecked, isEndStateChecked: true });
     this._handleFilterUpdate(this.state.s_ratingOption, this.state.s_Brigade, ViabilityCategory, this.state.s_EndState, this.state.s_Classification, true);
   }
 
@@ -439,7 +436,7 @@ export class ActionPlanPage extends React.Component<
         updatedSelectedItem.splice(currIndex, 1);
       }
     }
-    let isAllClassificationChecked = this.ds_Classification.length === updatedSelectedItem.length ? true : false
+    let isAllClassificationChecked = this.ds_Classification.length === updatedSelectedItem.length ? true : false;
 
     this.setState({ s_Classification: updatedSelectedItem, isClassificationChecked: isAllClassificationChecked });
 
@@ -456,9 +453,9 @@ export class ActionPlanPage extends React.Component<
       });
     }
 
-    let isAllClassificationChecked = this.ds_Classification.length === Classification.length ? true : false
+    let isAllClassificationChecked = this.ds_Classification.length === Classification.length ? true : false;
 
-    this.setState({ s_Classification: Classification, isClassificationChecked: isAllClassificationChecked })
+    this.setState({ s_Classification: Classification, isClassificationChecked: isAllClassificationChecked });
     this._handleFilterUpdate(this.state.s_ratingOption, this.state.s_Brigade, this.state.s_ViabilityOption, this.state.s_EndState, Classification);
   }
 
@@ -475,7 +472,7 @@ export class ActionPlanPage extends React.Component<
         updatedSelectedItem.splice(currIndex, 1);
       }
     }
-    let isAllEndStateChecked = this.state.f_EndState.length === updatedSelectedItem.length ? true : false
+    let isAllEndStateChecked = this.state.f_EndState.length === updatedSelectedItem.length ? true : false;
     this.setState({ s_EndState: updatedSelectedItem, isEndStateChecked: isAllEndStateChecked });
 
     this._handleFilterUpdate(this.state.s_ratingOption, this.state.s_Brigade, this.state.s_ViabilityOption, updatedSelectedItem, this.state.s_Classification);
@@ -491,9 +488,9 @@ export class ActionPlanPage extends React.Component<
       });
     }
 
-    let isAllEndStateChecked = this.state.f_EndState.length === EndState.length ? true : false
+    let isAllEndStateChecked = this.state.f_EndState.length === EndState.length ? true : false;
 
-    this.setState({ s_EndState: EndState, isEndStateChecked: isAllEndStateChecked })
+    this.setState({ s_EndState: EndState, isEndStateChecked: isAllEndStateChecked });
     this._handleFilterUpdate(this.state.s_ratingOption, this.state.s_Brigade, this.state.s_ViabilityOption, EndState, this.state.s_Classification);
   }
 

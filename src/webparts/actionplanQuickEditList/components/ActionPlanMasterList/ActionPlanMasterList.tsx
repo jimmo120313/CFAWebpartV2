@@ -23,12 +23,12 @@ const columns = [
   {
     field: "reviewDetail",
     title: "Review Detail", cellStyle: { ...cellProps },
-    render: rowData => <a href={rowData.reviewDetail}>Review Detail</a>, ...headerProperties
+    render: rowData => <a href={rowData.reviewDetail} target="_blank">Review Detail</a>, ...headerProperties
   },
   {
     field: "actionPlanReportURL",
     title: "Action Plan Report", cellStyle: { ...cellProps },
-    render: rowData => <a href={rowData.actionPlanReportURL}>View Action plan report</a>, ...headerProperties
+    render: rowData => <a href={rowData.actionPlanReportURL} target="_blank">View Action plan report</a>, ...headerProperties
   },
   //{ field: "reviewId", cellStyle: { ...cellProps }, title: "Review ID", ...headerProperties },
   { field: "classification", cellStyle: { ...cellProps }, title: "Classification", ...headerProperties }
