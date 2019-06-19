@@ -1,12 +1,30 @@
 :global {
   font-size: 14px !important;
-    .dd {
+    .ddBrigade {
+      width: 15%;
+      float: left;
+    }
+    .ddRating {
+      width: 10%;
+      float: left;
+    }
+    .ddViability {
       width: 20%;
+      float: left;
+    }
+    .ddEndState {
+      width: 45%;
+      float: left;
+    }
+    .ddClassification {
+      width: 10%;
       float: left;
     }
     .cb{
       margin-top:10px;
       font-weight: bold;
+      width: 100%;
+      text-align: left;
     }
     .filterDiv{
       display: inline-block;
@@ -45,18 +63,30 @@
     font-weight: bold !important;
     font-size: 14px !important;
   }
-  //  span.jss52 {
-  //    font-size: 14px !important;
-  // }
-   
- 
-  // .jss105 {
-  //   font:15px  sans-serif !important;
-  // }
-  // th.jss152 {
-  //   font-size:14px !important;
-  //   font-weight:800 !important;
-  // }
+  td {
+    
+    padding: 4px !important;
+    width: 200px;
+  }
+  h6 {
+    
+    font-size: 20px !important;
+    font-weight: bold !important;
+  }
+
+  th {
+    font-size:14px !important;
+    font-weight:800 !important;
+    padding: 1px !important;
+    
+  }
+
+  .ms-Dropdown-optionText {
+    white-space: normal;
+    }
+  .ms-Checkbox-text{
+    font-weight:bold
+  }
   // .jss151{
   //   padding:4px !important;
   // }

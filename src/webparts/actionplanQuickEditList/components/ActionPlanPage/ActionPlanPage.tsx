@@ -498,7 +498,7 @@ export class ActionPlanPage extends React.Component<
   public _renderFilterControls(): object {
     return (
       <div className="filterDiv">
-        <div className="dd">
+        <div className="ddBrigade">
           <Checkbox label="Brigade" className="cb" onChange={this._selectRemoveAllBrigade} defaultChecked={true} checked={this.state.isBrigadeChecked} />
           <Dropdown
             // label="Brigade"
@@ -510,7 +510,7 @@ export class ActionPlanPage extends React.Component<
             onChanged={this._onBrigadeChangeMultiSelect}
           />
         </div>
-        <div className="dd">
+        <div className="ddRating">
           <Checkbox label="Rating" className="cb" onChange={this._selectRemoveAllRating} defaultChecked={false} checked={this.state.isRatingChecked} />
           <Dropdown
             //label="Rating"
@@ -521,7 +521,7 @@ export class ActionPlanPage extends React.Component<
             onChanged={this._onRatingChangeMultiSelect}
           />
         </div>
-        <div className="dd">
+        <div className="ddViability">
           < Checkbox label="Viability Category" className="cb" onChange={this._selectRemoveAllViabilityCategory} defaultChecked={true} checked={this.state.isViabilityCategoryChecked} />
           <Dropdown
             //label="Viability Category"
@@ -532,7 +532,7 @@ export class ActionPlanPage extends React.Component<
             onChanged={this._onVCategoryChange}
           />
         </div>
-        <div className="dd">
+        <div className="ddEndState">
           <Checkbox label="End State" className="cb" onChange={this._selectRemoveAllEndState} defaultChecked={true} checked={this.state.isEndStateChecked} />
           <Dropdown
             //label="End State"
@@ -541,9 +541,10 @@ export class ActionPlanPage extends React.Component<
             options={this.state.f_EndState}
             multiSelect
             onChanged={this._onEndStateSelected}
+            
           />
         </div>
-        <div className="dd">
+        <div className="ddClassification">
           <Checkbox label="Classification" className="cb" onChange={this._selectRemoveAllClassification} defaultChecked={true} checked={this.state.isClassificationChecked} />
           <Dropdown
             //label="Classification"
