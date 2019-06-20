@@ -541,7 +541,7 @@ export class ActionPlanPage extends React.Component<
             options={this.state.f_EndState}
             multiSelect
             onChanged={this._onEndStateSelected}
-            
+
           />
         </div>
         <div className="ddClassification">
@@ -589,7 +589,7 @@ export class ActionPlanPage extends React.Component<
               onClick={async () => {
                 let newRow: IActionPlanItem[] = await this.abrService._saveActionPlanItems(this.state.DetailRow);
                 this.setState({ DetailRow: newRow });
-                this.props.handleClose();
+                //this.props.handleClose();
               }}
               className="saveButton"
             >
