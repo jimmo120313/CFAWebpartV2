@@ -16,7 +16,8 @@ import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 
 import MaterialTable from "material-table";
-import { fontFamily, fontWeight, fontSize } from "@material-ui/system";
+import { Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react/lib/Dialog';
+import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
 
 
 export class ActionPlanPage extends React.Component<
@@ -36,6 +37,14 @@ export class ActionPlanPage extends React.Component<
   private ds_EndState: ISolutionDropdownOption[] = [];
   private ds_Brigade: ISolutionDropdownOption[] = [];
   private ds_Classification: ISolutionDropdownOption[] = [];
+
+  private _showDialog = (): void => {
+    this.setState({ hideDialog: false });
+  };
+
+  private _closeDialog = (): void => {
+    this.setState({ hideDialog: true });
+  };
 
 
 
@@ -68,7 +77,7 @@ export class ActionPlanPage extends React.Component<
       itemDueOption: [],
       itemStatusOption: [],
       isLoading: true,
-
+      hideDialog: true,
       //For Filter check box
       isClassificationChecked: true,
       isBrigadeChecked: true,
@@ -559,6 +568,12 @@ export class ActionPlanPage extends React.Component<
     );
   }
 
+  private _saveChange = async (): Promise<void> => {
+
+    let newRow: IActionPlanItem[] = await this.abrService._saveActionPlanItems(this.state.DetailRow);
+    this.setState({ DetailRow: newRow, hideDialog: true });
+
+  }
   public render(): React.ReactElement<IActionPlanPageProps> {
     if (this.state.isLoading) {
       return (<Spinner label="Loading Action Plan Data..." size={SpinnerSize.large} />);
@@ -586,17 +601,30 @@ export class ActionPlanPage extends React.Component<
             </Button>
             </ButtonBase>
             <ButtonBase
-              onClick={async () => {
-                let newRow: IActionPlanItem[] = await this.abrService._saveActionPlanItems(this.state.DetailRow);
-                this.setState({ DetailRow: newRow });
-                //this.props.handleClose();
-              }}
+              onClick={this._showDialog}
               className="saveButton"
             >
               <Button variant="contained" color="primary" size="large">
                 SAVE MY WORK SO FAR
               </Button>
             </ButtonBase>
+            <Dialog
+              hidden={this.state.hideDialog}
+              onDismiss={this._closeDialog}
+              dialogContentProps={{
+                type: DialogType.normal,
+                title: 'Save Change to Action Plan',
+                subText: 'Do you want to save all the changes?'
+              }}
+              modalProps={{
+                isBlocking: true
+              }}
+            >
+              <DialogFooter>
+                <PrimaryButton onClick={this._saveChange} text="Save" />
+                <DefaultButton onClick={this._closeDialog} text="Cancel" />
+              </DialogFooter>
+            </Dialog>
           </div>
         </div>
       );

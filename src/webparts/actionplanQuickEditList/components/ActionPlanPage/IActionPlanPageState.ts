@@ -25,6 +25,7 @@ export interface IActionPlanPageState {
   reviewIDs: number[];
 
   isLoading: boolean;
+  hideDialog: boolean;
 
   isClassificationChecked: boolean;
   isBrigadeChecked: boolean;
