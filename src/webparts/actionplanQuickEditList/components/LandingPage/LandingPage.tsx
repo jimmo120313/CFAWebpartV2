@@ -61,11 +61,13 @@ export class LandingPage extends React.Component<
       .then((option: ISolutionDropdownOption[]) => {
         this.setState({ reviewPeriodOption: option });
       });
+
     this.brigade
       ._getDistrictOption()
       .then((option: ISolutionDropdownOption[]) => {
         this.setState({ districtOption: option });
       });
+
   }
 
   private _getSelectionDetails(): IBrigadeDataListOption[] {
@@ -130,8 +132,8 @@ export class LandingPage extends React.Component<
     let selectedBrigade: ISolutionDropdownOption[] = [];
 
     this.state.targetKeys.forEach(k => {
-
-      selectedBrigade.push({ key: this.state.brigadeOption[k].description.toString(), text: this.state.brigadeOption[k].title });
+      let result = this.state.brigadeOption.filter((f) => f.key === k)[0];
+      selectedBrigade.push({ key: result.description.toString(), text: result.title });
     });
 
     this.props.onCreateActionPlan(
@@ -180,7 +182,7 @@ export class LandingPage extends React.Component<
             width: 250,
             height: 300,
           }}
-          operations={['Select', 'Remove']}
+          operations={['Select  ', 'Remove']}
           targetKeys={this.state.targetKeys}
           onChange={this.handleChange}
           render={item => `${item.title}`}

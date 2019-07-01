@@ -49,20 +49,25 @@ export class ABRService {
 
 
   public async _getDistrictOption(): Promise<ISolutionDropdownOption[]> {
-    sp.web.lists
+    await sp.web.lists
       .getByTitle("District")
-      .items.select("Title")
+      .items.select("Title", "Id")
       .get()
       .then((items: any[]) => {
         items.forEach(d => {
+
+          let oNumber = Number(d.Title.replace("District ", ""));
           let districtObj: ISolutionDropdownOption = {
-            key: d.etag,
-            text: d.Title
+            key: d.Id,
+            text: d.Title,
+            order: oNumber
           };
           this.district.push(districtObj);
         });
       });
-    return this.district;
+
+
+    return this.district.sort((a, b) => a.order - b.order);
   }
 
   public async _getClassificationOption(): Promise<ISolutionDropdownOption[]> {
@@ -287,9 +292,6 @@ export class ABRService {
     return actionPlanDetail;
   }
 
-
-
-
   ////Get From Chioce Field
   public async _getReviewPeriodOption(): Promise<ISolutionDropdownOption[]> {
     sp.web.lists
@@ -309,7 +311,6 @@ export class ABRService {
       });
     return this.reviewPeriod;
   }
-
 
 
   public async _getItemListOption(): Promise<void> {
@@ -354,7 +355,7 @@ export class ABRService {
       }
     });
 
-    const webUrl: string = "https://viccfa.sharepoint.com/sites/AAATEST/ABR/Demo";
+    const webUrl: string = "https://viccfa.sharepoint.com/sites/services/ABR";
     const listName: string = "Action Plan Items";
     const rootWeb = new Web(webUrl);
     const list = rootWeb.lists.getByTitle(listName);

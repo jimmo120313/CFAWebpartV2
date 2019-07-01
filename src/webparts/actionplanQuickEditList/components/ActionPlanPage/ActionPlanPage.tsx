@@ -40,11 +40,11 @@ export class ActionPlanPage extends React.Component<
 
   private _showDialog = (): void => {
     this.setState({ hideDialog: false });
-  };
+  }
 
   private _closeDialog = (): void => {
     this.setState({ hideDialog: true });
-  };
+  }
 
 
 

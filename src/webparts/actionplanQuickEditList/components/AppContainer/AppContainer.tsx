@@ -17,16 +17,7 @@ export class AppContainer extends React.Component<
   > {
   constructor(props: IAppContainerProps) {
     super(props);
-    // let testReviewPeriod = "2017/18";
-    // let testselectedBrigade: ISolutionDropdownOption[] = [];
-    // let e = {
-    //   "key": "853",
-    //   "text": "Nulla Vale",
-    //   "itemType": 0
-    // };
-
-    // testselectedBrigade.push(e);
-    //this.setState({ selectedBrigade: testselectedBrigade, selectedReviewPeriod: testReviewPeriod })
+    
     this.state = {
       selectedBrigade: [],
       selectedReviewPeriod: "",
