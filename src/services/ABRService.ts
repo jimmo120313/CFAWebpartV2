@@ -23,28 +23,53 @@ export class ABRService {
 
 
 
+
   public async _getBrigadeOption(
-    district: string
+    district: string,
+    reviewPeriod: string
   ): Promise<IBrigadeDataListOption[]> {
-    let q: string = "District/Title eq '" + district + "'";
+    let q: string = "District/Title eq '" + district + "'" + "and Year eq '" + reviewPeriod + "'";
     let brigade: IBrigadeDataListOption[] = [];
+    
     const allBrigade = await sp.web.lists
-      .getByTitle("Brigade")
-      .items.select("ID", "Title", "District/Title")
-      .expand("District")
+      .getByTitle("Action Plans")
+      .items.select("ID", "Brigade/Title", "District/Title","Year")
+      .expand("District","Brigade")
       .filter(q)
       .getAll();
-
+    
     for (let i = 0; i < allBrigade.length; i++) {
       brigade.push({
         key: i.toString(),
-        title: allBrigade[i].Title,
-        description: allBrigade[i].Id,
+        title: allBrigade[i].Brigade.Title,
+        description: allBrigade[i].,
         chosen: false
       });
     }
     return brigade.sort((a, b) => a.title.localeCompare(b.title));
   }
+  // public async _getBrigadeOption(
+  //   district: string
+  // ): Promise<IBrigadeDataListOption[]> {
+  //   let q: string = "District/Title eq '" + district + "'";
+  //   let brigade: IBrigadeDataListOption[] = [];
+  //   const allBrigade = await sp.web.lists
+  //     .getByTitle("Brigade")
+  //     .items.select("ID", "Title", "District/Title")
+  //     .expand("District")
+  //     .filter(q)
+  //     .getAll();
+
+  //   for (let i = 0; i < allBrigade.length; i++) {
+  //     brigade.push({
+  //       key: i.toString(),
+  //       title: allBrigade[i].Title,
+  //       description: allBrigade[i].Id,
+  //       chosen: false
+  //     });
+  //   }
+  //   return brigade.sort((a, b) => a.title.localeCompare(b.title));
+  // }
 
 
 
@@ -263,7 +288,7 @@ export class ABRService {
     const allActionPlan = await sp.web.lists
       .getByTitle("Action Plans")
       .renderListDataAsStream({ ViewXml: query });
-
+    debugger;
     const row = allActionPlan.Row;
 
     for (let i = 0; i < row.length; i++) {
@@ -363,7 +388,7 @@ export class ABRService {
     //const listEntityName = await list.getListItemEntityTypeFullName();
     const batch = sp.web.createBatch();
     const entityTypeFullName = await list.getListItemEntityTypeFullName();
-    //debugger;
+   
     changedRows.forEach(c => {
       list.items.getItemByStringId(c.actionPlanItemId)
         .inBatch(batch)

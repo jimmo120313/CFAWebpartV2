@@ -91,12 +91,11 @@ export class ActionPlanPage extends React.Component<
   public async componentDidMount(): Promise<void> {
 
     //Get Rating
-
     this.ds_ratingOption = await this.abrService._getRating();
     //this.state.s_ratingOption = ['Red', 'Amber'];
     this.setState({ s_ratingOption: ['Red', 'Amber'] });
 
-
+    
     //Get Viability Category
     this.ds_ViabilityOption = await this.abrService._getViabilityCategoryOption();
 
@@ -127,13 +126,13 @@ export class ActionPlanPage extends React.Component<
     this.actionPlanDetail.forEach(e => {
       this.selectedReviewID.push(e.reviewId);
     });
-
+    debugger;
     //Get all Action Plan Item
     this.actionPlanItemDetail = await this.abrService._getActionPlanItem(
       this.props.selectedBrigade,
       this.selectedReviewID
     );
-
+    debugger;
     //Get all end state
     this.actionPlanItemDetail.forEach(element => {
       this.ds_EndState.push({ key: element.endStateId, text: element.endState });
@@ -621,8 +620,8 @@ export class ActionPlanPage extends React.Component<
               }}
             >
               <DialogFooter>
-                <PrimaryButton onClick={this._saveChange} text="Save" />
-                <DefaultButton onClick={this._closeDialog} text="Cancel" />
+                <PrimaryButton className="bSave" onClick={this._saveChange} text="Save" />
+                <DefaultButton className= "bClose" onClick={this._closeDialog} text="Cancel" />
               </DialogFooter>
             </Dialog>
           </div>

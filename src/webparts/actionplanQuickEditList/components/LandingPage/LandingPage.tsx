@@ -84,7 +84,7 @@ export class LandingPage extends React.Component<
   public _onGetBrigade = async (): Promise<void> => {
     let bOption = new ABRService();
     bOption
-      ._getBrigadeOption(this.state.selectedDistrict)
+      ._getBrigadeOption(this.state.selectedDistrict,this.state.selectedReviewPeriod)
       .then((brigadeOption: IBrigadeDataListOption[]) => {
         this._allBrigadeOption = brigadeOption;
         this.setState({ brigadeOption: this._allBrigadeOption });
@@ -94,38 +94,46 @@ export class LandingPage extends React.Component<
       });
   }
 
-
-  // private _onChanged = (text: any): void => {
-  //   this.setState({
-  //     brigadeOption: text
-  //       ? this._allBrigadeOption.filter(
-  //         i => i.brigadeName.toLowerCase().indexOf(text) > -1
-  //       )
-  //       : this._allBrigadeOption
-  //   });
-  // }
-
   private _onDistrictSelected = async (item: IDropdownOption): Promise<void> => {
-    let bOption = new ABRService();
-    bOption
-      ._getBrigadeOption(item.text)
-      .then((brigadeOption: IBrigadeDataListOption[]) => {
-        //this._allBrigadeOption = brigadeOption;
-        this.setState({
-          brigadeOption: brigadeOption,
-          selectedDistrict: item.text,
-          selectedBrigade: [],
-          targetKeys: []
+    
+    if (this.state.selectedReviewPeriod) {
+      let bOption = new ABRService();
+      bOption
+        ._getBrigadeOption(item.text,this.state.selectedReviewPeriod)
+        .then((brigadeOption: IBrigadeDataListOption[]) => {
+          //this._allBrigadeOption = brigadeOption;
+          this.setState({
+            brigadeOption: brigadeOption,
+            selectedDistrict: item.text,
+            selectedBrigade: [],
+            targetKeys: []
+          });
+        })
+        .catch(e => {
+          console.log(e);
         });
-      })
-      .catch(e => {
-        console.log(e);
-      });
-
-
+      }
   }
-  private _onReviewPeriodSelected = (item: IDropdownOption): void => {
+
+  private _onReviewPeriodSelected = async (item: IDropdownOption): Promise<void> => {
     this.setState({ selectedReviewPeriod: item.text });
+    
+    if (this.state.selectedDistrict) {
+        let bOption = new ABRService();
+        bOption
+        ._getBrigadeOption(this.state.selectedDistrict,item.text)
+        .then((brigadeOption: IBrigadeDataListOption[]) => {
+          this.setState({
+            brigadeOption: brigadeOption,
+            selectedDistrict: this.state.selectedDistrict,
+            selectedBrigade: [],
+            targetKeys: []
+          });
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    }
   }
 
   private _createActionPlan = (): void => {
@@ -163,17 +171,7 @@ export class LandingPage extends React.Component<
             onChanged={this._onDistrictSelected}
           />
         </div>
-        {/* <div style={{ display: "flex", alignItems: "stretch", height: "40px" }}>
-          <CommandBarButton
-            data-automation-id="test2"
-            disabled={this.state.isGetBrigadeDisabled}
-            //checked={checked}
-            iconProps={{ iconName: "CheckList" }}
-            text="Select Brigade"
-            onClick={this._onGetBrigade}
-          />
-        </div> */}
-        {/* <div className="middleAlignTransfer"> */}
+        
         <Transfer
           dataSource={this.state.brigadeOption}
           showSearch
@@ -188,36 +186,7 @@ export class LandingPage extends React.Component<
           render={item => `${item.title}`}
 
         />
-        {/* </div> */}
-        {/* <TextField
-          //className={exampleChildClass}
-          label="Filter by name:"
-          onChanged={this._onChanged}
-        />
-        <MarqueeSelection selection={this._selection}>
-          <DetailsList
-            items={this.state.brigadeOption}
-            columns={[
-              {
-                key: "Brigade",
-                name: "Brigade",
-                fieldName: "brigadeName",
-                minWidth: 100,
-                maxWidth: 200,
-                headerClassName: "detailListHeader",
-                isResizable: true
-              }
-            ]}
-            setKey="set"
-            layoutMode={DetailsListLayoutMode.fixedColumns}
-            selection={this._selection}
-            selectionPreservedOnEmptyClick={true}
-            ariaLabelForSelectionColumn="Toggle selection"
-            ariaLabelForSelectAllCheckbox="Toggle selection for all items"
-
-          //onItemInvoked={this._onItemInvoked}    //This is for action Double click
-          />
-        </MarqueeSelection>*/}
+       
         <div className='controlWidth'>
           <PrimaryButton
             disabled={this.state.targetKeys.length == 0}
