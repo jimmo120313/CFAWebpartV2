@@ -18,6 +18,7 @@ import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import MaterialTable from "material-table";
 import { Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react/lib/Dialog';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
+import { PageContext } from '@microsoft/sp-page-context';
 
 
 export class ActionPlanPage extends React.Component<
@@ -95,7 +96,7 @@ export class ActionPlanPage extends React.Component<
     //this.state.s_ratingOption = ['Red', 'Amber'];
     this.setState({ s_ratingOption: ['Red', 'Amber'] });
 
-    
+
     //Get Viability Category
     this.ds_ViabilityOption = await this.abrService._getViabilityCategoryOption();
 
@@ -126,13 +127,13 @@ export class ActionPlanPage extends React.Component<
     this.actionPlanDetail.forEach(e => {
       this.selectedReviewID.push(e.reviewId);
     });
-    debugger;
+
     //Get all Action Plan Item
     this.actionPlanItemDetail = await this.abrService._getActionPlanItem(
       this.props.selectedBrigade,
       this.selectedReviewID
     );
-    debugger;
+
     //Get all end state
     this.actionPlanItemDetail.forEach(element => {
       this.ds_EndState.push({ key: element.endStateId, text: element.endState });
@@ -236,6 +237,7 @@ export class ActionPlanPage extends React.Component<
 
       });
     }
+
     if (isViabilityChanged) {
       let EndStates: ISolutionDropdownOption[] = [];
       let selectedEndStates: string[] = [];
@@ -569,7 +571,7 @@ export class ActionPlanPage extends React.Component<
 
   private _saveChange = async (): Promise<void> => {
 
-    let newRow: IActionPlanItem[] = await this.abrService._saveActionPlanItems(this.state.DetailRow);
+    let newRow: IActionPlanItem[] = await this.abrService._saveActionPlanItems(this.state.DetailRow, this.props.siteURL);
     this.setState({ DetailRow: newRow, hideDialog: true });
 
   }
@@ -621,7 +623,7 @@ export class ActionPlanPage extends React.Component<
             >
               <DialogFooter>
                 <PrimaryButton className="bSave" onClick={this._saveChange} text="Save" />
-                <DefaultButton className= "bClose" onClick={this._closeDialog} text="Cancel" />
+                <DefaultButton className="bClose" onClick={this._closeDialog} text="Cancel" />
               </DialogFooter>
             </Dialog>
           </div>

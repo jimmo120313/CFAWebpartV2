@@ -19,10 +19,14 @@ export default class ActionplanQuickEditListWebPart extends BaseClientSideWebPar
 
   public render(): void {
     const element: React.ReactElement<IAppContainerProps> = React.createElement(
-      AppContainer
+      AppContainer,
+      {
+        siteURL:this.context.pageContext.web.absoluteUrl
+      }
     );
 
     ReactDom.render(element, this.domElement);
+
   }
 
   protected onInit(): Promise<void> {

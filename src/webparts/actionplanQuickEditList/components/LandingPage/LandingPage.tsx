@@ -84,7 +84,7 @@ export class LandingPage extends React.Component<
   public _onGetBrigade = async (): Promise<void> => {
     let bOption = new ABRService();
     bOption
-      ._getBrigadeOption(this.state.selectedDistrict,this.state.selectedReviewPeriod)
+      ._getBrigadeOption(this.state.selectedDistrict, this.state.selectedReviewPeriod)
       .then((brigadeOption: IBrigadeDataListOption[]) => {
         this._allBrigadeOption = brigadeOption;
         this.setState({ brigadeOption: this._allBrigadeOption });
@@ -95,11 +95,11 @@ export class LandingPage extends React.Component<
   }
 
   private _onDistrictSelected = async (item: IDropdownOption): Promise<void> => {
-    
+
     if (this.state.selectedReviewPeriod) {
       let bOption = new ABRService();
       bOption
-        ._getBrigadeOption(item.text,this.state.selectedReviewPeriod)
+        ._getBrigadeOption(item.text, this.state.selectedReviewPeriod)
         .then((brigadeOption: IBrigadeDataListOption[]) => {
           //this._allBrigadeOption = brigadeOption;
           this.setState({
@@ -112,16 +112,16 @@ export class LandingPage extends React.Component<
         .catch(e => {
           console.log(e);
         });
-      }
+    }
   }
 
   private _onReviewPeriodSelected = async (item: IDropdownOption): Promise<void> => {
     this.setState({ selectedReviewPeriod: item.text });
-    
+
     if (this.state.selectedDistrict) {
-        let bOption = new ABRService();
-        bOption
-        ._getBrigadeOption(this.state.selectedDistrict,item.text)
+      let bOption = new ABRService();
+      bOption
+        ._getBrigadeOption(this.state.selectedDistrict, item.text)
         .then((brigadeOption: IBrigadeDataListOption[]) => {
           this.setState({
             brigadeOption: brigadeOption,
@@ -171,7 +171,7 @@ export class LandingPage extends React.Component<
             onChanged={this._onDistrictSelected}
           />
         </div>
-        
+
         <Transfer
           dataSource={this.state.brigadeOption}
           showSearch
@@ -186,7 +186,7 @@ export class LandingPage extends React.Component<
           render={item => `${item.title}`}
 
         />
-       
+
         <div className='controlWidth'>
           <PrimaryButton
             disabled={this.state.targetKeys.length == 0}

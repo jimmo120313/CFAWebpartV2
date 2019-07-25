@@ -11,13 +11,15 @@ import {
 } from "../../../../models/index";
 import { IAppContainerState } from "./IAppContainerState";
 
+
+
 export class AppContainer extends React.Component<
   IAppContainerProps,
   IAppContainerState
   > {
   constructor(props: IAppContainerProps) {
     super(props);
-    
+
     this.state = {
       selectedBrigade: [],
       selectedReviewPeriod: "",
@@ -47,12 +49,14 @@ export class AppContainer extends React.Component<
 
   public render(): React.ReactElement<IAppContainerProps> {
 
+
     if (this.state.isActionPlanCreated) {
       return (
         <ActionPlanPage
           selectedBrigade={this.state.selectedBrigade}
           reviewPeriod={this.state.selectedReviewPeriod}
           handleClose={this.reInitiate}
+          siteURL={this.props.siteURL}
         />
       );
     } else {

@@ -1,3 +1,4 @@
 export interface IAppContainerProps {
-  onCreateActionPlan: any;
+  onCreateActionPlan?: any;
+  siteURL: string;
 }

@@ -9,6 +9,8 @@ import {
 } from "../models/index";
 import * as CamlBuilder from "camljs";
 import * as strings from "ActionplanQuickEditListWebPartStrings";
+import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
+import { PageContext } from '@microsoft/sp-page-context';
 
 export class ABRService {
   private reviewPeriod: ISolutionDropdownOption[] = [];
@@ -30,19 +32,19 @@ export class ABRService {
   ): Promise<IBrigadeDataListOption[]> {
     let q: string = "District/Title eq '" + district + "'" + "and Year eq '" + reviewPeriod + "'";
     let brigade: IBrigadeDataListOption[] = [];
-    
+
     const allBrigade = await sp.web.lists
       .getByTitle("Action Plans")
-      .items.select("ID", "Brigade/Title", "District/Title","Year")
-      .expand("District","Brigade")
+      .items.select("ID", "Brigade/Title", "District/Title", "Year", "Brigade/Id")
+      .expand("District", "Brigade")
       .filter(q)
       .getAll();
-    
+
     for (let i = 0; i < allBrigade.length; i++) {
       brigade.push({
         key: i.toString(),
         title: allBrigade[i].Brigade.Title,
-        description: allBrigade[i].,
+        description: allBrigade[i].Brigade.Id,
         chosen: false
       });
     }
@@ -154,6 +156,7 @@ export class ABRService {
     selectedBrigade?: ISolutionDropdownOption[],
     reviewsId?: string[]
   ): Promise<IActionPlanItem[]> {
+
     let brigadesId = new Array();
 
     selectedBrigade.forEach(e => {
@@ -161,68 +164,77 @@ export class ABRService {
     });
 
     //Generate Query
-    let query = new CamlBuilder()
-      .View([
-        "ID",
-        "BrigadeId",
-        "BrigadeTitle",
-        "Title",
-        "ViabilityCategory",
-        "SubCategory",
-        "Rating",
-        "Challenge",
-        "Treatment",
-        "Initiative",
-        "AssignedTo",
-        "Priority",
-        "Due",
-        "Status",
-        "ReviewId",
-        "QuestionReference"
-      ])
-      .LeftJoin("Brigade", "Brigade")
-      .Select("Title", "BrigadeTitle")
-      .Select("ID", "BrigadeId")
-      .LeftJoin("ReviewID", "Annual Brigade Review")
-      .Select("ID", "ReviewId")
-      .Query()
-      .Where()
-      .LookupField("Brigade")
-      .Id()
-      .In(brigadesId)
-      .And()
-      .TextField("ReviewId")
-      .In(reviewsId)
-      .ToString();
+    // let query = new CamlBuilder()
+    //   .View([
+    //     "ID",
+    //     "BrigadeId",
+    //     "BrigadeTitle",
+    //     "Title",
+    //     "ViabilityCategory",
+    //     "SubCategory",
+    //     "Rating",
+    //     "Challenge",
+    //     "Treatment",
+    //     "Initiative",
+    //     "AssignedTo",
+    //     "Priority",
+    //     "Due",
+    //     "Status",
+    //     "ReviewId",
+    //     "QuestionReference"
+    //   ])
+    //   .LeftJoin("Brigade", "Brigade")
+    //   .Select("Title", "BrigadeTitle")
+    //   .Select("ID", "BrigadeId")
+    //   .LeftJoin("ReviewID", "Annual Brigade Review")
+    //   .Select("ID", "ReviewId");
 
     let allActionPlanItemDetail: IActionPlanItem[] = [];
 
+    const filterCond = reviewsId.map(id => `ReviewID/ID eq ${id}`).join(' or ');
     //Get row detail form Aciton Plan list
     const actionPlanItemDetail = await sp.web.lists
-      .getByTitle("Action Plan Items")
-      .renderListDataAsStream({ ViewXml: query });
+      .getByTitle("Action Plan Items").items
+      .select(
+        "ID"
+        , "Brigade/Id"
+        , "Brigade/Title"
+        , "Title"
+        , "ViabilityCategory"
+        , "SubCategory"
+        , "Rating"
+        , "Challenge"
+        , "Treatment"
+        , "Initiative"
+        , "AssignedTo"
+        , "Priority"
+        , "Due"
+        , "Status"
+        , "ReviewID/ID"
+        , "QuestionReference"
+      ).expand("Brigade", "ReviewID").filter(filterCond).getAll();
 
 
-    const row = actionPlanItemDetail.Row;
-    for (let i = 0; i < row.length; i++) {
+    // const row = actionPlanItemDetail.Row;
+    for (let i = 0; i < actionPlanItemDetail.length; i++) {
       allActionPlanItemDetail.push({
         //reviewId: row[i].ReviewId,
-        brigadeId: row[i].BrigadeId,
-        brigadeName: row[i].BrigadeTitle,
-        endState: row[i].Title,
+        brigadeId: actionPlanItemDetail[i].Brigade.Id.toString(),
+        brigadeName: actionPlanItemDetail[i].Brigade.Title,
+        endState: actionPlanItemDetail[i].Title,
         endStateId: i.toString(),
-        viabilityCategory: row[i].ViabilityCategory,
-        subCategory: row[i].SubCategory,
-        rating: row[i].Rating,
-        statementSelection: row[i].Challenge,
-        treatment: row[i].Treatment,
-        initiative: row[i].Initiative,
-        supportRequired: row[i].AssignedTo,
-        priority: row[i].Priority,
-        due: row[i].Due,
-        status: row[i].Status,
-        actionPlanItemId: row[i].ID,
-        questionReference: row[i].QuestionReference
+        viabilityCategory: actionPlanItemDetail[i].ViabilityCategory,
+        subCategory: actionPlanItemDetail[i].SubCategory,
+        rating: actionPlanItemDetail[i].Rating,
+        statementSelection: actionPlanItemDetail[i].Challenge,
+        treatment: actionPlanItemDetail[i].Treatment,
+        initiative: actionPlanItemDetail[i].Initiative,
+        supportRequired: actionPlanItemDetail[i].AssignedTo,
+        priority: actionPlanItemDetail[i].Priority,
+        due: actionPlanItemDetail[i].Due,
+        status: actionPlanItemDetail[i].Status,
+        actionPlanItemId: actionPlanItemDetail[i].ID,
+        questionReference: actionPlanItemDetail[i].QuestionReference
 
       });
     }
@@ -288,7 +300,7 @@ export class ABRService {
     const allActionPlan = await sp.web.lists
       .getByTitle("Action Plans")
       .renderListDataAsStream({ ViewXml: query });
-    debugger;
+
     const row = allActionPlan.Row;
 
     for (let i = 0; i < row.length; i++) {
@@ -370,7 +382,7 @@ export class ABRService {
 
   }
 
-  public async _saveActionPlanItems(row: IActionPlanItem[]): Promise<IActionPlanItem[]> {
+  public async _saveActionPlanItems(row: IActionPlanItem[], siteUrl: string): Promise<IActionPlanItem[]> {
     let changedRows: IActionPlanItem[] = [];
 
     row.forEach(r => {
@@ -380,7 +392,8 @@ export class ABRService {
       }
     });
 
-    const webUrl: string = "https://viccfa.sharepoint.com/sites/services/ABR";
+
+    const webUrl: string = siteUrl;//"https://viccfa.sharepoint.com/sites/services/ABR";
     const listName: string = "Action Plan Items";
     const rootWeb = new Web(webUrl);
     const list = rootWeb.lists.getByTitle(listName);
@@ -388,7 +401,7 @@ export class ABRService {
     //const listEntityName = await list.getListItemEntityTypeFullName();
     const batch = sp.web.createBatch();
     const entityTypeFullName = await list.getListItemEntityTypeFullName();
-   
+
     changedRows.forEach(c => {
       list.items.getItemByStringId(c.actionPlanItemId)
         .inBatch(batch)
