@@ -1,5 +1,5 @@
 export interface IActionPlanItem {
-  //reviewId?: string;
+  reviewId?: string;
   brigadeId?: string;
   brigadeName?: string;
   endState?: string;

@@ -1,5 +1,6 @@
 import { registerBeforeUnloadHandler } from '@microsoft/teams-js';
 import { sp, CamlQuery, Web } from "@pnp/sp";
+import { CurrentUser } from '@pnp/sp/src/siteusers';
 import {
   ISolutionDropdownOption,
   IBrigadeDataListOption,
@@ -163,31 +164,6 @@ export class ABRService {
       brigadesId.push(e.key);
     });
 
-    //Generate Query
-    // let query = new CamlBuilder()
-    //   .View([
-    //     "ID",
-    //     "BrigadeId",
-    //     "BrigadeTitle",
-    //     "Title",
-    //     "ViabilityCategory",
-    //     "SubCategory",
-    //     "Rating",
-    //     "Challenge",
-    //     "Treatment",
-    //     "Initiative",
-    //     "AssignedTo",
-    //     "Priority",
-    //     "Due",
-    //     "Status",
-    //     "ReviewId",
-    //     "QuestionReference"
-    //   ])
-    //   .LeftJoin("Brigade", "Brigade")
-    //   .Select("Title", "BrigadeTitle")
-    //   .Select("ID", "BrigadeId")
-    //   .LeftJoin("ReviewID", "Annual Brigade Review")
-    //   .Select("ID", "ReviewId");
 
     let allActionPlanItemDetail: IActionPlanItem[] = [];
 
@@ -218,7 +194,7 @@ export class ABRService {
     // const row = actionPlanItemDetail.Row;
     for (let i = 0; i < actionPlanItemDetail.length; i++) {
       allActionPlanItemDetail.push({
-        //reviewId: row[i].ReviewId,
+        reviewId: actionPlanItemDetail[i].ReviewID.ID.toString(),
         brigadeId: actionPlanItemDetail[i].Brigade.Id.toString(),
         brigadeName: actionPlanItemDetail[i].Brigade.Title,
         endState: actionPlanItemDetail[i].Title,
@@ -384,6 +360,7 @@ export class ABRService {
 
   public async _saveActionPlanItems(row: IActionPlanItem[], siteUrl: string): Promise<IActionPlanItem[]> {
     let changedRows: IActionPlanItem[] = [];
+    let uniqueReviewIdRows: string[] = [];
 
     row.forEach(r => {
       if (r.isUpdated) {
@@ -394,11 +371,14 @@ export class ABRService {
 
 
     const webUrl: string = siteUrl;//"https://viccfa.sharepoint.com/sites/services/ABR";
-    const listName: string = "Action Plan Items";
+    const ItemlistName: string = "Action Plan Items";
+    const MasterListName: string = "Action Plans";
     const rootWeb = new Web(webUrl);
-    const list = rootWeb.lists.getByTitle(listName);
-    //get entity name
-    //const listEntityName = await list.getListItemEntityTypeFullName();
+    const list = rootWeb.lists.getByTitle(ItemlistName);
+
+    const currentUser = await sp.web.currentUser.get();
+
+
     const batch = sp.web.createBatch();
     const entityTypeFullName = await list.getListItemEntityTypeFullName();
 
@@ -415,9 +395,27 @@ export class ABRService {
             ApprovedBy: "",
             Due: c.due,
           }, "*", entityTypeFullName);
+
+      if (c.reviewId !== null && c.reviewId !== '' && uniqueReviewIdRows.indexOf(c.reviewId) == -1) {
+        uniqueReviewIdRows.push(c.reviewId);
+      }
     });
 
     await batch.execute();
+
+    const masterList = rootWeb.lists.getByTitle(MasterListName).expand("Review").select("ID", "Review/ID");
+    uniqueReviewIdRows.forEach(m => {
+      let fielterString: string = "Review/ID eq" + m;
+      masterList.items.top(1).filter(fielterString).get()
+        .then(
+          (items: any[]) => {
+            if (items.length > 0) {
+              sp.web.lists.getByTitle(MasterListName).items.getById(items[0].Id).update(
+                { ActionPlanCompletedBy: currentUser['Title'] }
+              );
+            }
+          });
+    });
 
     return row;
 
