@@ -6,7 +6,6 @@ import { ABRService } from "../../../../services/index";
 import MaterialTable from "material-table";
 import Input from '@material-ui/core/Input';
 
-let actionPlanItem: IActionPlanItem[];
 
 export class ActionPlanItemList extends React.Component<
   IActionPlanItemListProp,
@@ -20,29 +19,18 @@ export class ActionPlanItemList extends React.Component<
     this.state = {
       selectedBrigade: this.props.selectedBrigade,
       rows: this.props.row
-      // itemDueOption: [],
-      // itemPriorityOption: [],
-      // itemStatusOption: [],
-      // itemSupportOption: []
     };
   }
   public async componentDidMount(): Promise<void> {
 
-    // actionPlanItem = await this.actionPlanItemService._getActionPlanItem(
-
-    //   this.state.selectedBrigade
-    //   selectedBrigade?: ISolutionDropdownOption[],
-    //   this
-    // );
     await this.actionPlanItemService._getItemListOption();
 
-
     this.columns = [
-      { field: "brigadeName", title: "Brigade Name", editable: 'never' },
+      { field: "brigadeName", title: "Brigade Name", editable: 'never', cellStyle: { width: 5, maxWidth: 5 } },
       { field: "endState", title: "End State", editable: 'never' },
-      { field: "viability", title: "Viability Category", editable: 'never' },
+      { field: "viability", title: "Viability Category", editable: 'never', cellStyle: { width: 100 }, headerStyle: { width: 100 } },
       { field: "subCategory", title: "Sub-Category", editable: 'never' },
-      { field: "rating", title: "Rating", editable: 'never' },
+      { field: "rating", title: "Rating", editable: 'never', cellStyle: { width: 50 }, headerStyle: { width: 50 } },
       { field: "statementSelection", title: "Statement Selection", editable: 'never' },
       {
         field: "treatment", title: "Treatment", editComponent: props => (
@@ -94,6 +82,7 @@ export class ActionPlanItemList extends React.Component<
                 }, 1000);
               })
           }}
+
         />
       );
     } else {

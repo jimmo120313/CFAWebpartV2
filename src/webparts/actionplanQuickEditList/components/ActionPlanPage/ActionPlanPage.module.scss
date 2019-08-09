@@ -40,7 +40,7 @@
     }
     .ActionPlanPageContainer{
       overflow: hidden; 
-      width:1264px;
+      -width: 1400px;
     }
     [id$='label']{
       font-weight: bold;
@@ -57,17 +57,19 @@
      font-size: 14px !important;
      width: 250px !important;
    }
-
+  table{
+    width: fit-content !important;
+  }
   th{
     background-Color: #E31A1A !important;
     color: #ffffff !important;
     font-weight: bold !important;
-    font-size: 14px !important;
+    font-size: 12px !important;
   }
   td {
-    
-    padding: 4px !important;
-    width: 200px;
+    font-size:11px !important;
+    //padding: 0px !important;
+    // width: 200px;
   }
   h6 {
     
@@ -75,12 +77,12 @@
     font-weight: bold !important;
   }
 
-  th {
-    font-size:14px !important;
-    font-weight:800 !important;
-    padding: 1px !important;
+  // th {
+  //   font-size:14px !important;
+  //   font-weight:800 !important;
+  //   padding: 1px !important;
     
-  }
+  // }
 
   .ms-Dropdown-optionText {
     white-space: normal;

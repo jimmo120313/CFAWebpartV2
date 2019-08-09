@@ -18,7 +18,7 @@ import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import MaterialTable from "material-table";
 import { Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react/lib/Dialog';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
-import { PageContext } from '@microsoft/sp-page-context';
+
 
 
 export class ActionPlanPage extends React.Component<
@@ -31,6 +31,7 @@ export class ActionPlanPage extends React.Component<
   private actionPlanDetail: IActionPlan[] = [];
   private actionPlanItemDetail: IActionPlanItem[] = [];
   private itemColumns: any[] = [];
+  private isSave: boolean = false;
 
 
   private ds_ratingOption: ISolutionDropdownOption[] = [];
@@ -569,20 +570,59 @@ export class ActionPlanPage extends React.Component<
     );
   }
 
-  private _saveChange = async (): Promise<void> => {
+  private _refreshMasterList = async (): Promise<void> => {
+    //Refresh Master List
 
+    let newAllActionPlanDetail: IActionPlan[] = [];
+    let service = new ABRService();
+    newAllActionPlanDetail = await service._getActionPlanMaster(
+      this.props.reviewPeriod,
+      this.props.selectedBrigade
+    );
+    let newFielteredMasterDetail: IActionPlan[] = [];
+
+    newAllActionPlanDetail.forEach(a => {
+      if (
+        this.state.s_Classification.indexOf(a.classification) !== -1
+        && this.state.s_Brigade.indexOf(a.brigadeId) !== -1
+      ) {
+        newFielteredMasterDetail.push(a);
+      }
+    });
+    //End
+    this.setState({ masterRow: newFielteredMasterDetail });
+
+  }
+
+  private _saveChange = async (): Promise<void> => {
+    this.isSave = true;
+
+    this.setState({ isLoading: true });
     let newRow: IActionPlanItem[] = await this.abrService._saveActionPlanItems(this.state.DetailRow, this.props.siteURL);
-    this.setState({ DetailRow: newRow, hideDialog: true });
+
+    await this._refreshMasterList();
+
+    this.setState({ DetailRow: newRow, hideDialog: true, isLoading: false });
+    this.isSave = false;
 
   }
   public render(): React.ReactElement<IActionPlanPageProps> {
     if (this.state.isLoading) {
-      return (<Spinner label="Loading Action Plan Data..." size={SpinnerSize.large} />);
+      return (this.isSave ? <Spinner label="Saving Action Plan Data..." size={SpinnerSize.large} /> : <Spinner label="Loading Action Plan Data..." size={SpinnerSize.large} />);
 
     } else {
       return (
         <div className="ActionPlanPageContainer">
+          {/* <ButtonBase
+            onClick={async () => {
+              this._refreshMasterList();
+            }}
 
+          >
+            <Button variant="contained" size="large">
+              Refresh
+            </Button>
+          </ButtonBase> */}
           <ActionPlanMasterList
             row={this.state.masterRow}
           />

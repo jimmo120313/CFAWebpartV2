@@ -8,6 +8,8 @@ import { IActionPlan, IActionPlanItem } from "../../../../models/index";
 import { ABRService } from "../../../../services/index";
 import { registerBeforeUnloadHandler } from "@microsoft/teams-js";
 import MaterialTable from "material-table";
+import Button from '@material-ui/core/Button';
+import ButtonBase from '@material-ui/core/ButtonBase';
 
 
 
@@ -16,7 +18,7 @@ const cellProps = { fontSize: '14px' };
 const columns = [
   { field: "brigadeName", cellStyle: { ...cellProps }, title: "Brigade", ...headerProperties },
   { field: "reviewPeriod", cellStyle: { ...cellProps }, title: "Review Year", ...headerProperties },
-  { field: "dateStarted", cellStyle: { ...cellProps }, title: "Date Started", ...headerProperties },
+  { field: "dateStarted", cellStyle: { ...cellProps }, title: "Date Modified", ...headerProperties },
   { field: "completedBy", cellStyle: { ...cellProps }, title: "Action Plan Completed By", ...headerProperties },
   { field: "districtName", cellStyle: { ...cellProps }, title: "District", ...headerProperties },
   { field: "regionName", cellStyle: { ...cellProps }, title: "Region", ...headerProperties },
@@ -46,33 +48,26 @@ export class ActionPlanMasterList extends React.Component<
 
   constructor(props: IActionPlanMasterListProps) {
     super(props);
-    // this.state = {
-    //   rows: this.props.row
-    // };
   }
   public async componentDidMount(): Promise<void> {
-    //this.brigade._getBrigadeDetail();
-    // actionPlanDetail = await this.actionPlanService._getActionPlanMaster(
-    //   this.props.reviewPeriod,
-    //   this.props.selectedBrigade
-    // );
 
-    // this.setState({ rows: this.props.row });
   }
 
   public render(): React.ReactElement<IActionPlanMasterListProps> {
     return (
+      <div>
+        <MaterialTable
+          title="Action Plans"
+          columns={columns}
+          data={this.props.row}
+          options={{
+            pageSize: 3,
+            pageSizeOptions: [3, 6, 9],
+            search: false
+          }}
+        />
 
-      <MaterialTable
-        title="Action Plans"
-        columns={columns}
-        data={this.props.row}
-        options={{
-          pageSize: 3,
-          pageSizeOptions: [3, 6, 9],
-          search: false
-        }}
-      />
+      </div>
     );
   }
 }

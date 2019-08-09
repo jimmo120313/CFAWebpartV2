@@ -51,30 +51,6 @@ export class ABRService {
     }
     return brigade.sort((a, b) => a.title.localeCompare(b.title));
   }
-  // public async _getBrigadeOption(
-  //   district: string
-  // ): Promise<IBrigadeDataListOption[]> {
-  //   let q: string = "District/Title eq '" + district + "'";
-  //   let brigade: IBrigadeDataListOption[] = [];
-  //   const allBrigade = await sp.web.lists
-  //     .getByTitle("Brigade")
-  //     .items.select("ID", "Title", "District/Title")
-  //     .expand("District")
-  //     .filter(q)
-  //     .getAll();
-
-  //   for (let i = 0; i < allBrigade.length; i++) {
-  //     brigade.push({
-  //       key: i.toString(),
-  //       title: allBrigade[i].Title,
-  //       description: allBrigade[i].Id,
-  //       chosen: false
-  //     });
-  //   }
-  //   return brigade.sort((a, b) => a.title.localeCompare(b.title));
-  // }
-
-
 
   public async _getDistrictOption(): Promise<ISolutionDropdownOption[]> {
     await sp.web.lists
@@ -242,7 +218,8 @@ export class ABRService {
         "RegionId",
         "RegionTitle",
         "ReviewID",
-        "Classification"
+        "Classification",
+        "Modified"
       ])
       .LeftJoin("Brigade", "Brigade")
       .Select("Title", "BrigadeTitle")
@@ -285,12 +262,13 @@ export class ABRService {
         "/AllItems.aspx?View={BC3455D0-DFC9-41F3-B0DA-379CAD42E8B0}&FilterField1=ID&FilterValue1=" +
         row[i].ReviewID;
       let reportURL = actionPlanReport.replace("{0}", row[i].ReviewID);
+
       actionPlanDetail.push({
         reviewId: row[i].ReviewID,
         brigadeId: row[i].BrigadeId,
         brigadeName: row[i].BrigadeTitle,
         reviewPeriod: row[i].Year,
-        dateStarted: row[i].DateStarted,
+        dateStarted: row[i].Modified,
         completedBy: row[i].ActionPlanCompletedBy,
         districtId: row[i].DistrictId,
         districtName: row[i].DistrictTitle,
@@ -405,7 +383,7 @@ export class ABRService {
 
     const masterList = rootWeb.lists.getByTitle(MasterListName).expand("Review").select("ID", "Review/ID");
     uniqueReviewIdRows.forEach(m => {
-      let fielterString: string = "Review/ID eq" + m;
+      let fielterString: string = "Review/ID eq " + m;
       masterList.items.top(1).filter(fielterString).get()
         .then(
           (items: any[]) => {
