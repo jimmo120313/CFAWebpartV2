@@ -128,7 +128,7 @@ export class ActionPlanPage extends React.Component<
     this.actionPlanDetail.forEach(e => {
       this.selectedReviewID.push(e.reviewId);
     });
-
+    debugger;
     //Get all Action Plan Item
     this.actionPlanItemDetail = await this.abrService._getActionPlanItem(
       this.props.selectedBrigade,

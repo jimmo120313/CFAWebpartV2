@@ -57,7 +57,7 @@ export class ActionPlanMasterList extends React.Component<
     return (
       <div>
         <MaterialTable
-          title="Action Plans"
+          title="Selected Action Plans"
           columns={columns}
           data={this.props.row}
           options={{
