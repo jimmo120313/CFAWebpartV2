@@ -164,11 +164,21 @@ export class ABRService {
         , "Status"
         , "ReviewID/ID"
         , "QuestionReference"
+        ,"ReviewComments"
       ).expand("Brigade", "ReviewID").filter(filterCond).getAll();
 
 
     // const row = actionPlanItemDetail.Row;
     for (let i = 0; i < actionPlanItemDetail.length; i++) {
+      let index = actionPlanItemDetail[i].ReviewComments.indexOf("<p>"); 
+      let cComment ='';
+      if(index !== -1){
+        let startPos = index + "<p>".length;
+        let endPos = actionPlanItemDetail[i].ReviewComments.indexOf("</p>");
+        cComment = actionPlanItemDetail[i].ReviewComments.substring(startPos,endPos).trim();
+      }
+      // debugger;
+     
       allActionPlanItemDetail.push({
         reviewId: actionPlanItemDetail[i].ReviewID.ID.toString(),
         brigadeId: actionPlanItemDetail[i].Brigade.Id.toString(),
@@ -186,11 +196,12 @@ export class ABRService {
         due: actionPlanItemDetail[i].Due,
         status: actionPlanItemDetail[i].Status,
         actionPlanItemId: actionPlanItemDetail[i].ID,
-        questionReference: actionPlanItemDetail[i].QuestionReference
-
+        questionReference: actionPlanItemDetail[i].QuestionReference,
+        abrComment:  cComment
+        
       });
     }
-
+    debugger;
     return allActionPlanItemDetail;
   }
 

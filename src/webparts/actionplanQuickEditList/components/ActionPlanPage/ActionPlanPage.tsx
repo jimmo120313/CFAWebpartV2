@@ -155,12 +155,14 @@ export class ActionPlanPage extends React.Component<
 
       //{ field: "reviewId", title: "Review ID", editable: 'never', ...headerProperties },
       { field: "brigadeName", cellStyle: { ...cellProps }, title: "Brigade Name", editable: 'never', ...headerProperties },
-      { field: "endState", cellStyle: { ...cellProps }, title: "End State", editable: 'never', ...headerProperties },
+      //{ field: "endState", cellStyle: { ...cellProps }, title: "End State", editable: 'never', ...headerProperties },
       { field: "questionReference", cellStyle: { ...cellProps }, title: "Ref Number", editable: 'never', ...headerProperties },
       { field: "viabilityCategory", cellStyle: { ...cellProps }, title: "Viability Category", editable: 'never', ...headerProperties },
       { field: "subCategory", cellStyle: { ...cellProps }, title: "Sub-Category", editable: 'never', ...headerProperties },
       { field: "rating", cellStyle: { ...cellProps }, title: "Rating", editable: 'never', ...headerProperties },
       { field: "statementSelection", cellStyle: { ...cellProps }, title: "Statement Selection", editable: 'never', ...headerProperties },
+      { field: "abrComment", cellStyle: { ...cellProps }, title: "ABR Comments", editable: 'never', ...headerProperties },
+
       {
         field: "treatment", cellStyle: { ...cellProps }, title: "Treatment", editComponent: props => (
           <textarea
@@ -181,7 +183,8 @@ export class ActionPlanPage extends React.Component<
       },
       { field: "supportRequired", cellStyle: { ...cellProps }, title: "Support Required", lookup: this.abrService.supportOption, ...headerProperties },
       { field: "priority", cellStyle: { ...cellProps }, title: "Priority", lookup: this.abrService.priorityOption, ...headerProperties },
-      { field: "due", cellStyle: { ...cellProps }, title: "Due", lookup: this.abrService.dueOption, ...headerProperties },
+      //{ field: "due", cellStyle: { ...cellProps }, title: "Due", lookup: this.abrService.dueOption, ...headerProperties },
+      { field: "due", cellStyle: { ...cellProps }, title: "Due", type:'date', ...headerProperties },
       { field: "status", cellStyle: { ...cellProps }, title: "Action Status", lookup: this.abrService.statusOpion, ...headerProperties }
 
     ];

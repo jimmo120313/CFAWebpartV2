@@ -17,6 +17,7 @@ export interface IActionPlanItem {
   isUpdated?: boolean;
   actionPlanItemId?: string;
   questionReference?: string;
+  abrComment?:string;
 
 }
 
