@@ -161,24 +161,33 @@ export class ABRService {
         , "AssignedTo"
         , "Priority"
         , "Due"
+        //, "testDue"
         , "Status"
         , "ReviewID/ID"
         , "QuestionReference"
-        ,"ReviewComments"
+        , "ReviewComments"
       ).expand("Brigade", "ReviewID").filter(filterCond).getAll();
 
 
     // const row = actionPlanItemDetail.Row;
     for (let i = 0; i < actionPlanItemDetail.length; i++) {
-      let index = actionPlanItemDetail[i].ReviewComments.indexOf("<p>"); 
-      let cComment ='';
-      if(index !== -1){
+      let index = actionPlanItemDetail[i].ReviewComments.indexOf("<p>");
+      let cComment = '';
+      if (index !== -1) {
         let startPos = index + "<p>".length;
         let endPos = actionPlanItemDetail[i].ReviewComments.indexOf("</p>");
-        cComment = actionPlanItemDetail[i].ReviewComments.substring(startPos,endPos).trim();
+        cComment = actionPlanItemDetail[i].ReviewComments.substring(startPos, endPos).trim();
       }
-      // debugger;
-     
+      //debugger;
+      let formatedDate = '';
+      if (actionPlanItemDetail[i].Due) {
+        let duedate = new Date(actionPlanItemDetail[i].Due);
+        let month = duedate.getMonth() + 1;
+        let day = duedate.getDate();
+        let year = duedate.getFullYear();
+        formatedDate = day + "/" + month + "/" + year;
+      }
+
       allActionPlanItemDetail.push({
         reviewId: actionPlanItemDetail[i].ReviewID.ID.toString(),
         brigadeId: actionPlanItemDetail[i].Brigade.Id.toString(),
@@ -193,15 +202,17 @@ export class ABRService {
         initiative: actionPlanItemDetail[i].Initiative,
         supportRequired: actionPlanItemDetail[i].AssignedTo,
         priority: actionPlanItemDetail[i].Priority,
-        due: actionPlanItemDetail[i].Due,
+        //due: actionPlanItemDetail[i].Due,
+        //due: actionPlanItemDetail[i].testDue,
+        due: formatedDate,
         status: actionPlanItemDetail[i].Status,
         actionPlanItemId: actionPlanItemDetail[i].ID,
         questionReference: actionPlanItemDetail[i].QuestionReference,
-        abrComment:  cComment
-        
+        abrComment: cComment
+
       });
     }
-    debugger;
+
     return allActionPlanItemDetail;
   }
 
@@ -334,10 +345,10 @@ export class ABRService {
       this.priorityOption["'" + element + "'"] = element;
     });
 
-    let due = await objField.getByInternalNameOrTitle("Due").get();
-    due.Choices.forEach(element => {
-      this.dueOption["'" + element + "'"] = element;
-    });
+    // let due = await objField.getByInternalNameOrTitle("Due").get();
+    // due.Choices.forEach(element => {
+    //   this.dueOption["'" + element + "'"] = element;
+    // });
 
     let status = await objField.getByInternalNameOrTitle("Status")
       .get();

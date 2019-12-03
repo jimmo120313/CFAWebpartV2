@@ -19,6 +19,8 @@ import MaterialTable from "material-table";
 import { Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react/lib/Dialog';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
 
+import { DatePicker } from 'antd';
+import 'antd/dist/antd.css';
 
 
 export class ActionPlanPage extends React.Component<
@@ -128,7 +130,8 @@ export class ActionPlanPage extends React.Component<
     this.actionPlanDetail.forEach(e => {
       this.selectedReviewID.push(e.reviewId);
     });
-    debugger;
+
+
     //Get all Action Plan Item
     this.actionPlanItemDetail = await this.abrService._getActionPlanItem(
       this.props.selectedBrigade,
@@ -184,7 +187,7 @@ export class ActionPlanPage extends React.Component<
       { field: "supportRequired", cellStyle: { ...cellProps }, title: "Support Required", lookup: this.abrService.supportOption, ...headerProperties },
       { field: "priority", cellStyle: { ...cellProps }, title: "Priority", lookup: this.abrService.priorityOption, ...headerProperties },
       //{ field: "due", cellStyle: { ...cellProps }, title: "Due", lookup: this.abrService.dueOption, ...headerProperties },
-      { field: "due", cellStyle: { ...cellProps }, title: "Due", type:'date', ...headerProperties },
+      { field: "due", cellStyle: { ...cellProps }, title: "Due", ...headerProperties, editComponent: props => (<DatePicker format='DD/MM/YYYY' />) },
       { field: "status", cellStyle: { ...cellProps }, title: "Action Status", lookup: this.abrService.statusOpion, ...headerProperties }
 
     ];
@@ -601,6 +604,7 @@ export class ActionPlanPage extends React.Component<
     this.isSave = true;
 
     this.setState({ isLoading: true });
+
     let newRow: IActionPlanItem[] = await this.abrService._saveActionPlanItems(this.state.DetailRow, this.props.siteURL);
 
     await this._refreshMasterList();
