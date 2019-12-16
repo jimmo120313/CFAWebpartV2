@@ -299,6 +299,7 @@ export class ABRService {
         actionPlanReportURL: reportURL,
         reviewDetail: reviewURL,
         classification: row[i].Classification
+
       });
     }
 

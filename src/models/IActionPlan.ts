@@ -12,4 +12,5 @@ export interface IActionPlan {
   actionPlanReportURL?: string;
   reviewDetail?: string;
   classification?: string;
+  
 }

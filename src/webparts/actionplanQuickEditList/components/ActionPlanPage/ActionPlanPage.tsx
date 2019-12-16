@@ -19,8 +19,8 @@ import MaterialTable from "material-table";
 import { Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react/lib/Dialog';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
 
-import { DatePicker } from 'antd';
-import 'antd/dist/antd.css';
+import * as moment from 'moment';
+
 
 
 export class ActionPlanPage extends React.Component<
@@ -187,7 +187,8 @@ export class ActionPlanPage extends React.Component<
       { field: "supportRequired", cellStyle: { ...cellProps }, title: "Support Required", lookup: this.abrService.supportOption, ...headerProperties },
       { field: "priority", cellStyle: { ...cellProps }, title: "Priority", lookup: this.abrService.priorityOption, ...headerProperties },
       //{ field: "due", cellStyle: { ...cellProps }, title: "Due", lookup: this.abrService.dueOption, ...headerProperties },
-      { field: "due", cellStyle: { ...cellProps }, title: "Due", ...headerProperties, editComponent: props => (<DatePicker format='DD/MM/YYYY' />) },
+      { field: "due", cellStyle: { ...cellProps }, title: "Due", ...headerProperties, render: rowData => <input type="string" value={moment(rowData.due, "YYYY/MM/DD").format("DD/MM/YYYY")} className="readDate" readOnly style={{ border: 'none' }} />, editComponent: props => <input type="date" value={props.value} onChange={e => props.onChange(e.target.value)} name="bday" /> },
+      //{ field: "due", cellStyle: { ...cellProps }, title: "Due", ...headerProperties, render: rowData => <DatePicker format={'DD/MM/YYYY'} /> },
       { field: "status", cellStyle: { ...cellProps }, title: "Action Status", lookup: this.abrService.statusOpion, ...headerProperties }
 
     ];
