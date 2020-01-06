@@ -187,8 +187,9 @@ export class ActionPlanPage extends React.Component<
       { field: "supportRequired", cellStyle: { ...cellProps }, title: "Support Required", lookup: this.abrService.supportOption, ...headerProperties },
       { field: "priority", cellStyle: { ...cellProps }, title: "Priority", lookup: this.abrService.priorityOption, ...headerProperties },
       //{ field: "due", cellStyle: { ...cellProps }, title: "Due", lookup: this.abrService.dueOption, ...headerProperties },
-      { field: "due", cellStyle: { ...cellProps }, title: "Due", ...headerProperties, render: rowData => rowData.due ? <input type="string" value={moment(rowData.due, "YYYY/MM/DD").format("DD/MM/YYYY")} className="readDate" readOnly style={{ border: 'none' }} /> : <label />, editComponent: props => <input type="date" value={props.value} onChange={e => props.onChange(e.target.value)} name="bday" /> },
-      //{ field: "due", cellStyle: { ...cellProps }, title: "Due", ...headerProperties, render: rowData => <DatePicker format={'DD/MM/YYYY'} /> },
+    //{ field: "due", cellStyle: { ...cellProps }, title: "Due", ...headerProperties, render: rowData => {rowData.due ? <input type="string" value={moment(rowData.due, "YYYY/MM/DD").format("DD/MM/YYYY")} className="readDate" readOnly style={{ border: 'none' }} /> : <label />}, editComponent: props => <input type="date" value={props.value} onChange={e => props.onChange(e.target.value)} name="bday" /> },
+    { field: "due", cellStyle: { ...cellProps }, title: "Due", ...headerProperties, render: rowData => rowData.due, editComponent: props => <input type="date" value={props.value} onChange={e => props.onChange(e.target.value)} name="bday" /> },  
+    //{ field: "due", cellStyle: { ...cellProps }, title: "Due", ...headerProperties, render: rowData => <DatePicker format={'DD/MM/YYYY'} /> },
       { field: "status", cellStyle: { ...cellProps }, title: "Action Status", lookup: this.abrService.statusOpion, ...headerProperties }
 
     ];
@@ -298,6 +299,8 @@ export class ActionPlanPage extends React.Component<
             new Promise((resolve, reject) => {
               setTimeout(() => {
                 {
+                  debugger;
+                  console.log(newData);
                   const data = this.state.DetailRow;
                   const index = data.indexOf(oldData);
                   data[index] = newData;
