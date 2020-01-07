@@ -188,7 +188,7 @@ export class ActionPlanPage extends React.Component<
       { field: "priority", cellStyle: { ...cellProps }, title: "Priority", lookup: this.abrService.priorityOption, ...headerProperties },
       //{ field: "due", cellStyle: { ...cellProps }, title: "Due", lookup: this.abrService.dueOption, ...headerProperties },
     //{ field: "due", cellStyle: { ...cellProps }, title: "Due", ...headerProperties, render: rowData => {rowData.due ? <input type="string" value={moment(rowData.due, "YYYY/MM/DD").format("DD/MM/YYYY")} className="readDate" readOnly style={{ border: 'none' }} /> : <label />}, editComponent: props => <input type="date" value={props.value} onChange={e => props.onChange(e.target.value)} name="bday" /> },
-    { field: "due", cellStyle: { ...cellProps }, title: "Due", ...headerProperties, render: rowData => rowData.due, editComponent: props => <input type="date" value={props.value} onChange={e => props.onChange(e.target.value)} name="bday" /> },  
+      { field: "due", cellStyle: { ...cellProps },type:'Date', title: "Due", ...headerProperties, render: rowData => rowData.due,editComponent: props => <input type="Date" value={this._getISODateStringFormat(props.value)} onChange={e => {props.onChange(this._getAUDateStringFormat(e.target.value))}} name="bday" /> },  
     //{ field: "due", cellStyle: { ...cellProps }, title: "Due", ...headerProperties, render: rowData => <DatePicker format={'DD/MM/YYYY'} /> },
       { field: "status", cellStyle: { ...cellProps }, title: "Action Status", lookup: this.abrService.statusOpion, ...headerProperties }
 
@@ -281,7 +281,38 @@ export class ActionPlanPage extends React.Component<
 
   }
 
+  public _getISODateStringFormat(date:string):string {
+    let dateString:any;
+    date = date.replace(/-/g,"/");
+    
+    
+    let d =""
+    if(date && date.split("/")[2].toString().length==4){
+      d = date.split("/")[2] + "/" + date.split("/")[1] + "/" + date.split("/")[0]
+      dateString = new Date(d)
+    }else{
+      dateString = new Date(date)
+    }
+    
+    let month = dateString.getMonth() + 1;
+    let day = dateString.getDate();
+    let year = dateString.getFullYear();
+    let finalResult = year + "-" + (month.toString().length==1?"0"+month:month)+ "-" + day;
 
+    return finalResult;
+  }
+  public _getAUDateStringFormat(date:string):string {
+    
+    date = date.replace(/-/g,"/");
+    
+    console.log(date);
+    let d =""
+    if(date && date.split("/")[0].toString().length==4){
+      d = date.split("/")[2] + "/" + date.split("/")[1] + "/" + date.split("/")[0]
+    }
+
+    return d;
+  }
   public _renderItemDetailTable(): object {
     return (
       <MaterialTable
@@ -299,8 +330,6 @@ export class ActionPlanPage extends React.Component<
             new Promise((resolve, reject) => {
               setTimeout(() => {
                 {
-                  debugger;
-                  console.log(newData);
                   const data = this.state.DetailRow;
                   const index = data.indexOf(oldData);
                   data[index] = newData;

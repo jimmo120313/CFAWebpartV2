@@ -182,10 +182,12 @@ export class ABRService {
       let formatedDate = '';
       if (actionPlanItemDetail[i].Due) {
         let duedate = new Date(actionPlanItemDetail[i].Due);
+        
         let month = duedate.getMonth() + 1;
         let day = duedate.getDate();
         let year = duedate.getFullYear();
-        formatedDate = day + "/" + month + "/" + year;
+        formatedDate = day + "/" + (month.toString().length==1?"0"+month:month)+ "/" + year;
+        
       }
 
       allActionPlanItemDetail.push({
@@ -369,7 +371,7 @@ export class ABRService {
         r.isUpdated = false;
       }
     });
-
+    
 
     const webUrl: string = siteUrl;//"https://viccfa.sharepoint.com/sites/services/ABR";
     const ItemlistName: string = "Action Plan Items";
@@ -394,7 +396,7 @@ export class ABRService {
             Priority: c.priority,
             Status: c.status,
             ApprovedBy: "",
-            Due: c.due,
+            Due: this._getISODateStringFormat(c.due),
           }, "*", entityTypeFullName);
 
       if (c.reviewId !== null && c.reviewId !== '' && uniqueReviewIdRows.indexOf(c.reviewId) == -1) {
@@ -420,5 +422,26 @@ export class ABRService {
 
     return row;
 
+  }
+
+  public _getISODateStringFormat(date:string):string {
+    let dateString:any;
+    date = date.replace(/-/g,"/");
+    
+    
+    let d =""
+    if(date && date.split("/")[2].toString().length==4){
+      d = date.split("/")[2] + "/" + date.split("/")[1] + "/" + date.split("/")[0]
+      dateString = new Date(d)
+    }else{
+      dateString = new Date(date)
+    }
+    
+    let month = dateString.getMonth() + 1;
+    let day = dateString.getDate();
+    let year = dateString.getFullYear();
+    let finalResult = year + "-" + (month.toString().length==1?"0"+month:month)+ "-" + day;
+
+    return finalResult;
   }
 }
