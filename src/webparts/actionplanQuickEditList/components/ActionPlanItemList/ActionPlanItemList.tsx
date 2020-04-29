@@ -5,6 +5,8 @@ import { IActionPlanItem } from "../../../../models/index";
 import { ABRService } from "../../../../services/index";
 import MaterialTable from "material-table";
 import Input from '@material-ui/core/Input';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';  
 
 
 export class ActionPlanItemList extends React.Component<
@@ -13,6 +15,7 @@ export class ActionPlanItemList extends React.Component<
   > {
   private actionPlanItemService: ABRService = new ABRService();
   private columns: any[];
+  private personName: any[];
 
   constructor(props: IActionPlanItemListProp) {
     super(props);
@@ -22,6 +25,18 @@ export class ActionPlanItemList extends React.Component<
     };
   }
   public async componentDidMount(): Promise<void> {
+    const names = [
+      'Oliver Hansen',
+      'Van Henry',
+      'April Tucker',
+      'Ralph Hubbard',
+      'Omar Alexander',
+      'Carlos Abbott',
+      'Miriam Wagner',
+      'Bradley Wilkerson',
+      'Virginia Andrews',
+      'Kelly Snyder',
+    ];
 
     await this.actionPlanItemService._getItemListOption();
 
@@ -50,7 +65,26 @@ export class ActionPlanItemList extends React.Component<
             cols={50}
           />)
       },
-      { field: "supportRequired", title: "Support Required", lookup: this.actionPlanItemService.supportOption },
+      //{ field: "supportRequired", title: "Support Required", lookup: this.actionPlanItemService.supportOption },
+      { field: "supportRequired", title: "Support Required2", editComponent: props =>(
+        <Select
+        //labelId="demo-mutiple-name-label"
+        id="demo-mutiple-name"
+        multiple
+        value={this.personName}
+        //onChange={handleChange}
+        input={<Input />}
+        //MenuProps={MenuProps}
+      >
+        {names.map((name) => (
+          <MenuItem key={name} value={name} >
+            {name}
+          </MenuItem>
+        ))}
+      </Select>
+        ) 
+      },
+      
       { field: "priority", title: "Priority", lookup: this.actionPlanItemService.priorityOption },
       { field: "due", title: "Due", lookup: this.actionPlanItemService.dueOption },
       { field: "status", title: "Status", lookup: this.actionPlanItemService.statusOpion }
