@@ -5,3 +5,4 @@ export * from "./ISolutionDropdownOption";
 export * from "./IBrigadeDataListOption";
 export * from "./IActionPlanItem";
 export * from "./IActionPlanItemChoice";
+export * from "./ISolutionMultiSelect";

@@ -7,7 +7,12 @@ import MaterialTable from "material-table";
 import Input from '@material-ui/core/Input';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';  
+import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
+//////////////
 
+////this component is no longer in use
+
+//////////////////
 
 export class ActionPlanItemList extends React.Component<
   IActionPlanItemListProp,
@@ -25,18 +30,7 @@ export class ActionPlanItemList extends React.Component<
     };
   }
   public async componentDidMount(): Promise<void> {
-    const names = [
-      'Oliver Hansen',
-      'Van Henry',
-      'April Tucker',
-      'Ralph Hubbard',
-      'Omar Alexander',
-      'Carlos Abbott',
-      'Miriam Wagner',
-      'Bradley Wilkerson',
-      'Virginia Andrews',
-      'Kelly Snyder',
-    ];
+    
 
     await this.actionPlanItemService._getItemListOption();
 
@@ -66,24 +60,33 @@ export class ActionPlanItemList extends React.Component<
           />)
       },
       //{ field: "supportRequired", title: "Support Required", lookup: this.actionPlanItemService.supportOption },
-      { field: "supportRequired", title: "Support Required2", editComponent: props =>(
-        <Select
-        //labelId="demo-mutiple-name-label"
-        id="demo-mutiple-name"
-        multiple
-        value={this.personName}
-        //onChange={handleChange}
-        input={<Input />}
-        //MenuProps={MenuProps}
-      >
-        {names.map((name) => (
-          <MenuItem key={name} value={name} >
-            {name}
-          </MenuItem>
-        ))}
-      </Select>
-        ) 
-      },
+      
+      //{ field: "supportRequired", title: "Support Required2", editComponent: props =>(
+      //   <Select
+      //   //labelId="demo-mutiple-name-label"
+      //   id="demo-mutiple-name"
+      //   multiple
+      //   value={this.personName}
+      //   onChange={handleChange}
+      //   input={<Input />}
+      //   //MenuProps={MenuProps}
+      // >
+      //   {names.map((name) => (
+      //     <MenuItem key={name} value={name} >
+      //       {name}
+      //     </MenuItem>
+      //   ))}
+      // </Select>
+          // <Dropdown
+          //   //label="Rating"
+          //   placeHolder="Please select Rating"
+          //   selectedKeys={this.state.s_ratingOption}
+          //   options={this.ds_ratingOption}
+          //   multiSelect
+          //   onChanged={this._onRatingChangeMultiSelect}
+          // />
+      //  ) 
+      //},
       
       { field: "priority", title: "Priority", lookup: this.actionPlanItemService.priorityOption },
       { field: "due", title: "Due", lookup: this.actionPlanItemService.dueOption },

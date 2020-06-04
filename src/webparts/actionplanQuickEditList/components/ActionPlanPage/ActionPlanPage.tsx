@@ -18,6 +18,11 @@ import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import MaterialTable from "material-table";
 import { Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react/lib/Dialog';
 import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
+// import Select from '@material-ui/core/Select';
+// import MenuItem from '@material-ui/core/MenuItem';  
+// import Input from '@material-ui/core/Input';
+import {ListItemText,Input,MenuItem,Select} from '@material-ui/core'
+
 
 import * as moment from 'moment';
 
@@ -35,12 +40,16 @@ export class ActionPlanPage extends React.Component<
   private itemColumns: any[] = [];
   private isSave: boolean = false;
 
+  private personName: any[] =[];
 
   private ds_ratingOption: ISolutionDropdownOption[] = [];
   private ds_ViabilityOption: ISolutionDropdownOption[] = [];
   private ds_EndState: ISolutionDropdownOption[] = [];
   private ds_Brigade: ISolutionDropdownOption[] = [];
   private ds_Classification: ISolutionDropdownOption[] = [];
+  private ds_SupportOption: ISolutionDropdownOption[] = [];
+
+  
 
   private _showDialog = (): void => {
     this.setState({ hideDialog: false });
@@ -55,11 +64,12 @@ export class ActionPlanPage extends React.Component<
   constructor(props: IActionPlanPageProps) {
     super(props);
 
+    
     let brigades: string[] = [];
     this.props.selectedBrigade.forEach(element => {
       brigades.push(element.key.toString());
     });
-
+    
     this.ds_Brigade = this.props.selectedBrigade;
 
     this.state = {
@@ -87,7 +97,10 @@ export class ActionPlanPage extends React.Component<
       isBrigadeChecked: true,
       isRatingChecked: false,
       isViabilityCategoryChecked: true,
-      isEndStateChecked: true
+      isEndStateChecked: true,
+      
+      /////For Detail List
+      ds_AssignTo: []
     };
 
 
@@ -150,7 +163,7 @@ export class ActionPlanPage extends React.Component<
 
     //Get All item list lookup field
     await this.abrService._getItemListOption();
-
+    
     const headerProperties = { headerStyle: { backgroundColor: '#E31A1A', color: '#ffffff', fontWeight: 'bold' as 'bold', paddingLeft: '5px', paddingRight: '20px', fontSize: '14px' } };
     const cellProps = { paddingLeft: '5px', paddingRight: '8px', fontSize: '14px' };
     //Render item list column
@@ -184,11 +197,32 @@ export class ActionPlanPage extends React.Component<
             cols={50}
           />), cellStyle: { ...cellProps }, ...headerProperties
       },
-      { field: "supportRequired", cellStyle: { ...cellProps }, title: "Support Required", lookup: this.abrService.supportOption, ...headerProperties },
+      //{ field: "supportRequired", cellStyle: { ...cellProps }, title: "Support Required", lookup: this.abrService.supportOption, ...headerProperties },
+      { field: "supportRequired", cellStyle: { ...cellProps }, title: "Support Required",lookup: this.abrService.supportOption, render: rowData => rowData.supportRequired, editComponent: props =>(
+          <Dropdown
+            placeHolder="Please select Required"
+            defaultSelectedKeys={props.value?(props.value.includes(",")?props.value.split(","):props.value):""}
+            selectedKeys={this.state.ds_AssignTo}
+            options={ this.abrService.supportOption}
+            multiSelect
+            //multiSelectDelimiter=","
+            
+            //onChange={()=>{debugger; props.rowData.supportRequired = }}
+            //onChange={()=>{debugger; console.log(props)}}
+            //onChanged={e=>{debugger; this._handleChangeAssignTo}}
+            //onChanged={e => {props.onChange(this._handleChangeAssignTo(e))}}
+            //onChanged={e =>{props.rowData.supportRequired=e.text; }}
+            //onChange={e => props.onChange(e.target)}
+            onChanged={(e, props)=>{this._handleChangeAssignTo(e,props)}}
+          />
+         
+        )  },
       { field: "priority", cellStyle: { ...cellProps }, title: "Priority", lookup: this.abrService.priorityOption, ...headerProperties },
       //{ field: "due", cellStyle: { ...cellProps }, title: "Due", lookup: this.abrService.dueOption, ...headerProperties },
     //{ field: "due", cellStyle: { ...cellProps }, title: "Due", ...headerProperties, render: rowData => {rowData.due ? <input type="string" value={moment(rowData.due, "YYYY/MM/DD").format("DD/MM/YYYY")} className="readDate" readOnly style={{ border: 'none' }} /> : <label />}, editComponent: props => <input type="date" value={props.value} onChange={e => props.onChange(e.target.value)} name="bday" /> },
-      { field: "due", cellStyle: { ...cellProps },type:'Date', title: "Due", ...headerProperties, render: rowData => rowData.due,editComponent: props => <input type="Date" value={this._getISODateStringFormat(props.value)} onChange={e => {props.onChange(this._getAUDateStringFormat(e.target.value))}} name="bday" /> },  
+      { field: "due", cellStyle: { ...cellProps },type:'Date', title: "Due", ...headerProperties, 
+        render: rowData => rowData.due,
+        editComponent: props => <input type="Date" value={this._getISODateStringFormat(props.value)} onChange={e => {props.onChange(this._getAUDateStringFormat(e.target.value))}} name="bday" /> },  
     //{ field: "due", cellStyle: { ...cellProps }, title: "Due", ...headerProperties, render: rowData => <DatePicker format={'DD/MM/YYYY'} /> },
       { field: "status", cellStyle: { ...cellProps }, title: "Action Status", lookup: this.abrService.statusOpion, ...headerProperties }
 
@@ -197,6 +231,25 @@ export class ActionPlanPage extends React.Component<
     this._handleFilterUpdate(this.state.s_ratingOption, this.state.s_Brigade, this.state.s_ViabilityOption, this.state.s_EndState, this.state.s_Classification);
   }
 
+  public _handleChangeAssignTo = (item:IDropdownOption, props:any):void =>{
+    debugger;
+    const updatedSelectedItem = this.state.ds_AssignTo ? this.copyArray(this.state.ds_AssignTo) : [];
+    if (item.selected) {
+      // add the option if it's checked
+      updatedSelectedItem.push(item.key);
+    } else {
+      // remove the option if it's unchecked
+      const currIndex = updatedSelectedItem.indexOf(item.key);
+      if (currIndex > -1) {
+        updatedSelectedItem.splice(currIndex, 1);
+      }
+    }
+
+    this.setState({ ds_AssignTo: updatedSelectedItem});
+    //this._handleFilterUpdate(this.state.s_ratingOption, this.state.s_Brigade, updatedSelectedItem, this.state.s_EndState, this.state.s_Classification, true);
+  }
+
+  
   public _handleFilterUpdate(ratingOption: string[], brigade: string[], viabilityOption: string[], endState: string[], classification: string[], isViabilityChanged: boolean = false): void {
     if (!this.state.isLoading) {
       this.setState({ isLoading: true });
@@ -328,16 +381,20 @@ export class ActionPlanPage extends React.Component<
         editable={{
           onRowUpdate: (newData, oldData) =>
             new Promise((resolve, reject) => {
+              debugger;
               setTimeout(() => {
                 {
                   const data = this.state.DetailRow;
                   const index = data.indexOf(oldData);
                   data[index] = newData;
+                  data[index].supportRequired = this.state.ds_AssignTo.join(",")
+                 
                   data[index].isUpdated = true;
-                  this.setState({ DetailRow: data }, () => resolve());
+                  this.setState({ DetailRow: data,ds_AssignTo:[] }, () => resolve());
                 }
                 resolve();
               }, 1000);
+              
             })
         }}
         localization={{
@@ -368,6 +425,7 @@ export class ActionPlanPage extends React.Component<
   }
 
 
+  
 
   public _onBrigadeChangeMultiSelect = (item: IDropdownOption): void => {
 
@@ -529,6 +587,8 @@ export class ActionPlanPage extends React.Component<
 
   }
 
+  
+
   public _selectRemoveAllEndState = (ev: React.FormEvent<HTMLElement>, isEndStateChecked: boolean): void => {
 
     let EndState: string[] = [];
@@ -643,6 +703,7 @@ export class ActionPlanPage extends React.Component<
     await this._refreshMasterList();
 
     this.setState({ DetailRow: newRow, hideDialog: true, isLoading: false });
+    
     this.isSave = false;
 
   }

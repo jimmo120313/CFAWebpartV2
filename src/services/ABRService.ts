@@ -6,7 +6,8 @@ import {
   IBrigadeDataListOption,
   IActionPlan,
   IActionPlanItem,
-  IActionPlanItemChoice
+  IActionPlanItemChoice,
+  ISolutionMultiSelect
 } from "../models/index";
 import * as CamlBuilder from "camljs";
 import * as strings from "ActionplanQuickEditListWebPartStrings";
@@ -19,7 +20,7 @@ export class ABRService {
   private classification: ISolutionDropdownOption[] = [];
   private viabilityCategory: ISolutionDropdownOption[] = [];
   private ratingOpion: ISolutionDropdownOption[] = [];
-  public supportOption: any = {};
+  public supportOption: ISolutionMultiSelect[] = [];
   public priorityOption: any = {};
   public dueOption: any = {};
   public statusOpion: any = {};
@@ -335,12 +336,18 @@ export class ABRService {
       .fields;
 
     let assignTo = await objField.getByInternalNameOrTitle("AssignedTo").get();
-    assignTo.Choices.forEach(element => {
+    
+    assignTo.Choices.forEach(d => {
 
-      this.supportOption["'" + element + "'"] = element;
-
+      let vOptionObj: ISolutionMultiSelect = {
+        key: d,
+        text: d,
+        selected:false
+      };
+      this.supportOption.push(vOptionObj);
+      
     });
-
+    
     let prioritys = await objField.getByInternalNameOrTitle("Priority")
       .get();
     prioritys.Choices.forEach(element => {
@@ -372,7 +379,7 @@ export class ABRService {
       }
     });
     
-
+    debugger;
     const webUrl: string = siteUrl;//"https://viccfa.sharepoint.com/sites/services/ABR";
     const ItemlistName: string = "Action Plan Items";
     const MasterListName: string = "Action Plans";
@@ -386,17 +393,22 @@ export class ABRService {
     const entityTypeFullName = await list.getListItemEntityTypeFullName();
 
     changedRows.forEach(c => {
+      let supportRequired:string[] = c.supportRequired?(c.supportRequired.indexOf(",")>0?c.supportRequired.split(","):c.supportRequired.split('')):[];
+      debugger;
+      let dueDate:string = this._getISODateStringFormat(c.due)
+
+      
       list.items.getItemByStringId(c.actionPlanItemId)
         .inBatch(batch)
         .update(
           {
             Treatment: c.treatment,
             Initiative: c.initiative,
-            AssignedTo: c.supportRequired,//Support Required
+            AssignedTo: { results: supportRequired },//Support Required
             Priority: c.priority,
             Status: c.status,
             ApprovedBy: "",
-            Due: this._getISODateStringFormat(c.due),
+            Due: dueDate.indexOf("NaN")>=0?null:dueDate,
           }, "*", entityTypeFullName);
 
       if (c.reviewId !== null && c.reviewId !== '' && uniqueReviewIdRows.indexOf(c.reviewId) == -1) {

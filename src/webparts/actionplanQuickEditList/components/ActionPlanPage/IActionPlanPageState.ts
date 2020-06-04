@@ -32,4 +32,7 @@ export interface IActionPlanPageState {
   isRatingChecked: boolean;
   isViabilityCategoryChecked: boolean;
   isEndStateChecked: boolean;
+
+
+  ds_AssignTo: string[];
 }
