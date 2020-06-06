@@ -8,20 +8,14 @@ import { IActionPlanPageProps, IActionPlanPageState } from "./index";
 import { ActionPlanMasterList } from "../ActionPlanMasterList/index";
 
 require("./ActionPlanPage.module.scss");
-import { ABRService } from "../../../../services/ABRService";
-import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
+import { ABRService,GeneralService } from "../../../../services";
+import {FilterControls} from "../FilterControls/index";
 import Button from '@material-ui/core/Button';
 import ButtonBase from '@material-ui/core/ButtonBase';
-import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
-import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
+import { Spinner, SpinnerSize,Panel,Checkbox,Dialog, DialogType, DialogFooter, PrimaryButton, DefaultButton,Dropdown, IDropdownOption,PanelType } from 'office-ui-fabric-react';
 
 import MaterialTable from "material-table";
-import { Dialog, DialogType, DialogFooter } from 'office-ui-fabric-react/lib/Dialog';
-import { PrimaryButton, DefaultButton } from 'office-ui-fabric-react/lib/Button';
-// import Select from '@material-ui/core/Select';
-// import MenuItem from '@material-ui/core/MenuItem';  
-// import Input from '@material-ui/core/Input';
-import {ListItemText,Input,MenuItem,Select} from '@material-ui/core'
+import {ListItemText,Input,MenuItem,Select} from '@material-ui/core';
 
 
 import * as moment from 'moment';
@@ -50,6 +44,7 @@ export class ActionPlanPage extends React.Component<
   private ds_SupportOption: ISolutionDropdownOption[] = [];
 
   
+  
 
   private _showDialog = (): void => {
     this.setState({ hideDialog: false });
@@ -58,7 +53,13 @@ export class ActionPlanPage extends React.Component<
   private _closeDialog = (): void => {
     this.setState({ hideDialog: true });
   }
+  private _openPanel = () => {
+    this.setState({isPanelOpen: true});
+  }
 
+  private _closePanel = () => {
+    this.setState({isPanelOpen: false});
+  }
 
 
   constructor(props: IActionPlanPageProps) {
@@ -100,11 +101,15 @@ export class ActionPlanPage extends React.Component<
       isEndStateChecked: true,
       
       /////For Detail List
-      ds_AssignTo: []
+      ds_AssignTo: [],
+      isPanelOpen: false
     };
 
 
   }
+
+  
+
   public async componentDidMount(): Promise<void> {
 
     //Get Rating
@@ -205,15 +210,7 @@ export class ActionPlanPage extends React.Component<
             selectedKeys={this.state.ds_AssignTo}
             options={ this.abrService.supportOption}
             multiSelect
-            //multiSelectDelimiter=","
-            
-            //onChange={()=>{debugger; props.rowData.supportRequired = }}
-            //onChange={()=>{debugger; console.log(props)}}
-            //onChanged={e=>{debugger; this._handleChangeAssignTo}}
-            //onChanged={e => {props.onChange(this._handleChangeAssignTo(e))}}
-            //onChanged={e =>{props.rowData.supportRequired=e.text; }}
-            //onChange={e => props.onChange(e.target)}
-            onChanged={(e, props)=>{this._handleChangeAssignTo(e,props)}}
+            onChanged={(e, props)=>{this._handleChangeAssignTo(e,props);}}
           />
          
         )  },
@@ -233,7 +230,7 @@ export class ActionPlanPage extends React.Component<
 
   public _handleChangeAssignTo = (item:IDropdownOption, props:any):void =>{
     debugger;
-    const updatedSelectedItem = this.state.ds_AssignTo ? this.copyArray(this.state.ds_AssignTo) : [];
+    const updatedSelectedItem = this.state.ds_AssignTo ? GeneralService.copyArray(this.state.ds_AssignTo) : [];
     if (item.selected) {
       // add the option if it's checked
       updatedSelectedItem.push(item.key);
@@ -367,6 +364,7 @@ export class ActionPlanPage extends React.Component<
     return d;
   }
   public _renderItemDetailTable(): object {
+    
     return (
       <MaterialTable
         columns={this.itemColumns}
@@ -381,13 +379,13 @@ export class ActionPlanPage extends React.Component<
         editable={{
           onRowUpdate: (newData, oldData) =>
             new Promise((resolve, reject) => {
-              debugger;
+           
               setTimeout(() => {
                 {
                   const data = this.state.DetailRow;
                   const index = data.indexOf(oldData);
                   data[index] = newData;
-                  data[index].supportRequired = this.state.ds_AssignTo.join(",")
+                  data[index].supportRequired = this.state.ds_AssignTo.join(",");
                  
                   data[index].isUpdated = true;
                   this.setState({ DetailRow: data,ds_AssignTo:[] }, () => resolve());
@@ -411,25 +409,67 @@ export class ActionPlanPage extends React.Component<
 
 
         }}
+        components={{
+          Toolbar: props => (
+            <div>
+              <div className = "actionItemTitle"> 
+              Action Plan Items 
+              <ButtonBase
+                onClick={this._openPanel}
+                className="bulkUpdateButton"
+              >
+                <Button variant="outlined" color="secondary" size="medium">
+                  Bulk Update
+                </Button>
+              </ButtonBase>
+              
+              <Panel
+                //headerText="Event Detail"
+                isOpen={this.state.isPanelOpen}
+                onDismiss={this._closePanel}
+                type={PanelType.large}
+                // You MUST provide this prop! Otherwise screen readers will just say "button" with no label.
+                closeButtonAriaLabel="Close"
+              >
+                <FilterControls 
+                  EndState = {this.ds_EndState}
+                  RatingOption = {this.ds_ratingOption}
+                  Brigade = {this.ds_Brigade}
+                  ViabilityOption = {this.ds_ViabilityOption}
+                  Classification = {this.ds_Classification}
+
+                  p_EndStateChecked = {this.state.isEndStateChecked}
+                  p_RatingOptionChecked = {this.state.isRatingChecked}
+                  p_BrigadeChecked = {this.state.isBrigadeChecked}
+                  p_ViabilityChecked = {this.state.isViabilityCategoryChecked}
+                  p_ClasifiChecked = {this.state.isClassificationChecked}
+
+                  ps_EndState={this.state.s_EndState}
+                  ps_RatingOption={this.state.s_ratingOption}
+                  ps_Brigade={this.state.s_Brigade}
+                  ps_ViabilityOption={this.state.s_ViabilityOption}
+                  ps_Classification={this.state.s_Classification}
+
+                />
+                
+              </Panel>
+              </div>
+              
+            </div>
+          ),
+        }}
       />
     );
 
   }
 
-  public copyArray = (array: any[]): any[] => {
-    const newArray: any[] = [];
-    for (let i = 0; i < array.length; i++) {
-      newArray[i] = array[i];
-    }
-    return newArray;
-  }
 
 
   
 
   public _onBrigadeChangeMultiSelect = (item: IDropdownOption): void => {
 
-    const updatedSelectedItem = this.state.s_Brigade ? this.copyArray(this.state.s_Brigade) : [];
+    const updatedSelectedItem = this.state.s_Brigade ? GeneralService.copyArray(this.state.s_Brigade) : [];
     if (item.selected) {
       // add the option if it's checked
       updatedSelectedItem.push(item.key);
@@ -462,7 +502,7 @@ export class ActionPlanPage extends React.Component<
 
   public _onRatingChangeMultiSelect = (item: IDropdownOption): void => {
 
-    const updatedSelectedItem = this.state.s_ratingOption ? this.copyArray(this.state.s_ratingOption) : [];
+    const updatedSelectedItem = this.state.s_ratingOption ? GeneralService.copyArray(this.state.s_ratingOption) : [];
 
     if (item.selected) {
       // add the option if it's checked
@@ -497,7 +537,7 @@ export class ActionPlanPage extends React.Component<
   }
 
   public _onVCategoryChange = (item: IDropdownOption): void => {
-    const updatedSelectedItem = this.state.s_ViabilityOption ? this.copyArray(this.state.s_ViabilityOption) : [];
+    const updatedSelectedItem = this.state.s_ViabilityOption ? GeneralService.copyArray(this.state.s_ViabilityOption) : [];
 
     if (item.selected) {
       // add the option if it's checked
@@ -532,7 +572,7 @@ export class ActionPlanPage extends React.Component<
   }
 
   public _onClassificationSelected = (item: IDropdownOption): void => {
-    const updatedSelectedItem = this.state.s_Classification ? this.copyArray(this.state.s_Classification) : [];
+    const updatedSelectedItem = this.state.s_Classification ? GeneralService.copyArray(this.state.s_Classification) : [];
 
     if (item.selected) {
       // add the option if it's checked
@@ -568,7 +608,7 @@ export class ActionPlanPage extends React.Component<
   }
 
   public _onEndStateSelected = (item: IDropdownOption): void => {
-    const updatedSelectedItem = this.state.s_EndState ? this.copyArray(this.state.s_EndState) : [];
+    const updatedSelectedItem = this.state.s_EndState ? GeneralService.copyArray(this.state.s_EndState) : [];
 
     if (item.selected) {
       // add the option if it's checked
@@ -707,6 +747,8 @@ export class ActionPlanPage extends React.Component<
     this.isSave = false;
 
   }
+
+
   public render(): React.ReactElement<IActionPlanPageProps> {
     if (this.state.isLoading) {
       return (this.isSave ? <Spinner label="Saving Action Plan Data..." size={SpinnerSize.large} /> : <Spinner label="Loading Action Plan Data..." size={SpinnerSize.large} />);
@@ -714,16 +756,6 @@ export class ActionPlanPage extends React.Component<
     } else {
       return (
         <div className="ActionPlanPageContainer">
-          {/* <ButtonBase
-            onClick={async () => {
-              this._refreshMasterList();
-            }}
-
-          >
-            <Button variant="contained" size="large">
-              Refresh
-            </Button>
-          </ButtonBase> */}
           <ActionPlanMasterList
             row={this.state.masterRow}
           />

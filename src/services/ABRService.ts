@@ -395,7 +395,7 @@ export class ABRService {
     changedRows.forEach(c => {
       let supportRequired:string[] = c.supportRequired?(c.supportRequired.indexOf(",")>0?c.supportRequired.split(","):c.supportRequired.split('')):[];
       debugger;
-      let dueDate:string = this._getISODateStringFormat(c.due)
+      let dueDate:string = this._getISODateStringFormat(c.due);
 
       
       list.items.getItemByStringId(c.actionPlanItemId)
@@ -441,12 +441,12 @@ export class ABRService {
     date = date.replace(/-/g,"/");
     
     
-    let d =""
+    let d ="";
     if(date && date.split("/")[2].toString().length==4){
-      d = date.split("/")[2] + "/" + date.split("/")[1] + "/" + date.split("/")[0]
-      dateString = new Date(d)
+      d = date.split("/")[2] + "/" + date.split("/")[1] + "/" + date.split("/")[0];
+      dateString = new Date(d);
     }else{
-      dateString = new Date(date)
+      dateString = new Date(date);
     }
     
     let month = dateString.getMonth() + 1;

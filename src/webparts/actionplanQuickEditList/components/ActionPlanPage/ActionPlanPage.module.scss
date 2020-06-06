@@ -38,6 +38,11 @@
       float: right;
       
     }
+    .bulkUpdateButton{
+      float: right;
+      background-color: red;
+      height:38%;
+    }
     .ActionPlanPageContainer{
       overflow: hidden; 
       // width: 1540px;
@@ -79,6 +84,12 @@
   h6 {
     font-size: 20px !important;
     font-weight: bold !important;
+  }
+
+  .actionItemTitle {
+    font-size: 20px !important;
+    font-weight: bold !important;
+    height: 40px;
   }
 
   // th {

@@ -35,4 +35,6 @@ export interface IActionPlanPageState {
 
 
   ds_AssignTo: string[];
+  isPanelOpen: boolean;
+
 }
