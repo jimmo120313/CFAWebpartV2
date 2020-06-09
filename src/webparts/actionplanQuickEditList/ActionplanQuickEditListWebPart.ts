@@ -8,7 +8,7 @@ import {
 } from '@microsoft/sp-property-pane';
 
 import * as strings from 'ActionplanQuickEditListWebPartStrings';
-import { AppContainer, IAppContainerProps } from './components';
+import { AppContainer, IAppContainerProps } from './components/AppContainer';
 import { SPComponentLoader } from '@microsoft/sp-loader';
 
 export interface IActionplanQuickEditListWebPartProps {

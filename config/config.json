@@ -9,19 +9,11 @@
           "manifest": "./src/webparts/actionplanQuickEditList/ActionplanQuickEditListWebPart.manifest.json"
         }
       ]
-    },
-    "test-w-2-ui-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/testW2Ui/TestW2UiWebPart.js",
-          "manifest": "./src/webparts/testW2Ui/TestW2UiWebPart.manifest.json"
-        }
-      ]
     }
   },
   "externals": {},
   "localizedResources": {
-    "ActionplanQuickEditListWebPartStrings": "lib/webparts/actionplanQuickEditList/loc/{locale}.js",
-    "TestW2UiWebPartStrings": "lib/webparts/testW2Ui/loc/{locale}.js"
+    "ActionplanQuickEditListWebPartStrings": "lib/webparts/actionplanQuickEditList/loc/{locale}.js"
+    
   }
 }

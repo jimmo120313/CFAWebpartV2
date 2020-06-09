@@ -1,6 +1,6 @@
 import { IActionPlanItem,ISolutionDropdownOption } from "../../../../models";
 import { IDropdownOption } from 'office-ui-fabric-react';
-export interface IFilterControlsProp {
+export interface IBulkUpdatePanelProp {
 
       //Filter Option Value
       EndState: ISolutionDropdownOption[];
@@ -21,7 +21,13 @@ export interface IFilterControlsProp {
       ps_ViabilityOption: string[];
       ps_Classification: string[];
 
-      //Sync function from Parent
-      _syncSelectedOption:Function;
+      //LookupValue
+      supportOption:ISolutionDropdownOption[];
+      priorityOption:ISolutionDropdownOption[];
+      actionStatus:ISolutionDropdownOption[];
+
+      //Method
+      dismissPanel:Function;
+      
 }
 

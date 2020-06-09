@@ -9,7 +9,8 @@ import { ActionPlanMasterList } from "../ActionPlanMasterList/index";
 
 require("./ActionPlanPage.module.scss");
 import { ABRService,GeneralService } from "../../../../services";
-import {FilterControls} from "../FilterControls/index";
+//import {FilterControls} from "../FilterControls/index";
+import {BulkUpdatePanel} from "../BulkUpdatePanel/index";
 import Button from '@material-ui/core/Button';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import { Spinner, SpinnerSize,Panel,Checkbox,Dialog, DialogType, DialogFooter, PrimaryButton, DefaultButton,Dropdown, IDropdownOption,PanelType } from 'office-ui-fabric-react';
@@ -219,7 +220,7 @@ export class ActionPlanPage extends React.Component<
     //{ field: "due", cellStyle: { ...cellProps }, title: "Due", ...headerProperties, render: rowData => {rowData.due ? <input type="string" value={moment(rowData.due, "YYYY/MM/DD").format("DD/MM/YYYY")} className="readDate" readOnly style={{ border: 'none' }} /> : <label />}, editComponent: props => <input type="date" value={props.value} onChange={e => props.onChange(e.target.value)} name="bday" /> },
       { field: "due", cellStyle: { ...cellProps },type:'Date', title: "Due", ...headerProperties, 
         render: rowData => rowData.due,
-        editComponent: props => <input type="Date" value={this._getISODateStringFormat(props.value)} onChange={e => {props.onChange(this._getAUDateStringFormat(e.target.value))}} name="bday" /> },  
+        editComponent: props => <input type="Date" value={GeneralService._getISODateStringFormat(props.value)} onChange={e => {props.onChange(GeneralService._getAUDateStringFormat(e.target.value))}} name="bday" /> },  
     //{ field: "due", cellStyle: { ...cellProps }, title: "Due", ...headerProperties, render: rowData => <DatePicker format={'DD/MM/YYYY'} /> },
       { field: "status", cellStyle: { ...cellProps }, title: "Action Status", lookup: this.abrService.statusOpion, ...headerProperties }
 
@@ -229,7 +230,7 @@ export class ActionPlanPage extends React.Component<
   }
 
   public _handleChangeAssignTo = (item:IDropdownOption, props:any):void =>{
-    debugger;
+
     const updatedSelectedItem = this.state.ds_AssignTo ? GeneralService.copyArray(this.state.ds_AssignTo) : [];
     if (item.selected) {
       // add the option if it's checked
@@ -331,38 +332,7 @@ export class ActionPlanPage extends React.Component<
 
   }
 
-  public _getISODateStringFormat(date:string):string {
-    let dateString:any;
-    date = date.replace(/-/g,"/");
-    
-    
-    let d =""
-    if(date && date.split("/")[2].toString().length==4){
-      d = date.split("/")[2] + "/" + date.split("/")[1] + "/" + date.split("/")[0]
-      dateString = new Date(d)
-    }else{
-      dateString = new Date(date)
-    }
-    
-    let month = dateString.getMonth() + 1;
-    let day = dateString.getDate();
-    let year = dateString.getFullYear();
-    let finalResult = year + "-" + (month.toString().length==1?"0"+month:month)+ "-" + day;
-
-    return finalResult;
-  }
-  public _getAUDateStringFormat(date:string):string {
-    
-    date = date.replace(/-/g,"/");
-    
-    console.log(date);
-    let d =""
-    if(date && date.split("/")[0].toString().length==4){
-      d = date.split("/")[2] + "/" + date.split("/")[1] + "/" + date.split("/")[0]
-    }
-
-    return d;
-  }
+  
   public _renderItemDetailTable(): object {
     
     return (
@@ -424,14 +394,12 @@ export class ActionPlanPage extends React.Component<
               </ButtonBase>
               
               <Panel
-                //headerText="Event Detail"
                 isOpen={this.state.isPanelOpen}
                 onDismiss={this._closePanel}
                 type={PanelType.large}
-                // You MUST provide this prop! Otherwise screen readers will just say "button" with no label.
                 closeButtonAriaLabel="Close"
               >
-                <FilterControls 
+                <BulkUpdatePanel 
                   EndState = {this.ds_EndState}
                   RatingOption = {this.ds_ratingOption}
                   Brigade = {this.ds_Brigade}
@@ -450,8 +418,17 @@ export class ActionPlanPage extends React.Component<
                   ps_ViabilityOption={this.state.s_ViabilityOption}
                   ps_Classification={this.state.s_Classification}
 
+                  supportOption={this.abrService.supportOption}
+                  priorityOption={this.abrService.drpPriorityOption}
+                  actionStatus={this.abrService.drpstatusOpion}
+
+                  dismissPanel = {this._closePanel}
+
                 />
-                
+                <div>
+                 <PrimaryButton className="PanelPrimButton" text="Save" onClick={this._saveBulkPanel}  disabled={false}/>
+                 <DefaultButton className="PanelDefButton" text="Close" onClick={this._closePanel}  disabled={false} />
+                </div>
               </Panel>
               </div>
               
@@ -626,8 +603,6 @@ export class ActionPlanPage extends React.Component<
     this._handleFilterUpdate(this.state.s_ratingOption, this.state.s_Brigade, this.state.s_ViabilityOption, updatedSelectedItem, this.state.s_Classification);
 
   }
-
-  
 
   public _selectRemoveAllEndState = (ev: React.FormEvent<HTMLElement>, isEndStateChecked: boolean): void => {
 

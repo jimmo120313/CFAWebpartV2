@@ -21,6 +21,9 @@ export class ABRService {
   private viabilityCategory: ISolutionDropdownOption[] = [];
   private ratingOpion: ISolutionDropdownOption[] = [];
   public supportOption: ISolutionMultiSelect[] = [];
+  public drpPriorityOption:ISolutionDropdownOption[] = [];
+  public drpstatusOpion:ISolutionDropdownOption[] = [];
+  
   public priorityOption: any = {};
   public dueOption: any = {};
   public statusOpion: any = {};
@@ -162,7 +165,6 @@ export class ABRService {
         , "AssignedTo"
         , "Priority"
         , "Due"
-        //, "testDue"
         , "Status"
         , "ReviewID/ID"
         , "QuestionReference"
@@ -170,7 +172,7 @@ export class ABRService {
       ).expand("Brigade", "ReviewID").filter(filterCond).getAll();
 
 
-    // const row = actionPlanItemDetail.Row;
+
     for (let i = 0; i < actionPlanItemDetail.length; i++) {
       let index = actionPlanItemDetail[i].ReviewComments.indexOf("<p>");
       let cComment = '';
@@ -179,7 +181,7 @@ export class ABRService {
         let endPos = actionPlanItemDetail[i].ReviewComments.indexOf("</p>");
         cComment = actionPlanItemDetail[i].ReviewComments.substring(startPos, endPos).trim();
       }
-      //debugger;
+   
       let formatedDate = '';
       if (actionPlanItemDetail[i].Due) {
         let duedate = new Date(actionPlanItemDetail[i].Due);
@@ -205,8 +207,6 @@ export class ABRService {
         initiative: actionPlanItemDetail[i].Initiative,
         supportRequired: actionPlanItemDetail[i].AssignedTo,
         priority: actionPlanItemDetail[i].Priority,
-        //due: actionPlanItemDetail[i].Due,
-        //due: actionPlanItemDetail[i].testDue,
         due: formatedDate,
         status: actionPlanItemDetail[i].Status,
         actionPlanItemId: actionPlanItemDetail[i].ID,
@@ -353,6 +353,7 @@ export class ABRService {
     prioritys.Choices.forEach(element => {
 
       this.priorityOption["'" + element + "'"] = element;
+      this.drpPriorityOption.push({key:element,text:element});
     });
 
     // let due = await objField.getByInternalNameOrTitle("Due").get();
@@ -364,6 +365,7 @@ export class ABRService {
       .get();
     status.Choices.forEach(element => {
       this.statusOpion["'" + element + "'"] = element;
+      this.drpstatusOpion.push({key:element,text:element});
     });
 
   }
@@ -379,7 +381,7 @@ export class ABRService {
       }
     });
     
-    debugger;
+
     const webUrl: string = siteUrl;//"https://viccfa.sharepoint.com/sites/services/ABR";
     const ItemlistName: string = "Action Plan Items";
     const MasterListName: string = "Action Plans";
@@ -394,7 +396,7 @@ export class ABRService {
 
     changedRows.forEach(c => {
       let supportRequired:string[] = c.supportRequired?(c.supportRequired.indexOf(",")>0?c.supportRequired.split(","):c.supportRequired.split('')):[];
-      debugger;
+
       let dueDate:string = this._getISODateStringFormat(c.due);
 
       

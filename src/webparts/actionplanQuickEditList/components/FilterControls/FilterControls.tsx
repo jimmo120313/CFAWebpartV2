@@ -1,7 +1,7 @@
 import * as React from "react";
 import { IFilterControlsProp, IFilterControlsState } from "./index";
 import { IActionPlanItem,ISolutionDropdownOption } from "../../../../models/index";
-import { ABRService,GeneralService } from "../../../../services/index";
+import { ABRService,GeneralService,FilterLabel } from "../../../../services/index";
 import MaterialTable from "material-table";
 import Input from '@material-ui/core/Input';
 import Select from '@material-ui/core/Select';
@@ -59,34 +59,41 @@ IFilterControlsState
         Option.push(element.key);
       });
     }
-    debugger;
+    
     switch(optionName) {
-      case "Brigade":
+      case FilterLabel.Brigade:
+        this.props._syncSelectedOption(FilterLabel.Brigade,Option);
         this.setState({isBrigadeChecked:this.props.Brigade.length === Option.length ? true : false});
         this.s_Brigade = Option;
     
         break;
-      case "Rating":
+      case FilterLabel.Rating:
         this.setState({isRatingOptionChecked:this.props.RatingOption.length === Option.length ? true : false});
         this.s_RatingOption = Option;
+        this.props._syncSelectedOption(FilterLabel.Rating,Option);
     
         break;
-      case "Viability":
+      case FilterLabel.Viability:
         this.setState({isViabilityChecked:this.props.ViabilityOption.length === Option.length ? true : false});
         this.s_ViabilityOption = Option;
+        this.props._syncSelectedOption(FilterLabel.Viability,Option);
     
         break;
-      case "EndState":
+      case FilterLabel.EndState:
         this.setState({isEndStateChecked:this.props.EndState.length === Option.length ? true : false});
         this.s_EndState = Option;
+        this.props._syncSelectedOption(FilterLabel.EndState,Option);
     
         break;
-      case "Classification":
+      case FilterLabel.Classification:
         this.setState({isClasifiChecked:this.props.Classification.length === Option.length ? true : false});
         this.s_Classification = Option;
+        this.props._syncSelectedOption(FilterLabel.Classification,Option);
     
         break;  
+    
       default:
+        break;
         
     }
 
@@ -106,51 +113,54 @@ IFilterControlsState
         updatedSelectedItem.splice(currIndex, 1);
       }
     }
-
+  
     switch(optionName) {
-      case "Brigade":
+      case FilterLabel.Brigade:
         let isAllBChecked = this.props.Brigade.length === updatedSelectedItem.length ? true : false;
+        this.props._syncSelectedOption(FilterLabel.Brigade,updatedSelectedItem);
         this.s_Brigade = updatedSelectedItem;
         this.setState({isBrigadeChecked: isAllBChecked});
     
         break;
-      case "Rating":
+      case FilterLabel.Rating:
         let isAllRChecked = this.props.RatingOption.length === updatedSelectedItem.length ? true : false;
-        this.s_RatingOption = updatedSelectedItem;
+        this.s_RatingOption = updatedSelectedItem
         this.setState({isRatingOptionChecked: isAllRChecked});
+        this.props._syncSelectedOption(FilterLabel.Rating,updatedSelectedItem);
     
         break;
-      case "Viability":
+      case FilterLabel.Viability:
         let isAllVChecked = this.props.ViabilityOption.length === updatedSelectedItem.length ? true : false;
         this.s_ViabilityOption = updatedSelectedItem;
         this.setState({isViabilityChecked: isAllVChecked});
+        this.props._syncSelectedOption(FilterLabel.Viability,updatedSelectedItem);
     
         break;
-      case "EndState":
+      case FilterLabel.EndState:
         let isAllESChecked = this.props.EndState.length === updatedSelectedItem.length ? true : false;
         this.s_EndState = updatedSelectedItem;
         this.setState({isEndStateChecked: isAllESChecked});
+        this.props._syncSelectedOption(FilterLabel.EndState,updatedSelectedItem);
     
         break;
-      case "Classification":
+      case FilterLabel.Classification:
         let isAllCChecked = this.props.Classification.length === updatedSelectedItem.length ? true : false;
         this.s_Classification = updatedSelectedItem;
         this.setState({isClasifiChecked: isAllCChecked});
+        this.props._syncSelectedOption(FilterLabel.Classification,updatedSelectedItem);
     
         break;  
       default:
+        break;
         
     }
-
-    
-     
    
   }
 
 
   public render(): React.ReactElement<IFilterControlsProp> {
-    debugger;
-    console.log(this.state.isBrigadeChecked);
+
+  
       return (
         <div className="filterDiv">
           <div className="ddBrigade">

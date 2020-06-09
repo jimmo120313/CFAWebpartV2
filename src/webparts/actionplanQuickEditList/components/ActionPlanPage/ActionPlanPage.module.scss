@@ -47,6 +47,17 @@
       overflow: hidden; 
       // width: 1540px;
     }
+    .PanelPrimButton{
+      margin-top: 50px;
+    }
+    .PanelDefButton{
+      margin-top: 50px;
+    }
+    
+    .ms-Button--default{
+      float:right;
+    }
+      
     [id$='label']{
       font-weight: bold;
     }
