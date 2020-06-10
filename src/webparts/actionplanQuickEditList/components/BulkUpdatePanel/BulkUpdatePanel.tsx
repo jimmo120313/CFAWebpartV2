@@ -1,14 +1,11 @@
 import * as React from "react";
 import { IBulkUpdatePanelProp, IBulkUpdatePanelState } from "./index";
-import { IActionPlanItem,ISolutionDropdownOption } from "../../../../models/index";
+import { IActionPlanItem,ISolutionDropdownOption,IActionPlan } from "../../../../models/index";
 import {FilterControls} from "../FilterControls/index";
-import { ABRService,GeneralService,FilterLabel } from "../../../../services/index";
-import MaterialTable from "material-table";
-import Input from '@material-ui/core/Input';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';  
+import { ABRService,GeneralService,FilterLabel, } from "../../../../services/index";
+import {ButtonBase,Button,Input,Select,MenuItem} from '@material-ui/core';
 require("./BulkUpdatePanel.module.scss");
-import { Dropdown, IDropdownOption,Checkbox,TextField,PrimaryButton, DefaultButton,Label} from 'office-ui-fabric-react';
+import { Dropdown, IDropdownOption,TextField,PrimaryButton, DefaultButton,Label,Panel,PanelType} from 'office-ui-fabric-react';
 
 
 
@@ -21,19 +18,19 @@ IBulkUpdatePanelState
   private actionPlanItemService: ABRService = new ABRService();
 
   ////Selected Value
-  private s_EndState: string[];
-  private s_RatingOption: string[];
-  private s_Brigade: string[];
-  private s_ViabilityOption: string[];
-  private s_Classification: string[];
+  // public s_EndState: string[];
+  // public s_RatingOption: string[];
+  // public s_Brigade: string[];
+  // public s_ViabilityOption: string[];
+  // public s_Classification: string[];
 
   //Items Detail
-  private treatment: string;
-  private initiative: string;
-  private supportRequired: string[];
-  private priority:string;
-  private due:string;
-  private actionStatus:string;
+  public treatment: string;
+  public initiative: string;
+  public supportRequired: string[];
+  public priority:string;
+  public due:string;
+  public actionStatus:string;
 
 
   constructor(props: IBulkUpdatePanelProp) {
@@ -47,7 +44,9 @@ IBulkUpdatePanelState
       s_Classification:this.props.ps_Classification,
       ds_AssignTo:[],
       ds_Priority:"",
-      ds_ActionStatus:""
+      ds_ActionStatus:"",
+      isPanelOpen:false
+
     };
     
   }
@@ -62,24 +61,24 @@ IBulkUpdatePanelState
     
     switch(label) {
       case FilterLabel.Brigade:
-        //this.setState({s_Brigade: sOption});
-        this.s_Brigade = sOption;
+        this.setState({s_Brigade: sOption});
+        //this.s_Brigade = sOption;
         break;
       case FilterLabel.Rating:
-        //this.setState({s_RatingOption: sOption});
-        this.s_RatingOption = sOption; 
+        this.setState({s_RatingOption: sOption});
+        //this.s_RatingOption = sOption; 
         break;
       case FilterLabel.Viability:
-        //this.setState({s_ViabilityOption: sOption});
-        this.s_ViabilityOption = sOption;
+        this.setState({s_ViabilityOption: sOption});
+        //this.s_ViabilityOption = sOption;
         break;
       case FilterLabel.EndState:
-        //this.setState({s_EndState: sOption});
-        this.s_EndState = sOption;
+        this.setState({s_EndState: sOption});
+        //this.s_EndState = sOption;
         break;
       case FilterLabel.Classification:
-        //this.setState({s_Classification: sOption});
-        this.s_Classification = sOption;
+        this.setState({s_Classification: sOption});
+        //this.s_Classification = sOption;
     
         break;  
       default:
@@ -105,10 +104,28 @@ public _handleChangeAssignTo = (item:IDropdownOption):void =>{
   this.setState({ ds_AssignTo: updatedSelectedItem});
 }
 
-public _dismissClick = ()=>{
+private  _BulkUpdate = async(api:IActionPlanItem[],ap:IActionPlan[]):Promise<void> =>{
+  
+  let filterdRecord = await this.actionPlanItemService._getFilteredActionPlanItem(ap,api,this.state.s_Brigade,this.state.s_EndState,this.state.s_RatingOption,this.state.s_ViabilityOption,this.state.s_Classification);
   debugger;
-  this.props.dismissPanel;
+  this.actionPlanItemService._bulkUpdateActionPlanItem(filterdRecord,this.treatment,this.initiative,this.state.ds_AssignTo,this.state.ds_Priority,this.due,this.state.ds_ActionStatus,this.props.siteURL)
 
+}
+
+private _onRenderFooterContent = ()=>{
+  return(<div>
+    <PrimaryButton className="PanelPrimButton" text="Save" onClick={()=>{this._BulkUpdate(this.props.actionPlanItemDetail,this.props.actionPlan)}}  disabled={false}/>
+    <DefaultButton className="PanelDefButton" text="Close" onClick={this._closePanel}  disabled={false} />
+   </div>)
+    
+}
+
+private _openPanel = () => {
+  this.setState({isPanelOpen: true});
+}
+
+private _closePanel = () => {
+  this.setState({isPanelOpen: false});
 }
 
   public render(): React.ReactElement<IBulkUpdatePanelProp> {
@@ -116,6 +133,22 @@ public _dismissClick = ()=>{
 
       return (
         <React.Fragment>
+            <ButtonBase
+          onClick={this._openPanel}
+          className="bulkUpdateButton"
+        >
+          <Button variant="outlined" color="secondary" size="medium">
+            Bulk Update
+          </Button>
+        </ButtonBase>
+          <Panel
+                isOpen={this.state.isPanelOpen}
+                onDismiss={this._closePanel}
+                type={PanelType.large}
+                closeButtonAriaLabel="Close"
+                onRenderFooterContent={this._onRenderFooterContent}
+                isFooterAtBottom={true}
+              >
             <FilterControls 
               EndState = {this.props.EndState}
               RatingOption = {this.props.RatingOption}
@@ -175,14 +208,14 @@ public _dismissClick = ()=>{
               placeHolder="Please select Required"
               label="Priority"
               options={ this.props.priorityOption}
-              //onChanged={(e)=>{this.setState({ds_Priority:e.text});}}
+              onChanged={(e)=>{this.setState({ds_Priority:e.text});}}
            />
            </div>
            {/* Due*/}
            <div>
            <Label className={"PanelLabel"}>Due</Label>
            <input 
-              
+              className = "dateInput"
               type="Date" 
               //value={GeneralService._getISODateStringFormat(props.value)} 
               onChange={e => this.due = GeneralService._getAUDateStringFormat(e.target.value)} 
@@ -198,12 +231,12 @@ public _dismissClick = ()=>{
               onChanged={(e)=>{this.setState({ds_ActionStatus:e.text});}}
            />
            </div>
-           {/* <div>
-            <PrimaryButton className="PanelPrimButton" text="Save" onClick={this._dismissClick}  disabled={false}/>
-            <DefaultButton className="PanelDefButton" text="Close" onClick={()=>this.props.dismissPanel}  disabled={false} />
-           </div> */}
            
+           </Panel>
+
         </React.Fragment>
+          
+        
         
       );
     }

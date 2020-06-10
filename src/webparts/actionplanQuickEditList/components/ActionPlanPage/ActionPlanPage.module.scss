@@ -47,17 +47,7 @@
       overflow: hidden; 
       // width: 1540px;
     }
-    .PanelPrimButton{
-      margin-top: 50px;
-    }
-    .PanelDefButton{
-      margin-top: 50px;
-    }
-    
-    .ms-Button--default{
-      float:right;
-    }
-      
+  
     [id$='label']{
       font-weight: bold;
     }
@@ -72,12 +62,11 @@
 
    textarea {
     font-size: 11px!important;
-    width: 160px!important;
+    //width: 160px!important;
+    width: -webkit-fill-available !important;
     padding: 0px;
   }
-  // table{
-  //   width: fit-content !important;
-  // }
+  
   th{
     background-Color: #E31A1A !important;
     color: #ffffff !important;
@@ -101,6 +90,7 @@
     font-size: 20px !important;
     font-weight: bold !important;
     height: 40px;
+    padding-left:24px;
   }
 
   // th {

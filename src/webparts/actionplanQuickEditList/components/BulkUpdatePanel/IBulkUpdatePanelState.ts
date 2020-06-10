@@ -12,6 +12,7 @@ export interface IBulkUpdatePanelState {
   ds_Priority:string;
   ds_ActionStatus:string;
 
+  isPanelOpen: boolean;
 
 }
 

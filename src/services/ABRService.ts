@@ -1,3 +1,4 @@
+import { IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import { registerBeforeUnloadHandler } from '@microsoft/teams-js';
 import { sp, CamlQuery, Web } from "@pnp/sp";
 import { CurrentUser } from '@pnp/sp/src/siteusers';
@@ -219,6 +220,176 @@ export class ABRService {
     return allActionPlanItemDetail;
   }
 
+  public async _bulkUpdateActionPlanItem(
+    allItems:IActionPlanItem[],
+    Treatment:string,
+    Initiative:string,
+    SupportRequired:string[],
+    Priority:string,
+    Due:string,
+    ActionStatus:string,
+    siteURL:string
+  ):Promise<IActionPlanItem[]>{
+
+    const webUrl: string = siteURL;//"https://viccfa.sharepoint.com/sites/services/ABR";
+    const ItemlistName: string = "Action Plan Items";
+    const MasterListName: string = "Action Plans";
+    const rootWeb = new Web(webUrl);
+    const list = rootWeb.lists.getByTitle(ItemlistName);
+
+    const batch = sp.web.createBatch();
+    const entityTypeFullName = await list.getListItemEntityTypeFullName();
+
+    allItems.forEach(c => {
+      //let supportRequired:string[] = SupportRequired?(SupportRequired.indexOf(",")>0?SupportRequired.split(","):SupportRequired.split('')):[];
+
+      let dueDate:string = this._getISODateStringFormat(Due);
+
+      debugger;
+      
+      list.items.getItemByStringId(c.actionPlanItemId)
+        .inBatch(batch)
+        .update(
+          {
+            Treatment: Treatment,
+            Initiative: Initiative,
+            //AssignedTo: { results: SupportRequired },//Support Required
+            Priority: Priority,
+            Status: ActionStatus,
+            Due: dueDate.indexOf("NaN")>=0?null:dueDate,
+          }, "*", entityTypeFullName);
+
+    });
+
+    await batch.execute();
+    return allItems;
+    // const masterList = rootWeb.lists.getByTitle(MasterListName).expand("Review").select("ID", "Review/ID");
+    // uniqueReviewIdRows.forEach(m => {
+    //   let fielterString: string = "Review/ID eq " + m;
+    //   masterList.items.top(1).filter(fielterString).get()
+    //     .then(
+    //       (items: any[]) => {
+    //         if (items.length > 0) {
+    //           sp.web.lists.getByTitle(MasterListName).items.getById(items[0].Id).update(
+    //             { ActionPlanCompletedBy: currentUser['Title'] }
+    //           );
+    //         }
+    //       });
+    // });
+
+  }
+
+  public async _getFilteredActionPlanItem(
+    allActionPlan:IActionPlan[],
+    allItems:IActionPlanItem[],
+    //reviewId:string[],
+    Brigade?: string[],
+    EndState?: string[],
+    RatingOption?: string[],
+    ViabilityOption?: string[],
+    Classification?: string[],
+    
+  ): Promise<IActionPlanItem[]> {
+
+    if (typeof Brigade !== 'undefined' && Brigade.length > 0) {
+      allItems = allItems.filter((e)=>{return Brigade.indexOf(e.brigadeId)!==-1})
+    }
+    
+    if (typeof EndState !== 'undefined' && EndState.length > 0) {
+      allItems = allItems.filter((e)=>{return EndState.indexOf(e.endStateId)!==-1})
+    }
+
+    if (typeof RatingOption !== 'undefined' && RatingOption.length > 0) {
+      allItems = allItems.filter((e)=>{return RatingOption.indexOf(e.rating)!==-1})
+    }
+
+    if (typeof ViabilityOption !== 'undefined' && ViabilityOption.length > 0) {
+      allItems = allItems.filter((e)=>{return ViabilityOption.indexOf(e.viabilityCategory)!==-1})
+    }
+
+    if (typeof Classification !== 'undefined' && Classification.length > 0) {
+      allActionPlan = allActionPlan.filter((e)=>{return Classification.indexOf(e.classification)!==-1})
+      
+      let reviewId = allActionPlan.map((e)=>{return e.reviewId});
+      allItems = allItems.filter((e)=>{return reviewId.indexOf(e.reviewId)!==-1})
+    }
+    
+    return allItems;
+  }
+
+  public async _saveActionPlanItems(row: IActionPlanItem[], siteUrl: string): Promise<IActionPlanItem[]> {
+    let changedRows: IActionPlanItem[] = [];
+    let uniqueReviewIdRows: string[] = [];
+
+    row.forEach(r => {
+      if (r.isUpdated) {
+        changedRows.push(r);
+        r.isUpdated = false;
+      }
+    });
+    
+
+    const webUrl: string = siteUrl;//"https://viccfa.sharepoint.com/sites/services/ABR";
+    const ItemlistName: string = "Action Plan Items";
+    const MasterListName: string = "Action Plans";
+    const rootWeb = new Web(webUrl);
+    const list = rootWeb.lists.getByTitle(ItemlistName);
+
+    const currentUser = await sp.web.currentUser.get();
+
+
+    const batch = sp.web.createBatch();
+    const entityTypeFullName = await list.getListItemEntityTypeFullName();
+
+    changedRows.forEach(c => {
+      let supportRequired:string[] = c.supportRequired?(c.supportRequired.indexOf(",")>0?c.supportRequired.split(","):c.supportRequired.split('')):[];
+
+      let dueDate:string = this._getISODateStringFormat(c.due);
+      debugger;
+      
+      list.items.getItemByStringId(c.actionPlanItemId)
+        .inBatch(batch)
+        .update(
+          {
+            Treatment: c.treatment,
+            Initiative: c.initiative,
+            AssignedTo: { results: supportRequired },//Support Required
+            Priority: c.priority,
+            Status: c.status,
+            ApprovedBy: "",
+            Due: dueDate.indexOf("NaN")>=0?null:dueDate,
+          }, "*", entityTypeFullName);
+
+      if (c.reviewId !== null && c.reviewId !== '' && uniqueReviewIdRows.indexOf(c.reviewId) == -1) {
+        uniqueReviewIdRows.push(c.reviewId);
+      }
+    });
+
+    await batch.execute();
+
+    const masterList = rootWeb.lists.getByTitle(MasterListName).expand("Review").select("ID", "Review/ID");
+    uniqueReviewIdRows.forEach(m => {
+      let fielterString: string = "Review/ID eq " + m;
+      masterList.items.top(1).filter(fielterString).get()
+        .then(
+          (items: any[]) => {
+            if (items.length > 0) {
+              sp.web.lists.getByTitle(MasterListName).items.getById(items[0].Id).update(
+                { ActionPlanCompletedBy: currentUser['Title'] }
+              );
+            }
+          });
+    });
+
+    return row;
+
+  }
+
+
+
+
+
+
   public async _getActionPlanMaster(
     reviewPeriod: string,
     selectedBrigade: ISolutionDropdownOption[]
@@ -370,73 +541,6 @@ export class ABRService {
 
   }
 
-  public async _saveActionPlanItems(row: IActionPlanItem[], siteUrl: string): Promise<IActionPlanItem[]> {
-    let changedRows: IActionPlanItem[] = [];
-    let uniqueReviewIdRows: string[] = [];
-
-    row.forEach(r => {
-      if (r.isUpdated) {
-        changedRows.push(r);
-        r.isUpdated = false;
-      }
-    });
-    
-
-    const webUrl: string = siteUrl;//"https://viccfa.sharepoint.com/sites/services/ABR";
-    const ItemlistName: string = "Action Plan Items";
-    const MasterListName: string = "Action Plans";
-    const rootWeb = new Web(webUrl);
-    const list = rootWeb.lists.getByTitle(ItemlistName);
-
-    const currentUser = await sp.web.currentUser.get();
-
-
-    const batch = sp.web.createBatch();
-    const entityTypeFullName = await list.getListItemEntityTypeFullName();
-
-    changedRows.forEach(c => {
-      let supportRequired:string[] = c.supportRequired?(c.supportRequired.indexOf(",")>0?c.supportRequired.split(","):c.supportRequired.split('')):[];
-
-      let dueDate:string = this._getISODateStringFormat(c.due);
-
-      
-      list.items.getItemByStringId(c.actionPlanItemId)
-        .inBatch(batch)
-        .update(
-          {
-            Treatment: c.treatment,
-            Initiative: c.initiative,
-            AssignedTo: { results: supportRequired },//Support Required
-            Priority: c.priority,
-            Status: c.status,
-            ApprovedBy: "",
-            Due: dueDate.indexOf("NaN")>=0?null:dueDate,
-          }, "*", entityTypeFullName);
-
-      if (c.reviewId !== null && c.reviewId !== '' && uniqueReviewIdRows.indexOf(c.reviewId) == -1) {
-        uniqueReviewIdRows.push(c.reviewId);
-      }
-    });
-
-    await batch.execute();
-
-    const masterList = rootWeb.lists.getByTitle(MasterListName).expand("Review").select("ID", "Review/ID");
-    uniqueReviewIdRows.forEach(m => {
-      let fielterString: string = "Review/ID eq " + m;
-      masterList.items.top(1).filter(fielterString).get()
-        .then(
-          (items: any[]) => {
-            if (items.length > 0) {
-              sp.web.lists.getByTitle(MasterListName).items.getById(items[0].Id).update(
-                { ActionPlanCompletedBy: currentUser['Title'] }
-              );
-            }
-          });
-    });
-
-    return row;
-
-  }
 
   public _getISODateStringFormat(date:string):string {
     let dateString:any;
