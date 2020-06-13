@@ -54,7 +54,7 @@ IBulkUpdatePanelState
   public async componentDidMount(): Promise<void> {
     
     await this.actionPlanItemService._getItemListOption();
-    
+   
   }
   
   _syncSelectedOption = (label:string,sOption:string[]):void =>{
@@ -107,21 +107,30 @@ public _handleChangeAssignTo = (item:IDropdownOption):void =>{
 private  _BulkUpdate = async(api:IActionPlanItem[],ap:IActionPlan[]):Promise<void> =>{
   
   let filterdRecord = await this.actionPlanItemService._getFilteredActionPlanItem(ap,api,this.state.s_Brigade,this.state.s_EndState,this.state.s_RatingOption,this.state.s_ViabilityOption,this.state.s_Classification);
-  debugger;
-  this.actionPlanItemService._bulkUpdateActionPlanItem(filterdRecord,this.treatment,this.initiative,this.state.ds_AssignTo,this.state.ds_Priority,this.due,this.state.ds_ActionStatus,this.props.siteURL)
+  
+  await this.actionPlanItemService._bulkUpdateActionPlanItem(filterdRecord,this.treatment,this.initiative,this.state.ds_AssignTo,this.state.ds_Priority,this.due,this.state.ds_ActionStatus,this.props.siteURL)
+  await this.props._refreshBulkUpdate;
+
+  console.log("test321");
+  this.setState({isPanelOpen:false});
+  
 
 }
 
 private _onRenderFooterContent = ()=>{
   return(<div>
-    <PrimaryButton className="PanelPrimButton" text="Save" onClick={()=>{this._BulkUpdate(this.props.actionPlanItemDetail,this.props.actionPlan)}}  disabled={false}/>
+    <PrimaryButton className="PanelPrimButton" text="Save" onClick={()=>this._BulkUpdate(this.props.actionPlanItemDetail,this.props.actionPlan)}  disabled={false}/>
     <DefaultButton className="PanelDefButton" text="Close" onClick={this._closePanel}  disabled={false} />
    </div>)
     
 }
 
 private _openPanel = () => {
-  this.setState({isPanelOpen: true});
+  this.setState({isPanelOpen: true,s_EndState:this.props.ps_EndState,
+      s_RatingOption:this.props.ps_RatingOption,
+      s_Brigade:this.props.ps_Brigade,
+      s_ViabilityOption:this.props.ps_ViabilityOption,
+      s_Classification:this.props.ps_Classification});
 }
 
 private _closePanel = () => {

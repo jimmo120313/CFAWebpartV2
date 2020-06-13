@@ -193,7 +193,7 @@ export class ABRService {
         formatedDate = day + "/" + (month.toString().length==1?"0"+month:month)+ "/" + year;
         
       }
-
+      debugger;
       allActionPlanItemDetail.push({
         reviewId: actionPlanItemDetail[i].ReviewID.ID.toString(),
         brigadeId: actionPlanItemDetail[i].Brigade.Id.toString(),
@@ -206,7 +206,8 @@ export class ABRService {
         statementSelection: actionPlanItemDetail[i].Challenge,
         treatment: actionPlanItemDetail[i].Treatment,
         initiative: actionPlanItemDetail[i].Initiative,
-        supportRequired: actionPlanItemDetail[i].AssignedTo,
+        //supportRequired: actionPlanItemDetail[i].AssignedTo?(actionPlanItemDetail[i].AssignedTo.includes(",")?rowData.supportRequired.join(","):rowData.supportRequired):"",
+        supportRequired: actionPlanItemDetail[i].AssignedTo?(actionPlanItemDetail[i].AssignedTo.includes(",")?actionPlanItemDetail[i].AssignedTo.join(","):actionPlanItemDetail[i].AssignedTo):"",
         priority: actionPlanItemDetail[i].Priority,
         due: formatedDate,
         status: actionPlanItemDetail[i].Status,
@@ -215,6 +216,7 @@ export class ABRService {
         abrComment: cComment
 
       });
+      debugger;
     }
 
     return allActionPlanItemDetail;
@@ -245,7 +247,7 @@ export class ABRService {
 
       let dueDate:string = this._getISODateStringFormat(Due);
 
-      debugger;
+    
       
       list.items.getItemByStringId(c.actionPlanItemId)
         .inBatch(batch)
@@ -253,9 +255,9 @@ export class ABRService {
           {
             Treatment: Treatment,
             Initiative: Initiative,
-            //AssignedTo: { results: SupportRequired },//Support Required
-            Priority: Priority,
-            Status: ActionStatus,
+            AssignedTo: { results: SupportRequired },//Support Required
+            Priority: "'"+Priority+"'",
+            Status: "'"+ActionStatus+"'",
             Due: dueDate.indexOf("NaN")>=0?null:dueDate,
           }, "*", entityTypeFullName);
 
@@ -263,19 +265,6 @@ export class ABRService {
 
     await batch.execute();
     return allItems;
-    // const masterList = rootWeb.lists.getByTitle(MasterListName).expand("Review").select("ID", "Review/ID");
-    // uniqueReviewIdRows.forEach(m => {
-    //   let fielterString: string = "Review/ID eq " + m;
-    //   masterList.items.top(1).filter(fielterString).get()
-    //     .then(
-    //       (items: any[]) => {
-    //         if (items.length > 0) {
-    //           sp.web.lists.getByTitle(MasterListName).items.getById(items[0].Id).update(
-    //             { ActionPlanCompletedBy: currentUser['Title'] }
-    //           );
-    //         }
-    //       });
-    // });
 
   }
 

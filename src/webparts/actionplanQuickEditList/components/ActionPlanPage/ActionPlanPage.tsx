@@ -204,7 +204,8 @@ export class ActionPlanPage extends React.Component<
             selectedKeys={this.state.ds_AssignTo}
             options={ this.abrService.supportOption}
             multiSelect
-            onChanged={ (option)=>{this._handleChangeAssignTo(ps,option);}}
+            multiSelectDelimiter=","
+            onChange={ (p,option)=>{this._handleChangeAssignTo(ps,option);}}
           />
          
         )  },
@@ -221,14 +222,14 @@ export class ActionPlanPage extends React.Component<
 
   public _handleChangeAssignTo = (e:any,item:IDropdownOption):void =>{
     
+    debugger;
     let updatedSelectedItem :any[];
-    if(this.state.assignToInit){
-      updatedSelectedItem= this.state.ds_AssignTo ? GeneralService.copyArray(this.state.ds_AssignTo) : [];
-    }else{
-
-      updatedSelectedItem = e.value? GeneralService.copyArray(e.value) : [];
-    }
-    
+    // if(this.state.assignToInit){
+    //   updatedSelectedItem= this.state.ds_AssignTo ? GeneralService.copyArray(this.state.ds_AssignTo) : [];
+    // }else{
+    //   updatedSelectedItem = e.value? GeneralService.copyArray(e.value) : [];
+    // }
+    updatedSelectedItem= this.state.ds_AssignTo ? GeneralService.copyArray(this.state.ds_AssignTo) : [];
 
     if (item.selected) {
       // add the option if it's checked
@@ -359,6 +360,8 @@ export class ActionPlanPage extends React.Component<
             actionPlanItemDetail = {this.actionPlanItemDetail}
             actionPlan = {this.actionPlanDetail}
             siteURL = {this.props.siteURL}
+
+            _refreshBulkUpdate = {this._refreshBulkUpdate}
   
         />
         </div>
@@ -683,6 +686,23 @@ export class ActionPlanPage extends React.Component<
     this.setState({ masterRow: newFielteredMasterDetail });
 
   }
+
+
+  public _refreshBulkUpdate = async (): Promise<void> => {
+    debugger;
+    console.log("test123");
+    // this.isSave = true;
+    // this.setState({ isLoading: true });
+    // let actionPlanItemDetail = await this.abrService._getActionPlanItem(
+    //   this.props.selectedBrigade,
+    //   this.selectedReviewID
+    // );
+    // await this._refreshMasterList();
+    // this.setState({ DetailRow: actionPlanItemDetail, hideDialog: true, isLoading: false });
+    // this.isSave = false;
+
+  }
+
 
   private _saveChange = async (): Promise<void> => {
     this.isSave = true;

@@ -33,6 +33,8 @@ export interface IBulkUpdatePanelProp {
       actionPlanItemDetail: IActionPlanItem[];
       actionPlan:IActionPlan[];
       siteURL:string;
+
+      _refreshBulkUpdate:Function;
       
 }
 
