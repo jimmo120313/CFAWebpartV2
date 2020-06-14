@@ -212,7 +212,7 @@ export class ActionPlanPage extends React.Component<
       { field: "priority", cellStyle: { ...cellProps }, title: "Priority", lookup: this.abrService.priorityOption, ...headerProperties },
       { field: "due", cellStyle: { ...cellProps },type:'Date', title: "Due", ...headerProperties, 
         render: rowData => rowData.due,
-        editComponent: props => <input type="Date" value={GeneralService._getISODateStringFormat(props.value)} onChange={e => {props.onChange(GeneralService._getAUDateStringFormat(e.target.value))}} name="bday" /> },  
+        editComponent: props => <input type="Date" value={GeneralService._getISODateStringFormat(props.value)} onChange={e => {props.onChange(GeneralService._getAUDateStringFormat(e.target.value));}} name="bday" /> },  
       { field: "status", cellStyle: { ...cellProps }, title: "Action Status", lookup: this.abrService.statusOpion, ...headerProperties }
 
     ];
@@ -222,13 +222,9 @@ export class ActionPlanPage extends React.Component<
 
   public _handleChangeAssignTo = (e:any,item:IDropdownOption):void =>{
     
-    debugger;
+
     let updatedSelectedItem :any[];
-    // if(this.state.assignToInit){
-    //   updatedSelectedItem= this.state.ds_AssignTo ? GeneralService.copyArray(this.state.ds_AssignTo) : [];
-    // }else{
-    //   updatedSelectedItem = e.value? GeneralService.copyArray(e.value) : [];
-    // }
+  
     updatedSelectedItem= this.state.ds_AssignTo ? GeneralService.copyArray(this.state.ds_AssignTo) : [];
 
     if (item.selected) {
@@ -259,7 +255,7 @@ export class ActionPlanPage extends React.Component<
     let s_EndState: string[] = endState;
     let s_Classification: string[] = classification;
 
-
+    
     this.actionPlanDetail.forEach(a => {
       if (
         s_Classification.indexOf(a.classification) !== -1
@@ -386,17 +382,16 @@ export class ActionPlanPage extends React.Component<
             new Promise((resolve, reject) => {
               setTimeout(() => {
                 {
-                  debugger;
+     
                   const data = this.state.DetailRow;
                   const index = data.indexOf(oldData);
                   data[index] = newData;
-                  //data[index].supportRequired = newData.supportRequired;
                   data[index].supportRequired = this.state.ds_AssignTo.join(",");
                   
                  
                   data[index].isUpdated = true;
                   this.setState({ DetailRow: data,ds_AssignTo:[],assignToInit:false }, () => resolve());
-                  //this.setState({ DetailRow: data}, () => resolve());
+                  
                 }
                 resolve();
               }, 1000);
@@ -689,17 +684,17 @@ export class ActionPlanPage extends React.Component<
 
 
   public _refreshBulkUpdate = async (): Promise<void> => {
-    debugger;
-    console.log("test123");
-    // this.isSave = true;
-    // this.setState({ isLoading: true });
-    // let actionPlanItemDetail = await this.abrService._getActionPlanItem(
-    //   this.props.selectedBrigade,
-    //   this.selectedReviewID
-    // );
-    // await this._refreshMasterList();
-    // this.setState({ DetailRow: actionPlanItemDetail, hideDialog: true, isLoading: false });
-    // this.isSave = false;
+    
+    this.isSave = true;
+    this.setState({ isLoading: true });
+    this.actionPlanItemDetail = await this.abrService._getActionPlanItem(
+      this.props.selectedBrigade,
+      this.selectedReviewID
+    );
+
+    this.setState({ DetailRow: this.actionPlanItemDetail, hideDialog: true, isLoading: false });
+    this._handleFilterUpdate(this.state.s_ratingOption, this.state.s_Brigade, this.state.s_ViabilityOption, this.state.s_EndState, this.state.s_Classification);
+    this.isSave = false;
 
   }
 

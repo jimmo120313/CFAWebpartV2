@@ -2,10 +2,7 @@ import * as React from "react";
 import { IFilterControlsProp, IFilterControlsState } from "./index";
 import { IActionPlanItem,ISolutionDropdownOption } from "../../../../models/index";
 import { ABRService,GeneralService,FilterLabel } from "../../../../services/index";
-import MaterialTable from "material-table";
-import Input from '@material-ui/core/Input';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';  
+
 import { Dropdown, IDropdownOption,Checkbox } from 'office-ui-fabric-react';
 
 
@@ -124,7 +121,7 @@ IFilterControlsState
         break;
       case FilterLabel.Rating:
         let isAllRChecked = this.props.RatingOption.length === updatedSelectedItem.length ? true : false;
-        this.s_RatingOption = updatedSelectedItem
+        this.s_RatingOption = updatedSelectedItem;
         this.setState({isRatingOptionChecked: isAllRChecked});
         this.props._syncSelectedOption(FilterLabel.Rating,updatedSelectedItem);
     

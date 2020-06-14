@@ -14,12 +14,12 @@ export class GeneralService {
       date = date.replace(/-/g,"/");
       
       
-      let d =""
+      let d ="";
       if(date && date.split("/")[2].toString().length==4){
-        d = date.split("/")[2] + "/" + date.split("/")[1] + "/" + date.split("/")[0]
-        dateString = new Date(d)
+        d = date.split("/")[2] + "/" + date.split("/")[1] + "/" + date.split("/")[0];
+        dateString = new Date(d);
       }else{
-        dateString = new Date(date)
+        dateString = new Date(date);
       }
 
       let month = dateString.getMonth() + 1;
@@ -34,9 +34,9 @@ export class GeneralService {
     
       date = date.replace(/-/g,"/");
       
-      let d =""
+      let d ="";
       if(date && date.split("/")[0].toString().length==4){
-        d = date.split("/")[2] + "/" + date.split("/")[1] + "/" + date.split("/")[0]
+        d = date.split("/")[2] + "/" + date.split("/")[1] + "/" + date.split("/")[0];
       }
   
       return d;

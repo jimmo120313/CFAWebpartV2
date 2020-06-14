@@ -1,11 +1,11 @@
 import * as React from "react";
 import { IBulkUpdatePanelProp, IBulkUpdatePanelState } from "./index";
-import { IActionPlanItem,ISolutionDropdownOption,IActionPlan } from "../../../../models/index";
+import { IActionPlanItem,IActionPlan } from "../../../../models/index";
 import {FilterControls} from "../FilterControls/index";
 import { ABRService,GeneralService,FilterLabel, } from "../../../../services/index";
-import {ButtonBase,Button,Input,Select,MenuItem} from '@material-ui/core';
+import {ButtonBase,Button} from '@material-ui/core';
 require("./BulkUpdatePanel.module.scss");
-import { Dropdown, IDropdownOption,TextField,PrimaryButton, DefaultButton,Label,Panel,PanelType} from 'office-ui-fabric-react';
+import { Dropdown, IDropdownOption,TextField,PrimaryButton, DefaultButton,Label,Panel,PanelType,Dialog,DialogFooter,DialogType} from 'office-ui-fabric-react';
 
 
 
@@ -16,13 +16,6 @@ IBulkUpdatePanelState
 
 
   private actionPlanItemService: ABRService = new ABRService();
-
-  ////Selected Value
-  // public s_EndState: string[];
-  // public s_RatingOption: string[];
-  // public s_Brigade: string[];
-  // public s_ViabilityOption: string[];
-  // public s_Classification: string[];
 
   //Items Detail
   public treatment: string;
@@ -45,7 +38,11 @@ IBulkUpdatePanelState
       ds_AssignTo:[],
       ds_Priority:"",
       ds_ActionStatus:"",
-      isPanelOpen:false
+      isPanelOpen:false,
+      isDialogHided:true,
+      confirmSave:false,
+      noOfRecords:0,
+      filteredRecords:[]
 
     };
     
@@ -57,35 +54,34 @@ IBulkUpdatePanelState
    
   }
   
-  _syncSelectedOption = (label:string,sOption:string[]):void =>{
+  public _syncSelectedOption = (label:string,sOption:string[]):void =>{
     
     switch(label) {
       case FilterLabel.Brigade:
         this.setState({s_Brigade: sOption});
-        //this.s_Brigade = sOption;
+        
         break;
       case FilterLabel.Rating:
         this.setState({s_RatingOption: sOption});
-        //this.s_RatingOption = sOption; 
+        
         break;
       case FilterLabel.Viability:
         this.setState({s_ViabilityOption: sOption});
-        //this.s_ViabilityOption = sOption;
+        
         break;
       case FilterLabel.EndState:
         this.setState({s_EndState: sOption});
-        //this.s_EndState = sOption;
+        
         break;
       case FilterLabel.Classification:
         this.setState({s_Classification: sOption});
-        //this.s_Classification = sOption;
     
         break;  
       default:
         break;
         
   }
-};
+}
 
 public _handleChangeAssignTo = (item:IDropdownOption):void =>{
 
@@ -104,24 +100,35 @@ public _handleChangeAssignTo = (item:IDropdownOption):void =>{
   this.setState({ ds_AssignTo: updatedSelectedItem});
 }
 
-private  _BulkUpdate = async(api:IActionPlanItem[],ap:IActionPlan[]):Promise<void> =>{
+private _BulkUpdate = async(fr:IActionPlanItem[]):Promise<void> =>{
   
-  let filterdRecord = await this.actionPlanItemService._getFilteredActionPlanItem(ap,api,this.state.s_Brigade,this.state.s_EndState,this.state.s_RatingOption,this.state.s_ViabilityOption,this.state.s_Classification);
+  //let filterdRecord = await this.actionPlanItemService._getFilteredActionPlanItem(ap,api,this.state.s_Brigade,this.state.s_EndState,this.state.s_RatingOption,this.state.s_ViabilityOption,this.state.s_Classification);
   
-  await this.actionPlanItemService._bulkUpdateActionPlanItem(filterdRecord,this.treatment,this.initiative,this.state.ds_AssignTo,this.state.ds_Priority,this.due,this.state.ds_ActionStatus,this.props.siteURL)
-  await this.props._refreshBulkUpdate;
-
-  console.log("test321");
+  await this.actionPlanItemService._bulkUpdateActionPlanItem(fr,this.treatment,this.initiative,this.state.ds_AssignTo,this.state.ds_Priority,this.due,this.state.ds_ActionStatus,this.props.siteURL);
   this.setState({isPanelOpen:false});
-  
+  await this.props._refreshBulkUpdate;
 
 }
 
 private _onRenderFooterContent = ()=>{
   return(<div>
-    <PrimaryButton className="PanelPrimButton" text="Save" onClick={()=>this._BulkUpdate(this.props.actionPlanItemDetail,this.props.actionPlan)}  disabled={false}/>
+    <PrimaryButton className="PanelPrimButton" text="Save" onClick={()=>this._showDialog(this.props.actionPlanItemDetail,this.props.actionPlan)}  disabled={false}/>
     <DefaultButton className="PanelDefButton" text="Close" onClick={this._closePanel}  disabled={false} />
-   </div>)
+    
+    <Dialog
+            hidden={this.state.isDialogHided}
+            onDismiss={this._hideDialog}
+            dialogContentProps={{type: DialogType.largeHeader,
+              title: 'Confirm to save',
+              subText: this.state.confirmSave?'Saving .....':'Do you want to bulk update multiple action plan items? '+this.state.noOfRecords+' records will be modified.'}}
+            isBlocking={true}
+          >
+            <DialogFooter>
+              <PrimaryButton onClick={this._confirmSave} disabled={this.state.confirmSave} text="Confirm" />
+              <DefaultButton onClick={this._hideDialog} disabled={this.state.confirmSave} text="Cancel" />
+            </DialogFooter>
+          </Dialog>
+   </div>);
     
 }
 
@@ -133,14 +140,29 @@ private _openPanel = () => {
       s_Classification:this.props.ps_Classification});
 }
 
+private _hideDialog = () => {
+  this.setState({isDialogHided:true});
+}
+
+private _showDialog = async(api:IActionPlanItem[],ap:IActionPlan[]) => {
+  
+  let fr:IActionPlanItem[] = await this.actionPlanItemService._getFilteredActionPlanItem(ap,api,this.state.s_Brigade,this.state.s_EndState,this.state.s_RatingOption,this.state.s_ViabilityOption,this.state.s_Classification);
+  this.setState({isDialogHided:false,noOfRecords:fr.length,filteredRecords:fr});
+}
+
+private _confirmSave = async () => {
+  this.setState({confirmSave: true});
+  await this._BulkUpdate(this.state.filteredRecords);
+}
+
 private _closePanel = () => {
+  this.props._refreshBulkUpdate();
   this.setState({isPanelOpen: false});
 }
 
   public render(): React.ReactElement<IBulkUpdatePanelProp> {
 
-
-      return (
+    return (
         <React.Fragment>
             <ButtonBase
           onClick={this._openPanel}
@@ -150,9 +172,11 @@ private _closePanel = () => {
             Bulk Update
           </Button>
         </ButtonBase>
+         
           <Panel
                 isOpen={this.state.isPanelOpen}
-                onDismiss={this._closePanel}
+                //onDismiss={this._closePanel}
+                onDismiss={this.props._refreshBulkUpdate}
                 type={PanelType.large}
                 closeButtonAriaLabel="Close"
                 onRenderFooterContent={this._onRenderFooterContent}
@@ -226,7 +250,6 @@ private _closePanel = () => {
            <input 
               className = "dateInput"
               type="Date" 
-              //value={GeneralService._getISODateStringFormat(props.value)} 
               onChange={e => this.due = GeneralService._getAUDateStringFormat(e.target.value)} 
               name="bday" 
           />
@@ -241,7 +264,7 @@ private _closePanel = () => {
            />
            </div>
            
-           </Panel>
+          </Panel>
 
         </React.Fragment>
           

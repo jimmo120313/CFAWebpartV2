@@ -13,7 +13,10 @@ export interface IBulkUpdatePanelState {
   ds_ActionStatus:string;
 
   isPanelOpen: boolean;
-
+  isDialogHided: boolean;
+  confirmSave:boolean;
+  noOfRecords:number;
+  filteredRecords:IActionPlanItem[];
 }
 
 

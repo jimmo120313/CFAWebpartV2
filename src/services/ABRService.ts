@@ -193,7 +193,7 @@ export class ABRService {
         formatedDate = day + "/" + (month.toString().length==1?"0"+month:month)+ "/" + year;
         
       }
-      debugger;
+      
       allActionPlanItemDetail.push({
         reviewId: actionPlanItemDetail[i].ReviewID.ID.toString(),
         brigadeId: actionPlanItemDetail[i].Brigade.Id.toString(),
@@ -206,8 +206,7 @@ export class ABRService {
         statementSelection: actionPlanItemDetail[i].Challenge,
         treatment: actionPlanItemDetail[i].Treatment,
         initiative: actionPlanItemDetail[i].Initiative,
-        //supportRequired: actionPlanItemDetail[i].AssignedTo?(actionPlanItemDetail[i].AssignedTo.includes(",")?rowData.supportRequired.join(","):rowData.supportRequired):"",
-        supportRequired: actionPlanItemDetail[i].AssignedTo?(actionPlanItemDetail[i].AssignedTo.includes(",")?actionPlanItemDetail[i].AssignedTo.join(","):actionPlanItemDetail[i].AssignedTo):"",
+        supportRequired: actionPlanItemDetail[i].AssignedTo?actionPlanItemDetail[i].AssignedTo.join(","):"",
         priority: actionPlanItemDetail[i].Priority,
         due: formatedDate,
         status: actionPlanItemDetail[i].Status,
@@ -216,7 +215,7 @@ export class ABRService {
         abrComment: cComment
 
       });
-      debugger;
+      
     }
 
     return allActionPlanItemDetail;
@@ -243,18 +242,32 @@ export class ABRService {
     const entityTypeFullName = await list.getListItemEntityTypeFullName();
 
     allItems.forEach(c => {
-      //let supportRequired:string[] = SupportRequired?(SupportRequired.indexOf(",")>0?SupportRequired.split(","):SupportRequired.split('')):[];
+      
+      let dueDate:string ="";
+      let treatment:string="";
+      let initiative:string="";
 
-      let dueDate:string = this._getISODateStringFormat(Due);
+      if(Due){
+        dueDate = this._getISODateStringFormat(Due);
+      }else{
+        dueDate = "NaN";
+      }
+      
+      if(Treatment){
+        treatment = Treatment;
+      }
 
-    
+      if(Initiative){
+        initiative = Initiative;
+      }
+
       
       list.items.getItemByStringId(c.actionPlanItemId)
         .inBatch(batch)
         .update(
           {
-            Treatment: Treatment,
-            Initiative: Initiative,
+            Treatment: treatment,
+            Initiative: initiative,
             AssignedTo: { results: SupportRequired },//Support Required
             Priority: "'"+Priority+"'",
             Status: "'"+ActionStatus+"'",
@@ -281,26 +294,26 @@ export class ABRService {
   ): Promise<IActionPlanItem[]> {
 
     if (typeof Brigade !== 'undefined' && Brigade.length > 0) {
-      allItems = allItems.filter((e)=>{return Brigade.indexOf(e.brigadeId)!==-1})
+      allItems = allItems.filter((e)=>{return Brigade.indexOf(e.brigadeId)!==-1;});
     }
     
     if (typeof EndState !== 'undefined' && EndState.length > 0) {
-      allItems = allItems.filter((e)=>{return EndState.indexOf(e.endStateId)!==-1})
+      allItems = allItems.filter((e)=>{return EndState.indexOf(e.endStateId)!==-1;});
     }
 
     if (typeof RatingOption !== 'undefined' && RatingOption.length > 0) {
-      allItems = allItems.filter((e)=>{return RatingOption.indexOf(e.rating)!==-1})
+      allItems = allItems.filter((e)=>{return RatingOption.indexOf(e.rating)!==-1;});
     }
 
     if (typeof ViabilityOption !== 'undefined' && ViabilityOption.length > 0) {
-      allItems = allItems.filter((e)=>{return ViabilityOption.indexOf(e.viabilityCategory)!==-1})
+      allItems = allItems.filter((e)=>{return ViabilityOption.indexOf(e.viabilityCategory)!==-1;});
     }
 
     if (typeof Classification !== 'undefined' && Classification.length > 0) {
-      allActionPlan = allActionPlan.filter((e)=>{return Classification.indexOf(e.classification)!==-1})
+      allActionPlan = allActionPlan.filter((e)=>{return Classification.indexOf(e.classification)!==-1;});
       
-      let reviewId = allActionPlan.map((e)=>{return e.reviewId});
-      allItems = allItems.filter((e)=>{return reviewId.indexOf(e.reviewId)!==-1})
+      let reviewId = allActionPlan.map((e)=>{return e.reviewId;});
+      allItems = allItems.filter((e)=>{return reviewId.indexOf(e.reviewId)!==-1;});
     }
     
     return allItems;
@@ -334,7 +347,6 @@ export class ABRService {
       let supportRequired:string[] = c.supportRequired?(c.supportRequired.indexOf(",")>0?c.supportRequired.split(","):c.supportRequired.split('')):[];
 
       let dueDate:string = this._getISODateStringFormat(c.due);
-      debugger;
       
       list.items.getItemByStringId(c.actionPlanItemId)
         .inBatch(batch)

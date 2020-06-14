@@ -45,6 +45,7 @@
     }
     .ActionPlanPageContainer{
       overflow: hidden; 
+      width: inherit;
       // width: 1540px;
     }
   
@@ -62,8 +63,7 @@
 
    textarea {
     font-size: 11px!important;
-    //width: 160px!important;
-    width: -webkit-fill-available !important;
+    width: 270px!important;
     padding: 0px;
   }
   
