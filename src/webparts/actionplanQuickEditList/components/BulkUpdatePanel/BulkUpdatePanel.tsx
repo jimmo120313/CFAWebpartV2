@@ -53,14 +53,6 @@ IBulkUpdatePanelState
   public async componentDidMount(): Promise<void> {
     
     await this.actionPlanItemService._getItemListOption();
-    // debugger;
-    // var dTreatment = "";
-       
-    // if(this.props.ps_EndState.length == 1){
-    //   dTreatment = await this.actionPlanItemService._GetTreatment(this.props.ps_EndState[0],this.props.reviewPeriod)
-    //   this.setState({defaultTreatment:dTreatment});
-    // }
-
    
   }
   
@@ -81,7 +73,7 @@ IBulkUpdatePanelState
         break;
       case FilterLabel.EndState:
         var dTreatment = "";
-        debugger;
+    
         if(sOption.length == 1){
           dTreatment = await this.actionPlanItemService._GetTreatment(sOption[0],this.props.reviewPeriod)
           this.treatment = dTreatment;
@@ -152,7 +144,6 @@ private _onRenderFooterContent = ()=>{
 
 private _openPanel = async () => {
 
-  debugger;
     var dTreatment = "";
        
     if(this.props.ps_EndState.length == 1){

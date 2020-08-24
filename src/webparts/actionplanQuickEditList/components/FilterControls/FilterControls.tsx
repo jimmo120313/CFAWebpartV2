@@ -49,7 +49,7 @@ IFilterControlsState
   }
 
   private _selectRemoveOption = (ev: React.FormEvent<HTMLElement>, isChecked: boolean, prop: ISolutionDropdownOption[],optionName:string): void => {
-   debugger;
+   
     let Option: string[] = [];
     if (isChecked) {
       prop.forEach(element => {
@@ -98,7 +98,7 @@ IFilterControlsState
   }
 
   private _onOptionChangeMultiSelect = (item: IDropdownOption, selectedItems:string[],optionName:string): void => {
-    debugger;
+    
     const updatedSelectedItem = selectedItems? GeneralService.copyArray(selectedItems) : [];
     if (item.selected) {
       // add the option if it's checked
@@ -174,7 +174,6 @@ IFilterControlsState
           <div className="ddRating">
             <Checkbox label="Rating" className="cb" onChange={(e,checked)=>this._selectRemoveOption(e,checked,this.props.RatingOption,"Rating")} defaultChecked={false} checked={this.state.isRatingOptionChecked} />
             <Dropdown
-              //label="Rating"
               placeHolder="Please select Rating"
               selectedKeys={this.s_RatingOption}
               options={this.props.RatingOption}
@@ -185,7 +184,6 @@ IFilterControlsState
           <div className="ddViability">
             < Checkbox label="Viability Category" className="cb" onChange={(e,checked)=>this._selectRemoveOption(e,checked,this.props.ViabilityOption,"Viability")} defaultChecked={true} checked={this.state.isViabilityChecked} />
             <Dropdown
-              //label="Viability Category"
               placeHolder="Please Select Viability Category"
               selectedKeys={this.s_ViabilityOption}
               options={this.props.ViabilityOption}
@@ -196,7 +194,6 @@ IFilterControlsState
           <div className="ddEndState">
             <Checkbox label="End State" className="cb" onChange={(e,checked)=>this._selectRemoveOption(e,checked,this.props.EndState,"EndState")}  defaultChecked={true} checked={this.state.isEndStateChecked} />
             <Dropdown
-              //label="End State"
               placeHolder="End State (Question Ref)"
               selectedKeys={this.s_EndState}
               options={this.props.EndState}
@@ -208,7 +205,6 @@ IFilterControlsState
           <div className="ddClassification">
             <Checkbox label="Classification" className="cb" onChange={(e,checked)=>this._selectRemoveOption(e,checked,this.props.Classification,"Classification")} defaultChecked={true} checked={this.state.isClasifiChecked} />
             <Dropdown
-              //label="Classification"
               placeHolder="Classification"
               options={this.props.Classification}
               selectedKeys={this.s_Classification}
