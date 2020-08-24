@@ -28,7 +28,8 @@ IBulkUpdatePanelState
 
   constructor(props: IBulkUpdatePanelProp) {
     super(props);
-   
+    
+    
     this.state = {
       s_EndState:this.props.ps_EndState,
       s_RatingOption:this.props.ps_RatingOption,
@@ -42,7 +43,8 @@ IBulkUpdatePanelState
       isDialogHided:true,
       confirmSave:false,
       noOfRecords:0,
-      filteredRecords:[]
+      filteredRecords:[],
+      defaultTreatment:""
 
     };
     
@@ -51,10 +53,18 @@ IBulkUpdatePanelState
   public async componentDidMount(): Promise<void> {
     
     await this.actionPlanItemService._getItemListOption();
+    // debugger;
+    // var dTreatment = "";
+       
+    // if(this.props.ps_EndState.length == 1){
+    //   dTreatment = await this.actionPlanItemService._GetTreatment(this.props.ps_EndState[0],this.props.reviewPeriod)
+    //   this.setState({defaultTreatment:dTreatment});
+    // }
+
    
   }
   
-  public _syncSelectedOption = (label:string,sOption:string[]):void =>{
+  public _syncSelectedOption = async (label:string,sOption:string[]):Promise<void> =>{
     
     switch(label) {
       case FilterLabel.Brigade:
@@ -70,7 +80,15 @@ IBulkUpdatePanelState
         
         break;
       case FilterLabel.EndState:
-        this.setState({s_EndState: sOption});
+        var dTreatment = "";
+        debugger;
+        if(sOption.length == 1){
+          dTreatment = await this.actionPlanItemService._GetTreatment(sOption[0],this.props.reviewPeriod)
+          this.treatment = dTreatment;
+        }
+      
+
+        this.setState({s_EndState: sOption,defaultTreatment:dTreatment});
         
         break;
       case FilterLabel.Classification:
@@ -132,12 +150,24 @@ private _onRenderFooterContent = ()=>{
     
 }
 
-private _openPanel = () => {
+private _openPanel = async () => {
+
+  debugger;
+    var dTreatment = "";
+       
+    if(this.props.ps_EndState.length == 1){
+      dTreatment = await this.actionPlanItemService._GetTreatment(this.props.ps_EndState[0],this.props.reviewPeriod)
+      this.initiative = dTreatment;
+      this.setState({defaultTreatment:dTreatment});
+    }
+
+
   this.setState({isPanelOpen: true,s_EndState:this.props.ps_EndState,
       s_RatingOption:this.props.ps_RatingOption,
       s_Brigade:this.props.ps_Brigade,
       s_ViabilityOption:this.props.ps_ViabilityOption,
-      s_Classification:this.props.ps_Classification});
+      s_Classification:this.props.ps_Classification,
+    defaultTreatment:dTreatment});
 }
 
 private _hideDialog = () => {
@@ -208,6 +238,7 @@ private _closePanel = () => {
                label="Treatment" 
                onChange={(e,v) => this.treatment=v}
                multiline
+               value = {this.state.defaultTreatment}
                rows={4}
                cols={100}
             />
@@ -227,7 +258,7 @@ private _closePanel = () => {
             {/* Suppport Required */}
             <div>
             <Dropdown
-              label = "Support Required"
+              label = "Assigned to"
               placeHolder="Please select Required"
               selectedKeys={this.state.ds_AssignTo}
               options={ this.props.supportOption}

@@ -49,7 +49,7 @@ IFilterControlsState
   }
 
   private _selectRemoveOption = (ev: React.FormEvent<HTMLElement>, isChecked: boolean, prop: ISolutionDropdownOption[],optionName:string): void => {
-   
+   debugger;
     let Option: string[] = [];
     if (isChecked) {
       prop.forEach(element => {
@@ -98,7 +98,7 @@ IFilterControlsState
   }
 
   private _onOptionChangeMultiSelect = (item: IDropdownOption, selectedItems:string[],optionName:string): void => {
-
+    debugger;
     const updatedSelectedItem = selectedItems? GeneralService.copyArray(selectedItems) : [];
     if (item.selected) {
       // add the option if it's checked

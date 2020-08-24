@@ -111,7 +111,7 @@ export class ActionPlanPage extends React.Component<
     //this.state.s_ratingOption = ['Red', 'Amber'];
     this.setState({ s_ratingOption: ['Red', 'Amber'] });
 
-
+      
     //Get Viability Category
     this.ds_ViabilityOption = await this.abrService._getViabilityCategoryOption();
 
@@ -150,9 +150,14 @@ export class ActionPlanPage extends React.Component<
       this.selectedReviewID
     );
 
+ 
     //Get all end state
     this.actionPlanItemDetail.forEach(element => {
-      this.ds_EndState.push({ key: element.endStateId, text: element.endState });
+      let obj = { key: element.questionReference, text: element.questionReference +"-"+ element.endState }
+      
+      if (!this.ds_EndState.some(e=>e.key === element.questionReference)) {
+        this.ds_EndState.push(obj);
+      }
     });
     let endstate: string[] = [];
     this.ds_EndState.forEach(element => {
@@ -196,8 +201,7 @@ export class ActionPlanPage extends React.Component<
             cols={50}
           />), cellStyle: { ...cellProps }, ...headerProperties
       },
-      //{ field: "supportRequired", cellStyle: { ...cellProps }, title: "Support Required", lookup: this.abrService.supportOption, ...headerProperties },
-      { field: "supportRequired", cellStyle: { ...cellProps }, title: "Support Required",lookup: this.abrService.supportOption, render: rowData => rowData.supportRequired, editComponent: ps =>(
+      { field: "supportRequired", cellStyle: { ...cellProps }, title: "Assigned to",lookup: this.abrService.supportOption, render: rowData => rowData.supportRequired, editComponent: ps =>(
           <Dropdown
             placeHolder="Please select Required"
             defaultSelectedKeys={ps.value?(ps.value.includes(",")?ps.value.split(","):ps.value):""}
@@ -273,7 +277,7 @@ export class ActionPlanPage extends React.Component<
             s_ratingOption.indexOf(e.rating) !== -1
             && s_Brigade.indexOf(e.brigadeId) !== -1
             && s_ViabilityOption.indexOf(e.viabilityCategory) !== -1
-            && s_EndState.indexOf(e.endStateId) !== -1
+            && s_EndState.indexOf(e.questionReference) !== -1
 
           ) {
             tempItemDetail.push(e);
@@ -297,7 +301,9 @@ export class ActionPlanPage extends React.Component<
       let selectedEndStates: string[] = [];
       tempItemDetail.forEach(element => {
         if (viabilityOption.indexOf(element.viabilityCategory) > -1) {
-          EndStates.push({ key: element.endStateId, text: element.endState });
+          if(!EndStates.some(e=>e.key==element.questionReference)){
+            EndStates.push({ key: element.questionReference, text: element.questionReference +"-"+ element.endState });
+          }
         }
       });
 
@@ -356,6 +362,7 @@ export class ActionPlanPage extends React.Component<
             actionPlanItemDetail = {this.actionPlanItemDetail}
             actionPlan = {this.actionPlanDetail}
             siteURL = {this.props.siteURL}
+            reviewPeriod = {this.state.reviewPeriod}
 
             _refreshBulkUpdate = {this._refreshBulkUpdate}
   
@@ -382,13 +389,10 @@ export class ActionPlanPage extends React.Component<
             new Promise((resolve, reject) => {
               setTimeout(() => {
                 {
-     
                   const data = this.state.DetailRow;
                   const index = data.indexOf(oldData);
                   data[index] = newData;
                   data[index].supportRequired = this.state.ds_AssignTo.join(",");
-                  
-                 
                   data[index].isUpdated = true;
                   this.setState({ DetailRow: data,ds_AssignTo:[],assignToInit:false }, () => resolve());
                   
@@ -416,7 +420,6 @@ export class ActionPlanPage extends React.Component<
     );
 
   }
-
 
   public _onBrigadeChangeMultiSelect = (item: IDropdownOption): void => {
 

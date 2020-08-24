@@ -17,6 +17,7 @@ export interface IBulkUpdatePanelState {
   confirmSave:boolean;
   noOfRecords:number;
   filteredRecords:IActionPlanItem[];
+  defaultTreatment: string;
 }
 
 

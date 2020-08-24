@@ -16,6 +16,7 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { PageContext } from '@microsoft/sp-page-context';
 
 export class ABRService {
+  
   private reviewPeriod: ISolutionDropdownOption[] = [];
   private district: ISolutionDropdownOption[] = [];
   private classification: ISolutionDropdownOption[] = [];
@@ -55,6 +56,25 @@ export class ABRService {
       });
     }
     return brigade.sort((a, b) => a.title.localeCompare(b.title));
+  }
+
+  public async _GetTreatment(refNum: string, reviewPeriod: string): Promise<string> {
+    
+    let q: string = "Review_x0020_Period eq '" + reviewPeriod + "'" + "and Question_x0020_Reference_x0020_N eq '" + refNum + "'";
+    
+
+    const selectedStatement = await sp.web.lists
+      .getByTitle("Statements")
+      .items.select("Treatments")
+      .filter(q)
+      .getAll();
+    
+    console.log(selectedStatement);
+    var result = selectedStatement[0].Treatments;
+    console.log(result);
+    
+    return result;
+
   }
 
   public async _getDistrictOption(): Promise<ISolutionDropdownOption[]> {
@@ -175,13 +195,12 @@ export class ABRService {
 
 
     for (let i = 0; i < actionPlanItemDetail.length; i++) {
-      let index = actionPlanItemDetail[i].ReviewComments.indexOf("<p>");
+
       let cComment = '';
-      if (index !== -1) {
-        let startPos = index + "<p>".length;
-        let endPos = actionPlanItemDetail[i].ReviewComments.indexOf("</p>");
-        cComment = actionPlanItemDetail[i].ReviewComments.substring(startPos, endPos).trim();
-      }
+      let cElement = document.createElement("DIV");
+      cElement .innerHTML = actionPlanItemDetail[i].ReviewComments;
+      cComment = cElement.innerText;
+      
    
       let formatedDate = '';
       if (actionPlanItemDetail[i].Due) {
@@ -298,7 +317,7 @@ export class ABRService {
     }
     
     if (typeof EndState !== 'undefined' && EndState.length > 0) {
-      allItems = allItems.filter((e)=>{return EndState.indexOf(e.endStateId)!==-1;});
+      allItems = allItems.filter((e)=>{return EndState.indexOf(e.questionReference)!==-1;});
     }
 
     if (typeof RatingOption !== 'undefined' && RatingOption.length > 0) {
@@ -385,10 +404,6 @@ export class ABRService {
     return row;
 
   }
-
-
-
-
 
 
   public async _getActionPlanMaster(
