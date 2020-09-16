@@ -259,7 +259,7 @@ export class ABRService {
 
     const batch = sp.web.createBatch();
     const entityTypeFullName = await list.getListItemEntityTypeFullName();
-
+    
     allItems.forEach(c => {
       
       let dueDate:string ="";

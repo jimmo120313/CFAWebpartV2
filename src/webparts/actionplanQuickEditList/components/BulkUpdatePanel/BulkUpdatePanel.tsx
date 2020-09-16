@@ -45,6 +45,7 @@ IBulkUpdatePanelState
       noOfRecords:0,
       filteredRecords:[],
       defaultTreatment:""
+      
 
     };
     
@@ -108,6 +109,7 @@ public _handleChangeAssignTo = (item:IDropdownOption):void =>{
   }
 
   this.setState({ ds_AssignTo: updatedSelectedItem});
+  
 }
 
 private _BulkUpdate = async(fr:IActionPlanItem[]):Promise<void> =>{
@@ -121,6 +123,7 @@ private _BulkUpdate = async(fr:IActionPlanItem[]):Promise<void> =>{
 }
 
 private _onRenderFooterContent = ()=>{
+  
   return(<div>
     <PrimaryButton className="PanelPrimButton" text="Save" onClick={()=>this._showDialog(this.props.actionPlanItemDetail,this.props.actionPlan)}  disabled={false}/>
     <DefaultButton className="PanelDefButton" text="Close" onClick={this._closePanel}  disabled={false} />
@@ -148,7 +151,7 @@ private _openPanel = async () => {
        
     if(this.props.ps_EndState.length == 1){
       dTreatment = await this.actionPlanItemService._GetTreatment(this.props.ps_EndState[0],this.props.reviewPeriod)
-      this.initiative = dTreatment;
+      this.treatment = dTreatment;
       this.setState({defaultTreatment:dTreatment});
     }
 
@@ -168,6 +171,7 @@ private _hideDialog = () => {
 private _showDialog = async(api:IActionPlanItem[],ap:IActionPlan[]) => {
   
   let fr:IActionPlanItem[] = await this.actionPlanItemService._getFilteredActionPlanItem(ap,api,this.state.s_Brigade,this.state.s_EndState,this.state.s_RatingOption,this.state.s_ViabilityOption,this.state.s_Classification);
+ 
   this.setState({isDialogHided:false,noOfRecords:fr.length,filteredRecords:fr});
 }
 
@@ -227,7 +231,7 @@ private _closePanel = () => {
             <div>
             <TextField 
                label="Treatment" 
-               onChange={(e,v) => this.treatment=v}
+               onChange={(e,v) => {this.treatment=v; this.setState({defaultTreatment:v})}}
                multiline
                value = {this.state.defaultTreatment}
                rows={4}
