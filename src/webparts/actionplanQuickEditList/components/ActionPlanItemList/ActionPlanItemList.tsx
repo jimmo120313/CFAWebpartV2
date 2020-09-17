@@ -42,7 +42,7 @@ export class ActionPlanItemList extends React.Component<
       { field: "rating", title: "Rating", editable: 'never', cellStyle: { width: 50 }, headerStyle: { width: 50 } },
       { field: "statementSelection", title: "Statement Selection", editable: 'never' },
       {
-        field: "treatment", title: "Treatment", editComponent: props => (
+        field: "treatment", title: "Treatment/Initiative", editComponent: props => (
           <textarea
             value={props.value}
             onChange={e => props.onChange(e.target.value)}
@@ -51,7 +51,7 @@ export class ActionPlanItemList extends React.Component<
           />)
       },
       {
-        field: "initiative", title: "Initiative", editComponent: props => (
+        field: "initiative", title: "Comments", editComponent: props => (
           <textarea
             value={props.value}
             onChange={e => props.onChange(e.target.value)}

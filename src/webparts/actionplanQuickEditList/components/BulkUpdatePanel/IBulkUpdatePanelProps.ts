@@ -27,6 +27,7 @@ export interface IBulkUpdatePanelProp {
 
       //LookupValue
       supportOption:ISolutionDropdownOption[];
+      supportRequiredNewOption:ISolutionDropdownOption[];
       priorityOption:ISolutionDropdownOption[];
       actionStatus:ISolutionDropdownOption[];
 

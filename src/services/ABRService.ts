@@ -23,6 +23,7 @@ export class ABRService {
   private viabilityCategory: ISolutionDropdownOption[] = [];
   private ratingOpion: ISolutionDropdownOption[] = [];
   public supportOption: ISolutionMultiSelect[] = [];
+  public newSupportRequiredOption: ISolutionMultiSelect[] = [];
   public drpPriorityOption:ISolutionDropdownOption[] = [];
   public drpstatusOpion:ISolutionDropdownOption[] = [];
   
@@ -184,6 +185,7 @@ export class ABRService {
         , "Treatment"
         , "Initiative"
         , "AssignedTo"
+        , "supportRequiredNew"
         , "Priority"
         , "Due"
         , "Status"
@@ -226,6 +228,7 @@ export class ABRService {
         treatment: actionPlanItemDetail[i].Treatment,
         initiative: actionPlanItemDetail[i].Initiative,
         supportRequired: actionPlanItemDetail[i].AssignedTo?actionPlanItemDetail[i].AssignedTo.join(","):"",
+        newSupportRequired: actionPlanItemDetail[i].supportRequiredNew?actionPlanItemDetail[i].supportRequiredNew.join(","):"",
         priority: actionPlanItemDetail[i].Priority,
         due: formatedDate,
         status: actionPlanItemDetail[i].Status,
@@ -245,6 +248,7 @@ export class ABRService {
     Treatment:string,
     Initiative:string,
     SupportRequired:string[],
+    supportRequiredNew:string[],
     Priority:string,
     Due:string,
     ActionStatus:string,
@@ -288,6 +292,7 @@ export class ABRService {
             Treatment: treatment,
             Initiative: initiative,
             AssignedTo: { results: SupportRequired },//Support Required
+            supportRequiredNew: {results: supportRequiredNew},
             Priority: "'"+Priority+"'",
             Status: "'"+ActionStatus+"'",
             Due: dueDate.indexOf("NaN")>=0?null:dueDate,
@@ -364,7 +369,7 @@ export class ABRService {
 
     changedRows.forEach(c => {
       let supportRequired:string[] = c.supportRequired?(c.supportRequired.indexOf(",")>0?c.supportRequired.split(","):c.supportRequired.split('')):[];
-
+      let supportReqNew:string[] = c.newSupportRequired?(c.newSupportRequired.indexOf(",")>0?c.newSupportRequired.split(","):c.newSupportRequired.split('')):[];
       let dueDate:string = this._getISODateStringFormat(c.due);
       
       list.items.getItemByStringId(c.actionPlanItemId)
@@ -374,6 +379,7 @@ export class ABRService {
             Treatment: c.treatment,
             Initiative: c.initiative,
             AssignedTo: { results: supportRequired },//Support Required
+            supportRequiredNew:{results:supportReqNew},
             Priority: c.priority,
             Status: c.status,
             ApprovedBy: "",
@@ -532,6 +538,19 @@ export class ABRService {
         selected:false
       };
       this.supportOption.push(vOptionObj);
+      
+    });
+
+    let newSupportRequired = await objField.getByInternalNameOrTitle("supportRequiredNew").get();
+    
+    newSupportRequired.Choices.forEach(d => {
+
+      let vOptionObj: ISolutionMultiSelect = {
+        key: d,
+        text: d,
+        selected:false
+      };
+      this.newSupportRequiredOption.push(vOptionObj);
       
     });
     

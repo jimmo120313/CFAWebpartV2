@@ -35,6 +35,9 @@ export interface IActionPlanPageState {
 
 
   ds_AssignTo: string[];
+  ds_NewSupportRequired: string[];
+
   assignToInit: boolean;
+  newSupportRequiredInit: boolean;
 
 }

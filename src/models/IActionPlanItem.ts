@@ -18,6 +18,7 @@ export interface IActionPlanItem {
   actionPlanItemId?: string;
   questionReference?: string;
   abrComment?:string;
+  newSupportRequired?:string;
 
 }
 

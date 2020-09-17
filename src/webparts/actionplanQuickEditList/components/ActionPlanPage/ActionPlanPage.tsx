@@ -96,7 +96,9 @@ export class ActionPlanPage extends React.Component<
       
       /////For Detail List
       ds_AssignTo: [],
-      assignToInit:false
+      ds_NewSupportRequired: [],
+      assignToInit:false,
+      newSupportRequiredInit:false
     };
 
 
@@ -184,7 +186,7 @@ export class ActionPlanPage extends React.Component<
       { field: "abrComment", cellStyle: { ...cellProps }, title: "ABR Comments", editable: 'never', ...headerProperties },
 
       {
-        field: "treatment", cellStyle: { ...cellProps }, title: "Treatment", editComponent: props => (
+        field: "treatment", cellStyle: { ...cellProps }, title: "Treatment/Initiative", editComponent: props => (
           <textarea
             value={props.value}
             onChange={e => props.onChange(e.target.value)}
@@ -193,7 +195,7 @@ export class ActionPlanPage extends React.Component<
           />), ...headerProperties
       },
       {
-        field: "initiative", title: "Initiative", editComponent: props => (
+        field: "initiative", title: "Comments", editComponent: props => (
           <textarea
             value={props.value}
             onChange={e => props.onChange(e.target.value)}
@@ -210,6 +212,18 @@ export class ActionPlanPage extends React.Component<
             multiSelect
             multiSelectDelimiter=","
             onChange={ (p,option)=>{this._handleChangeAssignTo(ps,option);}}
+          />
+         
+        )  },
+      { field: "supportRequiredNew", cellStyle: { ...cellProps }, title: "Suppport Required",lookup: this.abrService.newSupportRequiredOption, render: rowData => rowData.newSupportRequired, editComponent: ps =>(
+          <Dropdown
+            placeHolder="Please select Required"
+            defaultSelectedKeys={ps.value?(ps.value.includes(",")?ps.value.split(","):ps.value):""}
+            selectedKeys={this.state.ds_NewSupportRequired}
+            options={ this.abrService.newSupportRequiredOption}
+            multiSelect
+            multiSelectDelimiter=","
+            onChange={ (p,option)=>{this._handleChangeNewSupportRequired(ps,option);}}
           />
          
         )  },
@@ -243,6 +257,27 @@ export class ActionPlanPage extends React.Component<
     }
 
     this.setState({ ds_AssignTo: updatedSelectedItem,assignToInit:true});
+  }
+
+  public _handleChangeNewSupportRequired = (e:any,item:IDropdownOption):void =>{
+    
+
+    let updatedSelectedItem :any[];
+  
+    updatedSelectedItem= this.state.ds_NewSupportRequired ? GeneralService.copyArray(this.state.ds_NewSupportRequired) : [];
+
+    if (item.selected) {
+      // add the option if it's checked
+      updatedSelectedItem.push(item.key);
+    } else {
+      // remove the option if it's unchecked
+      const currIndex = updatedSelectedItem.indexOf(item.key);
+      if (currIndex > -1) {
+        updatedSelectedItem.splice(currIndex, 1);
+      }
+    }
+
+    this.setState({ ds_NewSupportRequired: updatedSelectedItem,newSupportRequiredInit:true});
   }
 
   
@@ -356,6 +391,7 @@ export class ActionPlanPage extends React.Component<
             ps_ReviewId={this.selectedReviewID}
   
             supportOption={this.abrService.supportOption}
+            supportRequiredNewOption={this.abrService.newSupportRequiredOption}
             priorityOption={this.abrService.drpPriorityOption}
             actionStatus={this.abrService.drpstatusOpion}
 
@@ -393,8 +429,9 @@ export class ActionPlanPage extends React.Component<
                   const index = data.indexOf(oldData);
                   data[index] = newData;
                   data[index].supportRequired = this.state.ds_AssignTo.join(",");
+                  data[index].newSupportRequired = this.state.ds_NewSupportRequired.join(",");
                   data[index].isUpdated = true;
-                  this.setState({ DetailRow: data,ds_AssignTo:[],assignToInit:false }, () => resolve());
+                  this.setState({ DetailRow: data,ds_AssignTo:[],assignToInit:false,newSupportRequiredInit:false,ds_NewSupportRequired:[] }, () => resolve());
                   
                 }
                 resolve();

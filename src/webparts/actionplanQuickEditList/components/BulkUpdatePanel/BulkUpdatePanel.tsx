@@ -37,6 +37,7 @@ IBulkUpdatePanelState
       s_ViabilityOption:this.props.ps_ViabilityOption,
       s_Classification:this.props.ps_Classification,
       ds_AssignTo:[],
+      ds_supportRequiredNew:[],
       ds_Priority:"",
       ds_ActionStatus:"",
       isPanelOpen:false,
@@ -112,11 +113,30 @@ public _handleChangeAssignTo = (item:IDropdownOption):void =>{
   
 }
 
+public _handleChangeSupportRrequired = (item:IDropdownOption):void =>{
+
+  const updatedSelectedItem = this.state.ds_supportRequiredNew ? GeneralService.copyArray(this.state.ds_supportRequiredNew) : [];
+  if (item.selected) {
+    // add the option if it's checked
+    updatedSelectedItem.push(item.key);
+  } else {
+    // remove the option if it's unchecked
+    const currIndex = updatedSelectedItem.indexOf(item.key);
+    if (currIndex > -1) {
+      updatedSelectedItem.splice(currIndex, 1);
+    }
+  }
+
+  this.setState({ ds_supportRequiredNew: updatedSelectedItem});
+  
+}
+
+
 private _BulkUpdate = async(fr:IActionPlanItem[]):Promise<void> =>{
   
   //let filterdRecord = await this.actionPlanItemService._getFilteredActionPlanItem(ap,api,this.state.s_Brigade,this.state.s_EndState,this.state.s_RatingOption,this.state.s_ViabilityOption,this.state.s_Classification);
   
-  await this.actionPlanItemService._bulkUpdateActionPlanItem(fr,this.treatment,this.initiative,this.state.ds_AssignTo,this.state.ds_Priority,this.due,this.state.ds_ActionStatus,this.props.siteURL);
+  await this.actionPlanItemService._bulkUpdateActionPlanItem(fr,this.treatment,this.initiative,this.state.ds_AssignTo,this.state.ds_supportRequiredNew,this.state.ds_Priority,this.due,this.state.ds_ActionStatus,this.props.siteURL);
   this.setState({isPanelOpen:false});
   await this.props._refreshBulkUpdate;
 
@@ -259,6 +279,16 @@ private _closePanel = () => {
               options={ this.props.supportOption}
               multiSelect
               onChanged={(e)=>{this._handleChangeAssignTo(e);}}
+           />
+           </div>
+           <div>
+            <Dropdown
+              label = "Support Required"
+              placeHolder="Please select Required"
+              selectedKeys={this.state.ds_supportRequiredNew}
+              options={ this.props.supportRequiredNewOption}
+              multiSelect
+              onChanged={(e)=>{this._handleChangeSupportRrequired(e);}}
            />
            </div>
            {/* Priority*/}

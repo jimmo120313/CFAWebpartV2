@@ -9,6 +9,7 @@ export interface IBulkUpdatePanelState {
 
 
   ds_AssignTo:string[];
+  ds_supportRequiredNew:string[];
   ds_Priority:string;
   ds_ActionStatus:string;
 
