@@ -37,7 +37,7 @@ export class ActionPlanItemList extends React.Component<
     this.columns = [
       { field: "brigadeName", title: "Brigade Name", editable: 'never', cellStyle: { width: 5, maxWidth: 5 } },
       { field: "endState", title: "End State", editable: 'never' },
-      { field: "viability", title: "Viability Category", editable: 'never', cellStyle: { width: 100 }, headerStyle: { width: 100 } },
+      { field: "viability", title: "Category", editable: 'never', cellStyle: { width: 100 }, headerStyle: { width: 100 } },
       { field: "subCategory", title: "Sub-Category", editable: 'never' },
       { field: "rating", title: "Rating", editable: 'never', cellStyle: { width: 50 }, headerStyle: { width: 50 } },
       { field: "statementSelection", title: "Statement Selection", editable: 'never' },

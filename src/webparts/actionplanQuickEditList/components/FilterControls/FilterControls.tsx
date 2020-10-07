@@ -182,9 +182,9 @@ IFilterControlsState
             />
           </div>
           <div className="ddViability">
-            < Checkbox label="Viability Category" className="cb" onChange={(e,checked)=>this._selectRemoveOption(e,checked,this.props.ViabilityOption,"Viability")} defaultChecked={true} checked={this.state.isViabilityChecked} />
+            < Checkbox label="Category" className="cb" onChange={(e,checked)=>this._selectRemoveOption(e,checked,this.props.ViabilityOption,"Viability")} defaultChecked={true} checked={this.state.isViabilityChecked} />
             <Dropdown
-              placeHolder="Please Select Viability Category"
+              placeHolder="Please Select Category"
               selectedKeys={this.s_ViabilityOption}
               options={this.props.ViabilityOption}
               multiSelect

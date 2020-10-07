@@ -250,7 +250,7 @@ private _closePanel = () => {
             {/* Treatment */}
             <div>
             <TextField 
-               label="Treatment" 
+               label="Treatment/Initiative" 
                onChange={(e,v) => {this.treatment=v; this.setState({defaultTreatment:v})}}
                multiline
                value = {this.state.defaultTreatment}
@@ -262,7 +262,7 @@ private _closePanel = () => {
             {/* Initiative */}
             <div>
             <TextField 
-               label="Initiative" 
+               label="Comments" 
                onChange={(e,v) => this.initiative=v}
                multiline
                rows={4}
@@ -273,7 +273,7 @@ private _closePanel = () => {
             {/* Suppport Required */}
             <div>
             <Dropdown
-              label = "Assigned to"
+              label = "Support Required"
               placeHolder="Please select Required"
               selectedKeys={this.state.ds_AssignTo}
               options={ this.props.supportOption}
@@ -283,7 +283,7 @@ private _closePanel = () => {
            </div>
            <div>
             <Dropdown
-              label = "Support Required"
+              label = "Assigned to"
               placeHolder="Please select Required"
               selectedKeys={this.state.ds_supportRequiredNew}
               options={ this.props.supportRequiredNewOption}

@@ -179,7 +179,7 @@ export class ActionPlanPage extends React.Component<
       { field: "brigadeName", cellStyle: { ...cellProps }, title: "Brigade Name", editable: 'never', ...headerProperties },
       
       { field: "questionReference", cellStyle: { ...cellProps }, title: "Ref Number", editable: 'never', ...headerProperties },
-      { field: "viabilityCategory", cellStyle: { ...cellProps }, title: "Viability Category", editable: 'never', ...headerProperties },
+      { field: "viabilityCategory", cellStyle: { ...cellProps }, title: "Category", editable: 'never', ...headerProperties },
       { field: "subCategory", cellStyle: { ...cellProps }, title: "Sub-Category", editable: 'never', ...headerProperties },
       { field: "rating", cellStyle: { ...cellProps }, title: "Rating", editable: 'never', ...headerProperties },
       { field: "statementSelection", cellStyle: { ...cellProps }, title: "Statement Selection", editable: 'never', ...headerProperties },
@@ -203,7 +203,7 @@ export class ActionPlanPage extends React.Component<
             cols={50}
           />), cellStyle: { ...cellProps }, ...headerProperties
       },
-      { field: "supportRequired", cellStyle: { ...cellProps }, title: "Assigned to",lookup: this.abrService.supportOption, render: rowData => rowData.supportRequired, editComponent: ps =>(
+      { field: "supportRequired", cellStyle: { ...cellProps }, title: "Support Required",lookup: this.abrService.supportOption, render: rowData => rowData.supportRequired, editComponent: ps =>(
           <Dropdown
             placeHolder="Please select Required"
             defaultSelectedKeys={ps.value?(ps.value.includes(",")?ps.value.split(","):ps.value):""}
@@ -215,7 +215,7 @@ export class ActionPlanPage extends React.Component<
           />
          
         )  },
-      { field: "supportRequiredNew", cellStyle: { ...cellProps }, title: "Suppport Required",lookup: this.abrService.newSupportRequiredOption, render: rowData => rowData.newSupportRequired, editComponent: ps =>(
+      { field: "supportRequiredNew", cellStyle: { ...cellProps }, title: "Assigned to",lookup: this.abrService.newSupportRequiredOption, render: rowData => rowData.newSupportRequired, editComponent: ps =>(
           <Dropdown
             placeHolder="Please select Required"
             defaultSelectedKeys={ps.value?(ps.value.includes(",")?ps.value.split(","):ps.value):""}
@@ -661,10 +661,10 @@ export class ActionPlanPage extends React.Component<
           />
         </div>
         <div className="ddViability">
-          < Checkbox label="Viability Category" className="cb" onChange={this._selectRemoveAllViabilityCategory} defaultChecked={true} checked={this.state.isViabilityCategoryChecked} />
+          < Checkbox label="Category" className="cb" onChange={this._selectRemoveAllViabilityCategory} defaultChecked={true} checked={this.state.isViabilityCategoryChecked} />
           <Dropdown
             //label="Viability Category"
-            placeHolder="Please Select Viability Category"
+            placeHolder="Please Select Category"
             selectedKeys={this.state.s_ViabilityOption}
             options={this.ds_ViabilityOption}
             multiSelect
