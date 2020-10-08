@@ -260,7 +260,8 @@ export class ABRService {
     const MasterListName: string = "Action Plans";
     const rootWeb = new Web(webUrl);
     const list = rootWeb.lists.getByTitle(ItemlistName);
-
+    let uniqueReviewIdRows: string[] = [];
+    const currentUser = await sp.web.currentUser.get();
     const batch = sp.web.createBatch();
     const entityTypeFullName = await list.getListItemEntityTypeFullName();
     
@@ -298,9 +299,29 @@ export class ABRService {
             Due: dueDate.indexOf("NaN")>=0?null:dueDate,
           }, "*", entityTypeFullName);
 
+          if (c.reviewId !== null && c.reviewId !== '' && uniqueReviewIdRows.indexOf(c.reviewId) == -1) {
+            uniqueReviewIdRows.push(c.reviewId);
+          }
     });
 
     await batch.execute();
+
+    const masterList = rootWeb.lists.getByTitle(MasterListName).expand("Review").select("ID", "Review/ID");
+    uniqueReviewIdRows.forEach(m => {
+      let fielterString: string = "Review/ID eq " + m;
+      masterList.items.top(1).filter(fielterString).get()
+        .then(
+          (items: any[]) => {
+            if (items.length > 0) {
+              sp.web.lists.getByTitle(MasterListName).items.getById(items[0].Id).update(
+                { ActionPlanCompletedBy: currentUser['Title'] }
+              );
+            }
+          });
+    });
+
+
+
     return allItems;
 
   }
